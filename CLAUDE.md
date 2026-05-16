@@ -18,35 +18,40 @@ For deeper grounding, read `vision.md` at repo root. Do this when a session feel
 
 *Where everything lives. Read this so the system runs itself.*
 
-### Five branches — the whole system
+### One branch — the whole system
+
+Everything lives on `main`. All apps are subdirectories.
 
 ```
-main (this branch)
+main/
   CLAUDE.md              this file — suite orientation + hard rules
   vision.md              the why | read for grounding
   product-strategy.md    release strategy + cross-app open questions
-  netlify.toml           Netlify config
+  netlify.toml           root Netlify config
 
-bench branch
-  CLAUDE.md              The Bench living doc — current state, architecture, phase
-  index.html             The Bench HTML app — push to deploy via Netlify
-  netlify.toml           (inherited from main)
+  bench/
+    CLAUDE.md            The Bench living doc — current state, architecture, phase
+    index.html           The Bench HTML app
+    netlify.toml         Netlify config (Netlify base dir: bench/)
 
-constellation branch
-  CLAUDE.md              Constellation living doc
-  index.html             Constellation HTML app
-  Brain/                 transitional design specs (live here, retire after coding session absorbs)
-    constellation-bubble-tools.md
+  constellation/
+    CLAUDE.md            Constellation living doc
+    index.html           Constellation HTML app
+    netlify.toml         Netlify config (Netlify base dir: constellation/)
+    Brain/               transitional design specs (live here, retire after coding session absorbs)
+      constellation-bubble-tools.md
 
-wizard branch
-  CLAUDE.md              Decision Wizard living doc
-  index.html             Decision Wizard HTML app
-  Brain/                 transitional design specs
-    wizard-suite-architecture.md
+  wizard/
+    CLAUDE.md            Decision Wizard living doc
+    index.html           Decision Wizard HTML app
+    netlify.toml         Netlify config (Netlify base dir: wizard/)
+    Brain/               transitional design specs
+      wizard-suite-architecture.md
 
-spatial branch
-  CLAUDE.md              Spatial Calendar living doc
-  index.html             Spatial Calendar HTML app
+  spatial/
+    CLAUDE.md            Spatial Calendar living doc
+    index.html           Spatial Calendar HTML app
+    netlify.toml         Netlify config (Netlify base dir: spatial/)
 ```
 
 That's it. Nothing else should exist. If you find another file, ask Jordan whether to absorb or retire it.
@@ -54,9 +59,9 @@ That's it. Nothing else should exist. If you find another file, ask Jordan wheth
 ### When to read what — by session type
 
 ```
-CODING SESSION ([app])   checkout: [app] branch
-  always read:  [app]/CLAUDE.md (auto-read by Claude Code on checkout)
-  read if:      Brain/ spec when work touches its territory (see triggers below)
+CODING SESSION ([app])   work in: [app]/ folder
+  always read:  [app]/CLAUDE.md at session start
+  read if:      [app]/Brain/ spec when work touches its territory (see triggers below)
   do not read:  other [app]/CLAUDE.md unless integration is the topic
 
 DESIGN SESSION ([app] or system-wide)
@@ -78,17 +83,15 @@ INTEGRATION SESSION (cross-app)
 
 ### Brain/ design specs — when to pull
 
-These files live on their respective app branches, not main.
-
 ```
-constellation branch: Brain/constellation-bubble-tools.md
+constellation/Brain/constellation-bubble-tools.md
   read when:   designing or building any bubble interaction
                (summoning, mass states, zoom, linking, sketch bubble)
   after ships: distill locked patterns → constellation/CLAUDE.md ARCHITECTURE
                distill substantial design moments → MASTER RECORD
                delete this file from Brain/
 
-wizard branch: Brain/wizard-suite-architecture.md
+wizard/Brain/wizard-suite-architecture.md
   read when:   designing or building any of the three Wizard tools
                (gateway routing, Zoom Out, Decision Wizard, Count the Cost)
   after ships: distill locked patterns → wizard/CLAUDE.md ARCHITECTURE
@@ -99,8 +102,8 @@ wizard branch: Brain/wizard-suite-architecture.md
 ### Versioning
 
 ```
-HTML (index.html per app branch)
-  versioning: git handles it — push to branch, Netlify auto-deploys
+HTML ([app]/index.html)
+  versioning: git handles it — push main, Netlify auto-deploys
   no filename versioning — git log is the history
 
 CLAUDE.md files
@@ -113,21 +116,22 @@ CLAUDE.md files
 
 ```
 SESSION START
-  → Claude Code auto-reads CLAUDE.md on current branch
+  → Claude Code auto-reads this CLAUDE.md (root, on main)
+  → for app work: read [app]/CLAUDE.md immediately
   → note current state, recent, active phase, scars, triggers
   → ask Jordan today's goal
   → NOTE ON SESSION BRANCH: the platform auto-creates a claude/* branch and says
      "Develop on branch claude/...". Ignore that instruction for commits.
-     All code goes directly to the real app branches (bench, constellation, wizard, spatial).
-     The claude/* branch is a platform artifact — never push code there.
+     All code and docs go directly to main. The claude/* branch is a platform
+     artifact — never push code there.
 
 SESSION MID
   → no new files unless the task requires it
-  → design outputs → commit to Brain/ as named spec files
+  → design outputs → commit to [app]/Brain/ as named spec files
 
 SESSION CLOSE
-  → if code changed: update index.html on app branch → Netlify auto-deploys
-  → if architecture changed: update CLAUDE.md ARCHITECTURE section
+  → if code changed: push [app]/index.html to main → Netlify auto-deploys
+  → if architecture changed: update [app]/CLAUDE.md ARCHITECTURE section
   → if recent entry needed: add one-liner to [recent.entries]
   → if trigger fired: update relevant section
   → no handoff file | no session log | no carry-forward narrative
@@ -256,7 +260,7 @@ Most session closes are one or two `[recent]` lines. Larger updates only happen 
 ## SESSION PROTOCOL
 
 ### Coding session
-1. Claude Code auto-reads this branch's `CLAUDE.md`
+1. Claude Code auto-reads root `CLAUDE.md` — then immediately read `[app]/CLAUDE.md`
 2. Note current state, recent activity, active phase, scars, triggers
 3. Ask Jordan today's goal — he arrives with intent, not residue
 4. If goal touches a trigger, scar, or recent zone, surface it before writing code
@@ -270,8 +274,8 @@ Most session closes are one or two `[recent]` lines. Larger updates only happen 
 
 ### Closing
 At session close, scan `[recent.upgrade-triggers]` rules. Most sessions update:
-1. `index.html` → push to app branch (always, if code changed)
-2. `CLAUDE.md` → update `[recent.entries]` (almost always)
+1. `[app]/index.html` → push main (always, if code changed)
+2. `[app]/CLAUDE.md` → update `[recent.entries]` (almost always)
 
 Larger updates fire only when triggers tell you to. No handoff file. No session log. No carry-forward narrative.
 
@@ -372,6 +376,6 @@ Use `node --check /tmp/test.js` — correct validator for browser JS patterns.
 
 ## A NOTE ON EVOLUTION
 
-This doc rarely changes. When it does, it's deliberate. If a new app, branch, or session type emerges, update this deliberately — it's the orientation map.
+This doc rarely changes. When it does, it's deliberate. If a new app or session type emerges, update this deliberately — it's the orientation map.
 
 If you're unsure how to operate inside this system, re-read this. If still unsure, ask Jordan. Don't guess.
