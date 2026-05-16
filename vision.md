@@ -1,5 +1,8 @@
-# Jordan — Pricing Philosophy & Creative Identity
-**Session handoff — April 28, 2026**
+# Jordan — Creative Identity & Why This Suite Exists
+*The why behind every session. Read for grounding when work drifts from purpose.*
+*Last reviewed: April 2026*
+
+---
 
 ## Who Jordan Is
 
@@ -31,10 +34,6 @@ Jordan cannot make a piece for someone he isn't connected to. When genuine human
 
 Before materials, before technique, before pricing — Jordan's heart posture determines what kind of work is possible. When his heart is open and aligned, work flows like melody. When financial pressure or disconnection is present, work becomes mechanical and engineered.
 
-**He already has an intake process. He just hasn't named it.**
-
-When a customer approaches, Jordan intuitively: shows them his library to filter for resonance, reads their vulnerability and openness, assesses whether he can find genuine connection with their vision. This is sophisticated and effective. It just lives in his instincts rather than in a formal system.
-
 ## The Four Vision Sources
 
 When Jordan begins a piece, vision comes from one of four places:
@@ -47,61 +46,6 @@ When Jordan begins a piece, vision comes from one of four places:
 
 4. **Blueprint execution** — working from exact specs. The mode he feels most distant from. Feels cold. Could be outsourced to CAD. Least connected to his heart.
 
-## The Two Pricing Tracks
-
-**Heart commission** — work that Jordan is deeply connected to. Prices at "what would I need to accept to part with this." The five seventy-five wirework piece is the clearest example. Materials were fifteen to twenty dollars. Hours were maybe six. But the piece had accumulated meaning, spiritual significance, artistic integrity. It sat in his case for years at three ten because three ten felt cheap. Five seventy-five felt like the covenant price — the threshold where he could let it go to someone worthy of it.
-
-**Technical commission** — work that is primarily craft execution. Prices at components: materials plus labor plus complexity plus consumables plus margin.
-
-**The key insight:** Sacred work earns premium pricing not despite the heart connection but because of it. Underpricing heart work dishonors it. It tells the buyer — and Jordan himself — that it's worth less. The price is part of the covenant between the piece and its new keeper.
-
-**The hidden trap:** When something lives deep in Jordan's heart, he instinctively wants to charge less — as if money is the wrong currency for something sacred. This needs to be consciously reframed. The more heart-connected the piece, the higher the floor. Not lower.
-
-## The Slider Concept
-
-The pricing tool needs a spectrum — not a fixed formula — that moves between two poles:
-
-```
-"What would I need to part with this" ←————→ "What did this actually cost me"
-```
-
-Where Jordan places a piece on that spectrum determines how the pricing formula weights itself. This is the most important UI element in the entire pricing system.
-
-## The Intake Sequence
-
-Before any pricing calculation, the tool needs to walk through:
-
-1. **Connection** — Do I feel genuinely connected to this person?
-2. **Vision** — Can I find my thread inside their vision?
-3. **Heart posture** — Where am I on the spectrum today? Am I in flow or in technical mode?
-4. **Technical assessment** — Materials, labor, complexity, consumables, unknowns
-5. **Price** — Weighted by where the piece lands on the slider
-
-**The one question that does everything:** "Tell me what's meaningful to you about this piece. Not the specs — why does it matter?"
-
-## The Skill Domains
-
-Jordan has identified multiple distinct craft domains, each with its own mastery curve:
-
-- Flex shaft mastery
-- File work
-- Polishing and finishing (instinctually sharp — high mastery)
-- Soldering (solid results, but still building intuitive speed — extra time cost)
-- Microscope work
-- Stone and metal knowledge
-- Tool selection
-- Customer communication
-- Spatial and contextual awareness
-- Engraving (free-form and pattern-based)
-
-**Labor rates:**
-- Base work: $35–$40 per hour
-- High precision: $60–$70 per hour
-- Research and new skill acquisition: $20–$30 per hour
-- Application of newly acquired skill: $45 per hour
-
-**Complexity is discovered mid-work**, not always upfront. The pricing system needs to accommodate mid-project adjustment without making Jordan feel like he failed to assess correctly.
-
 ## The Deeper Motivation
 
 Jordan is not building these tools because he loves business infrastructure. He is building them because he needs the business to work so the art can breathe again. Every pricing system, every intake flow, every tool we build is in service of one thing: getting him back to the bench.
@@ -110,15 +54,6 @@ Back to the wirework. Back to the place where time disappears and the piece unfo
 
 The business infrastructure isn't stealing his creativity. It's buying it back.
 
-## What He Needs From Every Session
-
-- One question at a time. He gets overwhelmed by multiple questions simultaneously.
-- Space and breath. He processes through speaking, not pre-thinking.
-- Reflection back. He can't always see what he knows. Mirror it clearly.
-- Flag when something needs a dedicated session before moving forward.
-- Honor the emotional weight before moving to the technical.
-- Progress and protection in equal measure.
-
 ---
 
-**Use this document to orient every subsequent session in this thread. The technical work serves the human need. Never lose sight of that.**
+*The technical work serves the human need. Never lose sight of that.*
