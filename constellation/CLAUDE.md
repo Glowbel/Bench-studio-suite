@@ -1,4 +1,4 @@
-> **Parser constraints always active:** No `=>` | no backticks | no `...` | no base64 images | no frameworks | single HTML file | flash-free | state in one object. Full spec: `main` branch `CLAUDE.md → HARD RULES`.
+> **Parser constraints always active:** No `=>` | no backticks | no `...` | no base64 images | no frameworks | single HTML file | flash-free | state in one object. Full spec: root `CLAUDE.md → HARD RULES`.
 
 # CONSTELLATION
 *Single living doc. Read at start of every Constellation session.*
@@ -75,7 +75,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [file-shape]
-single HTML file | parser constraints locked (see main branch CLAUDE.md)
+single HTML file | parser constraints locked (see root CLAUDE.md)
 no frameworks | mobile-first | mouse + touch
 
 [mineral-metaphor] (locked — the spine)
@@ -119,10 +119,10 @@ friction-free: no UI gesture should fight against thought
 geometry must feel inevitable | not a system being operated
 visual prominence: weight, mass, tier — not arbitrary styling
 
-[bubble-tools] (kept specific — design depth lives in Brain/ spec)
+[bubble-tools] (kept specific — design depth lives in constellation-bubble-tools.md)
 core interface for bubble interaction
 visual embellishment deferred until geometry + core functions are locked
-fetch: Brain/constellation-bubble-tools.md (this branch) when working on bubble tool design
+fetch: constellation-bubble-tools.md when working on bubble tool design
 ```
 
 ---
@@ -195,7 +195,7 @@ manual completion circle → required trigger for crystallization | no auto-trig
 export work → carries enough state to rebuild or hand off
 persistence work → three-layer model (localStorage + IndexedDB + ZIP)
 session expiry → expiresAt stored but not yet checked
-bubble tools UI → fetch Brain/constellation-bubble-tools.md before deep work
+bubble tools UI → fetch constellation-bubble-tools.md before deep work
 visual embellishment → DEFERRED until geometry + core functions locked
 file split → external work in progress | don't restructure file inline
 ```
@@ -290,9 +290,9 @@ phase 1.5 / 2 [active]: see PHASE 1.5 / 2 section above
 
 ## FETCH IF NEEDED
 
-- **`vision.md`** (main branch root) — when a design decision touches the heart-vs-craft tension or when the divergent-thinking-space thesis itself is being tested
-- **Hard rules** — see main branch `CLAUDE.md → HARD RULES`
-- **`Brain/constellation-bubble-tools.md`** (this branch) — fetch when working on bubble tool design or the core interaction interface
+- **`vision.md`** (repo root) — when a design decision touches the heart-vs-craft tension or when the divergent-thinking-space thesis itself is being tested
+- **Hard rules** — see root `CLAUDE.md → HARD RULES`
+- **`constellation-bubble-tools.md`** — fetch when working on bubble tool design or the core interaction interface
 - **External bug list** — Jordan tracks bugs 12, 13, 14 (and others) separately; fetch when ready to address them
 - **`bench/CLAUDE.md`** — when constellation → bench integration design begins, fetch Bench's leads[] data shape and integration flags
 - **Session close** — delete the auto-created session branch: `git push origin --delete [your claude/* branch name]` (branch name is in your session instructions)

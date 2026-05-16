@@ -1,4 +1,4 @@
-> **Parser constraints always active:** No `=>` | no backticks | no `...` | no base64 images | no frameworks | single HTML file | flash-free | state in one object. Full spec: `main` branch `CLAUDE.md → HARD RULES`.
+> **Parser constraints always active:** No `=>` | no backticks | no `...` | no base64 images | no frameworks | single HTML file | flash-free | state in one object. Full spec: root `CLAUDE.md → HARD RULES`.
 
 # THE BENCH
 *Single living doc. Read at start of every Bench session.*
@@ -399,7 +399,7 @@ floating modal | dark bg | gold border | NOT full-screen
 addTodo / task creation → confirm shape !drifted
 capsule timer logic → no DOM rebuilds during tick | in-place only
 pieces tab work → piece data shape !defined yet | may need design session
-pricing feature → read Brain/pricing-philosophy.md before building | slider + intake sequence + labor rates
+pricing feature → read pricing-philosophy.md before building | slider + intake sequence + labor rates
 carousel work → settling transition is weighted | !break the feel
 theme system → classic+observatory share JS | update in lockstep
 new tab → finance pattern (hidden:true) | reserved: supplier, journal
@@ -479,7 +479,7 @@ phase 4.5 [shipping may-15]:
 
 ## FETCH IF NEEDED
 
-- **`vision.md`** (main branch root) — when a decision touches heart-vs-craft tension or grounding is needed
-- **Hard rules** — see main branch `CLAUDE.md → HARD RULES`
-- **`product-strategy.md`** (main branch root) — when integration or release strategy surfaces
+- **`vision.md`** (repo root) — when a decision touches heart-vs-craft tension or grounding is needed
+- **Hard rules** — see root `CLAUDE.md → HARD RULES`
+- **`product-strategy.md`** (repo root) — when integration or release strategy surfaces
 - **Session close** — delete the auto-created session branch: `git push origin --delete [your claude/* branch name]` (branch name is in your session instructions)
