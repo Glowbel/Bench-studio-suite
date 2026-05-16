@@ -1,7 +1,6 @@
 # DECISION WIZARD — Suite Architecture
 *Design spec for the three-tool suite. Designed April 28, 2026. Not yet built.*
-*Lives in Studio — Design project. Load when designing or discussing the Wizard suite.*
-*Do not build any of this without first reading wizard-handoff.md for current status.*
+*Read before building any Wizard tool. Lives at wizard/wizard-suite-architecture.md.*
 *Last updated: May 2026*
 
 ---

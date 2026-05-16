@@ -1,4 +1,4 @@
-> **Parser constraints always active:** No `=>` | no backticks | no `...` | no base64 images | no frameworks | single HTML file | flash-free | state in one object. Full spec: `main` branch `CLAUDE.md → HARD RULES`.
+> **Parser constraints always active:** No `=>` | no backticks | no `...` | no base64 images | no frameworks | single HTML file | flash-free | state in one object. Full spec: root `CLAUDE.md → HARD RULES`.
 
 # SPATIAL CALENDAR
 *Single living doc. Read at start of every Spatial session.*
@@ -66,7 +66,7 @@ phase milestone → MASTER RECORD entry
 ```
 [file-shape]
 single HTML file | ES5 only | no dependencies | no build step
-parser-constraints: locked (see main branch CLAUDE.md)
+parser-constraints: locked (see root CLAUDE.md)
 
 [pipe]
 core spatial metaphor: bezier curve
@@ -228,7 +228,7 @@ phase 5 [active]: see PHASE 5 section above
 
 ## FETCH IF NEEDED
 
-- **`vision.md`** (main branch root) — when a decision touches the heart-vs-craft tension or when the time-perception thesis itself is under question
-- **Hard rules** — see main branch `CLAUDE.md → HARD RULES`
+- **`vision.md`** (repo root) — when a decision touches the heart-vs-craft tension or when the time-perception thesis itself is under question
+- **Hard rules** — see root `CLAUDE.md → HARD RULES`
 - **`bench/CLAUDE.md`** — when Phase 5 design or bench bridge work begins, fetch Bench's events[] data shape and integration flags section
 - **Session close** — delete the auto-created session branch: `git push origin --delete [your claude/* branch name]` (branch name is in your session instructions)

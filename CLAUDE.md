@@ -30,30 +30,27 @@ main/
   netlify.toml           root Netlify config
 
   bench/
-    CLAUDE.md            The Bench living doc — current state, architecture, phase
-    index.html           The Bench HTML app
-    netlify.toml         Netlify config (Netlify base dir: bench/)
-    Brain/               transitional design specs
-      pricing-philosophy.md
+    CLAUDE.md                 The Bench living doc — current state, architecture, phase
+    index.html                The Bench HTML app
+    netlify.toml              Netlify config (Netlify base dir: bench/)
+    pricing-philosophy.md     pricing system design spec — read before building pricing feature
 
   constellation/
-    CLAUDE.md            Constellation living doc
-    index.html           Constellation HTML app
-    netlify.toml         Netlify config (Netlify base dir: constellation/)
-    Brain/               transitional design specs (live here, retire after coding session absorbs)
-      constellation-bubble-tools.md
+    CLAUDE.md                 Constellation living doc
+    index.html                Constellation HTML app
+    netlify.toml              Netlify config (Netlify base dir: constellation/)
+    constellation-bubble-tools.md  bubble interaction design spec — read before building bubble tools
 
   wizard/
-    CLAUDE.md            Decision Wizard living doc
-    index.html           Decision Wizard HTML app
-    netlify.toml         Netlify config (Netlify base dir: wizard/)
-    Brain/               transitional design specs
-      wizard-suite-architecture.md
+    CLAUDE.md                 Decision Wizard living doc
+    index.html                Decision Wizard HTML app
+    netlify.toml              Netlify config (Netlify base dir: wizard/)
+    wizard-suite-architecture.md   three-tool suite design spec — read before building any wizard tool
 
   spatial/
-    CLAUDE.md            Spatial Calendar living doc
-    index.html           Spatial Calendar HTML app
-    netlify.toml         Netlify config (Netlify base dir: spatial/)
+    CLAUDE.md                 Spatial Calendar living doc
+    index.html                Spatial Calendar HTML app
+    netlify.toml              Netlify config (Netlify base dir: spatial/)
 ```
 
 That's it. Nothing else should exist. If you find another file, ask Jordan whether to absorb or retire it.
@@ -63,13 +60,13 @@ That's it. Nothing else should exist. If you find another file, ask Jordan wheth
 ```
 CODING SESSION ([app])   work in: [app]/ folder
   always read:  [app]/CLAUDE.md at session start
-  read if:      [app]/Brain/ spec when work touches its territory (see triggers below)
+  read if:      [app]/ design spec when work touches its territory (see triggers below)
   do not read:  other [app]/CLAUDE.md unless integration is the topic
 
 DESIGN SESSION ([app] or system-wide)
   always read:  [app]/CLAUDE.md (if app-specific)
   read if:      vision.md (for grounding)
-                Brain/ spec (if design enters that territory)
+                [app]/ design spec (if design enters that territory)
                 product-strategy.md (if release/distribution touches it)
 
 BRAINSTORM SESSION
@@ -83,29 +80,29 @@ INTEGRATION SESSION (cross-app)
 
 **Default rule:** Read when work asks for it. Don't pre-read defensively. Trust the retrieval.
 
-### Brain/ design specs — when to pull
+### Design specs — when to pull
 
 ```
-bench/Brain/pricing-philosophy.md
+bench/pricing-philosophy.md
   read when:   designing or building any part of the pricing system
                (slider, intake sequence, commission tracks, labor rates)
   after ships: distill locked patterns → bench/CLAUDE.md ARCHITECTURE
                distill substantial design moments → MASTER RECORD
-               delete this file from Brain/
+               delete this file
 
-constellation/Brain/constellation-bubble-tools.md
+constellation/constellation-bubble-tools.md
   read when:   designing or building any bubble interaction
                (summoning, mass states, zoom, linking, sketch bubble)
   after ships: distill locked patterns → constellation/CLAUDE.md ARCHITECTURE
                distill substantial design moments → MASTER RECORD
-               delete this file from Brain/
+               delete this file
 
-wizard/Brain/wizard-suite-architecture.md
+wizard/wizard-suite-architecture.md
   read when:   designing or building any of the three Wizard tools
                (gateway routing, Zoom Out, Decision Wizard, Count the Cost)
   after ships: distill locked patterns → wizard/CLAUDE.md ARCHITECTURE
                distill substantial design moments → MASTER RECORD
-               delete this file from Brain/
+               delete this file
 ```
 
 ### Versioning
@@ -136,7 +133,7 @@ SESSION START
 
 SESSION MID
   → no new files unless the task requires it
-  → design outputs → commit to [app]/Brain/ as named spec files
+  → design outputs → commit to [app]/ as named spec files
 
 SESSION CLOSE
   → if code changed: push [app]/index.html to main → Netlify auto-deploys
@@ -151,20 +148,20 @@ SESSION CLOSE
 
 ---
 
-## DESIGN SESSION → BRAIN/
+## DESIGN SESSION → SPEC FILE
 
 The previous workflow lost design session context in slim handoffs. This is the fix.
 
-When a design session produces important context — a spec, a locked decision, a detailed feature design — **commit it to `Brain/` as a named markdown file.** It stays there until the relevant coding session absorbs it.
+When a design session produces important context — a spec, a locked decision, a detailed feature design — **commit it to `[app]/` as a named spec file.** It stays there until the relevant coding session absorbs it.
 
 ```
-design session output  →  Brain/[topic].md  →  git commit  →  permanently available
-coding session start   →  read Brain/[topic].md when work touches that territory
-after work ships       →  distill locked parts → CLAUDE.md  |  delete Brain/ file
+design session output  →  [app]/[topic].md  →  git commit  →  permanently available
+coding session start   →  read [app]/[topic].md when work touches that territory
+after work ships       →  distill locked parts → [app]/CLAUDE.md  |  delete spec file
 ```
 
-Brain/ files are transitional. They don't accumulate forever. When the work ships, they retire.
-If a Brain/ file is never touched by a coding session, it's a signal the design needs revisiting.
+Spec files are transitional. They don't accumulate forever. When the work ships, they retire.
+If a spec file is never touched by a coding session, it's a signal the design needs revisiting.
 
 ---
 
@@ -277,8 +274,8 @@ Most session closes are one or two `[recent]` lines. Larger updates only happen 
 
 ### Design session
 1. Ask Jordan what we're designing
-2. Read what's needed — `vision.md` for grounding, Brain/ spec if work enters that territory
-3. Commit design outputs to `Brain/[topic].md`
+2. Read what's needed — `vision.md` for grounding, [app]/ design spec if work enters that territory
+3. Commit design outputs to `[app]/[topic].md`
 4. Begin
 
 ### Closing

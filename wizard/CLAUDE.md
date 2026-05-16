@@ -1,4 +1,4 @@
-> **Parser constraints always active:** No `=>` | no backticks | no `...` | no base64 images | no frameworks | single HTML file | flash-free | state in one object. Full spec: `main` branch `CLAUDE.md → HARD RULES`.
+> **Parser constraints always active:** No `=>` | no backticks | no `...` | no base64 images | no frameworks | single HTML file | flash-free | state in one object. Full spec: root `CLAUDE.md → HARD RULES`.
 
 # DECISION WIZARD
 *Single living doc. Read at start of every Wizard session.*
@@ -65,7 +65,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [file-shape]
-single HTML file | parser constraints locked (see main branch CLAUDE.md)
+single HTML file | parser constraints locked (see root CLAUDE.md)
 no frameworks | localStorage persistence | mobile-first | mouse + touch
 
 [suite-shape] the progression
@@ -229,9 +229,9 @@ phase 2 [active]: extending the flow — zoom-out + count-the-cost
 
 ## FETCH IF NEEDED
 
-- **`vision.md`** (main branch root) — when a design decision touches the heart-vs-craft tension or when the emotional UX principle is being tested
-- **Hard rules** — see main branch `CLAUDE.md → HARD RULES`
-- **`Brain/wizard-suite-architecture.md`** (this branch) — full design spec for the three-tool suite; fetch when working on Zoom Out or Count the Cost design
+- **`vision.md`** (repo root) — when a design decision touches the heart-vs-craft tension or when the emotional UX principle is being tested
+- **Hard rules** — see root `CLAUDE.md → HARD RULES`
+- **`wizard-suite-architecture.md`** — full design spec for the three-tool suite; fetch when working on Zoom Out or Count the Cost design
 - **External Count the Cost design** — when count-the-cost work begins, fetch Jordan's latest design notes (active externally)
 - **`bench/CLAUDE.md`** — when wizard → bench skills integration is being designed, fetch Bench skill data shape
 - **Session close** — delete the auto-created session branch: `git push origin --delete [your claude/* branch name]` (branch name is in your session instructions)

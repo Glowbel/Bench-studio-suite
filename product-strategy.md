@@ -43,10 +43,11 @@ Supabase cross-device sync works automatically in the wrapped version.
 
 **Implication for code:** parser constraints stay until the hosted/wrapped migration. Plan for it but don't pre-optimize.
 
-### Track 3 — Netlify branch deploy (active, per this repo)
+### Track 3 — Netlify subdirectory deploy (active, per this repo)
 
-Each app branch deploys to its own Netlify URL automatically on push.
-Enables live testing and sharing without email-the-file workflow.
+All apps live on main as subdirectories (bench/, constellation/, wizard/, spatial/).
+Each app has its own Netlify site with base directory set to its subfolder.
+Push to main → all Netlify sites auto-deploy from their respective subdirectory.
 Same HTML file — no structural changes. Just a hosting layer.
 
 ---
