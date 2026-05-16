@@ -33,6 +33,8 @@ main/
     CLAUDE.md            The Bench living doc — current state, architecture, phase
     index.html           The Bench HTML app
     netlify.toml         Netlify config (Netlify base dir: bench/)
+    Brain/               transitional design specs
+      pricing-philosophy.md
 
   constellation/
     CLAUDE.md            Constellation living doc
@@ -84,6 +86,13 @@ INTEGRATION SESSION (cross-app)
 ### Brain/ design specs — when to pull
 
 ```
+bench/Brain/pricing-philosophy.md
+  read when:   designing or building any part of the pricing system
+               (slider, intake sequence, commission tracks, labor rates)
+  after ships: distill locked patterns → bench/CLAUDE.md ARCHITECTURE
+               distill substantial design moments → MASTER RECORD
+               delete this file from Brain/
+
 constellation/Brain/constellation-bubble-tools.md
   read when:   designing or building any bubble interaction
                (summoning, mass states, zoom, linking, sketch bubble)

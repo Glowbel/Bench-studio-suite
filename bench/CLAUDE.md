@@ -399,6 +399,7 @@ floating modal | dark bg | gold border | NOT full-screen
 addTodo / task creation → confirm shape !drifted
 capsule timer logic → no DOM rebuilds during tick | in-place only
 pieces tab work → piece data shape !defined yet | may need design session
+pricing feature → read Brain/pricing-philosophy.md before building | slider + intake sequence + labor rates
 carousel work → settling transition is weighted | !break the feel
 theme system → classic+observatory share JS | update in lockstep
 new tab → finance pattern (hidden:true) | reserved: supplier, journal
