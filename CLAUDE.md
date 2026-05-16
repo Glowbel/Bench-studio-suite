@@ -26,9 +26,6 @@ main (this branch)
   vision.md              the why | read for grounding
   product-strategy.md    release strategy + cross-app open questions
   netlify.toml           Netlify config
-  Brain/                 transitional design specs (read when triggered, retire after)
-    constellation-bubble-tools.md
-    wizard-suite-architecture.md
 
 bench branch
   CLAUDE.md              The Bench living doc — current state, architecture, phase
@@ -38,10 +35,14 @@ bench branch
 constellation branch
   CLAUDE.md              Constellation living doc
   index.html             Constellation HTML app
+  Brain/                 transitional design specs (live here, retire after coding session absorbs)
+    constellation-bubble-tools.md
 
 wizard branch
   CLAUDE.md              Decision Wizard living doc
   index.html             Decision Wizard HTML app
+  Brain/                 transitional design specs
+    wizard-suite-architecture.md
 
 spatial branch
   CLAUDE.md              Spatial Calendar living doc
@@ -77,15 +78,17 @@ INTEGRATION SESSION (cross-app)
 
 ### Brain/ design specs — when to pull
 
+These files live on their respective app branches, not main.
+
 ```
-Brain/constellation-bubble-tools.md
+constellation branch: Brain/constellation-bubble-tools.md
   read when:   designing or building any bubble interaction
                (summoning, mass states, zoom, linking, sketch bubble)
   after ships: distill locked patterns → constellation/CLAUDE.md ARCHITECTURE
                distill substantial design moments → MASTER RECORD
                delete this file from Brain/
 
-Brain/wizard-suite-architecture.md
+wizard branch: Brain/wizard-suite-architecture.md
   read when:   designing or building any of the three Wizard tools
                (gateway routing, Zoom Out, Decision Wizard, Count the Cost)
   after ships: distill locked patterns → wizard/CLAUDE.md ARCHITECTURE
