@@ -124,6 +124,8 @@ SESSION CLOSE
   → if recent entry needed: add one-liner to [recent.entries]
   → if trigger fired: update relevant section
   → no handoff file | no session log | no carry-forward narrative
+  → delete this session's auto-created branch: git push origin --delete [claude/* branch name]
+     (the branch name is in your session instructions — "Develop on branch claude/...")
 ```
 
 ---
