@@ -28,7 +28,7 @@ Spatial is the face of a calendar app — viewer and scheduler in one. It redefi
 
 ## CURRENT STATE
 ```
-file: spatial-day-v24.html
+file: index.html
 lines: ~2,765
 state: working, stable, no mid-build
 phase: 4 shipped | 5 active (events on pipe — design session pending)

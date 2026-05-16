@@ -35,8 +35,8 @@ Ideas are minerals. Interaction is pressure. Crystallization is commitment. The 
 
 ## CURRENT STATE
 ```
-file: constellation-v1-41.html
-lines: ~8,907
+file: index.html
+lines: ~9,450
 state: mid-build | stable but finding unusual bugs | hardcore audit underway
 phase: 1 shipped | 1.5/2 active (bug fixes + core audit + phase-change rethink)
 external-work: file split in progress (developer friend, testing in Claude artifacts)

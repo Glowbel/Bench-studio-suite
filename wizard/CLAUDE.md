@@ -28,7 +28,7 @@ The deeper purpose: getting through hard decisions without bypassing the parts t
 
 ## CURRENT STATE
 ```
-file: decision-wizard v1.html
+file: index.html
 lines: ~1,901
 state: Decision Wizard (middle stage) built and stable | parser audit clean
 phase: suite-build (extending forward + backward — design pending for both)
