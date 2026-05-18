@@ -29,8 +29,9 @@ The deeper purpose: getting through hard decisions without bypassing the parts t
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~1,901
+lines: ~2,173
 state: Decision Wizard (middle stage) built and stable | parser audit clean
+zones: 21 top-level zones | in-file registry + rebuilder (line 2)
 phase: suite-build (extending forward + backward — design pending for both)
 ```
 
@@ -56,7 +57,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
-(empty — populate as fixes/features ship)
+[2026-05-18] ref | zone markers + in-file registry — 21 zones, BEGIN/END pairs throughout | touches: all
 ```
 
 ---
