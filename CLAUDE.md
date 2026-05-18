@@ -136,14 +136,13 @@ SESSION MID
   → design outputs → commit to [app]/ as named spec files
 
 SESSION CLOSE
-  → if code changed: push [app]/index.html to main → Netlify auto-deploys
+  → if code changed: commit and push to main → Netlify auto-deploys
   → if architecture changed: update [app]/CLAUDE.md ARCHITECTURE section
   → if recent entry needed: add one-liner to [recent.entries]
   → if trigger fired: update relevant section
   → no handoff file | no session log | no carry-forward narrative
-  → delete the auto-created session branch: git push origin --delete [claude/* branch name]
-     (the branch name is in your session instructions — "Develop on branch claude/...")
-     do this before ending — if session ends abruptly, Jordan will clean it up manually
+  → the platform auto-creates a claude/* branch — Jordan cleans it up manually
+     never push code to it | it's a platform artifact, not a real branch
 ```
 
 ---
