@@ -1,10 +1,253 @@
 <!DOCTYPE html>
+<!--
+  ════════════════════════════════════════════════════════════════════
+  ZONE REGISTRY — decision wizard  (added May 2026)
+  ════════════════════════════════════════════════════════════════════
+  Grep CSS/JS:  /* === BEGIN <NAME> === */  ...  /* === END <NAME> === */
+  Grep HTML:    same shape, HTML-comment delimiters.
+  Sub-zones use NAME:CHILD (e.g. MAPPER:BUILD) and are excluded
+  from this registry. Find them by grep.
+  Line numbers are post-marker. Rebuild script lives below this block.
+
+    TOKENS                       250 — 293  
+    PHASE-BAR                    295 — 368  
+    SHARED-COMPONENTS            370 — 499  
+    DECISION-LIST                501 — 538  
+    MAPPER (CSS)                 540 — 650  
+    RESULTS (CSS)                652 — 727  
+    VALUE-ROWS                   729 — 811  
+    FEASIBILITY (CSS)            813 — 982  
+    SHELL                        986 — 1011 
+    SCREEN-DISCOVER             1013 — 1066 
+    SCREEN-ALIGN                1068 — 1113 
+    SCREEN-MAPPER               1115 — 1144 
+    SCREEN-CHOOSE               1146 — 1183 
+    STATE                       1185 — 1251 
+    DECISION-ENTRY              1253 — 1299 
+    VALUES                      1301 — 1395 
+    MAPPER (JS)                 1397 — 1755 
+    RESULTS (JS)                1757 — 1834 
+    FEASIBILITY (JS)            1836 — 2029 
+    NAVIGATION                  2031 — 2185 
+    BOOT                        2187 — 2190 
+  ════════════════════════════════════════════════════════════════════
+-->
+<!--
+  ════════════════════════════════════════════════════════════════════
+  ZONE REGISTRY REBUILDER — read me before editing the registry above
+  ════════════════════════════════════════════════════════════════════
+
+  WHEN TO RUN
+    Any time zone boundaries shift. Adding/removing lines inside an
+    existing zone pushes later zones up or down, so the line numbers
+    in the registry above go stale. This script rewrites the registry
+    to match reality. Markers themselves are never touched.
+
+  HOW TO RUN
+    1. Copy the Python script below (between the SCRIPT START and
+       SCRIPT END fences) into a file, e.g. /tmp/rebuild_registry.py
+    2. Strip the 2-space indent from each script line.
+    3. Run it, passing the HTML file path:
+         python3 /tmp/rebuild_registry.py /path/to/this-file.html
+    4. The registry block above is rewritten in place. Nothing else
+       in the file is modified.
+    5. Sanity check: grep BEGIN and END marker patterns — every
+       BEGIN should pair with a matching END.
+
+  OUTPUT CONTRACT
+    - Top-level zones only. Sub-zones (NAME:CHILD, e.g. MAPPER:BUILD)
+      are excluded from the registry. Find them by grep.
+    - One zone per line, formatted:
+        NAME (26 chars, left-aligned)  BEGIN_LINE — END_LINE
+    - Duplicate names get a (CSS) / (HTML) / (JS) suffix based on
+      file region: before </style>, between </style> and <script>,
+      between <script> and </script>, or after </script>.
+    - Zones sorted by BEGIN line, ascending.
+
+  MARKER SYNTAXES
+    CSS / JS:  /* === BEGIN <NAME> === */  ...  /* === END <NAME> === */
+    HTML body: same idea, written as a self-contained HTML comment.
+
+  ADDING NEW ZONES
+    Manually insert the marker pair in the code (matching the syntax
+    for the surrounding region), then run the script. New zone
+    appears automatically. Removing markers works the same way.
+
+  ════════════════════════════════════════════════════════════════════
+  SCRIPT START — copy from here to SCRIPT END
+  ════════════════════════════════════════════════════════════════════
+  # rebuild_registry.py
+  # Stdlib only. Python 3.6+.
+  #
+  # Scans an HTML file for /* === BEGIN <NAME> === */ ... /* === END
+  # <NAME> === */ (CSS and JS) plus HTML-comment marker pairs (same
+  # === BEGIN/END syntax but with HTML comment delimiters), then
+  # rewrites the ZONE REGISTRY comment block at the top of the file
+  # with current line numbers. Markers themselves are never touched.
+
+  import sys
+
+  HTML_COMMENT_OPEN  = "<" + "!--"
+  HTML_COMMENT_CLOSE = "--" + ">"      # avoid literal sequence
+  STYLE_CLOSE        = "</" + "style>"
+  SCRIPT_OPEN        = "<" + "script>"
+  SCRIPT_CLOSE       = "</" + "script>"
+
+  BEGIN_CSS    = "/* === BEGIN "
+  END_CSS      = "/* === END "
+  TRAIL_CSS    = " === */"
+  BEGIN_HTML   = HTML_COMMENT_OPEN + " === BEGIN "
+  END_HTML     = HTML_COMMENT_OPEN + " === END "
+  TRAIL_HTML   = " === " + HTML_COMMENT_CLOSE
+
+  def rebuild(path):
+      with open(path, "r") as f:
+          lines = f.read().split("\n")
+
+      markers = []
+      style_close = None
+      script_open = None
+      script_close = None
+      in_html_comment = False
+
+      for i, line in enumerate(lines, start=1):
+          s = line.strip()
+
+          # HTML marker line (self-contained single-line comment).
+          # Detected before comment-skipping so we still see it.
+          if s.startswith(BEGIN_HTML) and s.endswith(TRAIL_HTML):
+              name = s[len(BEGIN_HTML):-len(TRAIL_HTML)].strip()
+              markers.append(("BEGIN", name, i))
+              continue
+          if s.startswith(END_HTML) and s.endswith(TRAIL_HTML):
+              name = s[len(END_HTML):-len(TRAIL_HTML)].strip()
+              markers.append(("END", name, i))
+              continue
+
+          # HTML comment state machine (skip non-marker comments).
+          if not in_html_comment:
+              if s.startswith(HTML_COMMENT_OPEN):
+                  in_html_comment = True
+                  if HTML_COMMENT_CLOSE in s:
+                      in_html_comment = False
+                  continue
+          else:
+              if HTML_COMMENT_CLOSE in s:
+                  in_html_comment = False
+              continue
+
+          # CSS/JS markers (only outside HTML comments).
+          if s.startswith(BEGIN_CSS) and s.endswith(TRAIL_CSS):
+              name = s[len(BEGIN_CSS):-len(TRAIL_CSS)].strip()
+              markers.append(("BEGIN", name, i))
+              continue
+          if s.startswith(END_CSS) and s.endswith(TRAIL_CSS):
+              name = s[len(END_CSS):-len(TRAIL_CSS)].strip()
+              markers.append(("END", name, i))
+              continue
+
+          # Region anchors (only outside HTML comments).
+          if style_close is None and STYLE_CLOSE in line:
+              style_close = i
+          if script_open is None and SCRIPT_OPEN in line:
+              script_open = i
+          if script_close is None and SCRIPT_CLOSE in line:
+              script_close = i
+
+      # Pair BEGIN with END. Top-level zones only (no colon).
+      zones, stack = [], {}
+      for kind, name, ln in markers:
+          if kind == "BEGIN":
+              stack[name] = ln
+          else:
+              if name in stack:
+                  b = stack.pop(name)
+                  if ":" not in name:
+                      zones.append((name, b, ln))
+      zones.sort(key=lambda z: z[1])
+
+      # Four-region classification.
+      def region_of(b):
+          if style_close and b < style_close:
+              return "CSS"
+          if script_open and b < script_open:
+              return "HTML"
+          if script_close and b < script_close:
+              return "JS"
+          return "HTML"
+
+      counts = {}
+      for n, _, _ in zones:
+          counts[n] = counts.get(n, 0) + 1
+
+      labeled = []
+      for n, b, e in zones:
+          if counts[n] > 1:
+              labeled.append((n + " (" + region_of(b) + ")", b, e))
+          else:
+              labeled.append((n, b, e))
+
+      # Build new registry block.
+      bar = "\u2550" * 68
+      reg = [HTML_COMMENT_OPEN]
+      reg.append("  " + bar)
+      reg.append("  ZONE REGISTRY \u2014 decision wizard  (added May 2026)")
+      reg.append("  " + bar)
+      reg.append("  Grep CSS/JS:  /* === BEGIN <NAME> === */  ...  /* === END <NAME> === */")
+      reg.append("  Grep HTML:    same shape, HTML-comment delimiters.")
+      reg.append("  Sub-zones use NAME:CHILD (e.g. MAPPER:BUILD) and are excluded")
+      reg.append("  from this registry. Find them by grep.")
+      reg.append("  Line numbers are post-marker. Rebuild script lives below this block.")
+      reg.append("")
+      for name, b, e in labeled:
+          reg.append("    {:<26s} {:>5d} \u2014 {:<5d}".format(name, b, e))
+      reg.append("  " + bar)
+      reg.append(HTML_COMMENT_CLOSE)
+      new_block = "\n".join(reg)
+
+      # Replace the existing ZONE REGISTRY block in place.
+      # The registry block always precedes the REBUILDER block in the file,
+      # so the first <!-- whose 8-line peek contains 'ZONE REGISTRY' and
+      # does NOT contain 'REBUILDER' is the registry.
+      out, i, replaced = [], 0, False
+      while i < len(lines):
+          line = lines[i]
+          if not replaced and line.strip() == HTML_COMMENT_OPEN:
+              peek = "\n".join(lines[i:min(i + 8, len(lines))])
+              if "ZONE REGISTRY" in peek and "REBUILDER" not in peek:
+                  j = i
+                  while j < len(lines) and HTML_COMMENT_CLOSE not in lines[j]:
+                      j += 1
+                  out.extend(new_block.split("\n"))
+                  i = j + 1
+                  replaced = True
+                  continue
+          out.append(line)
+          i += 1
+
+      if not replaced:
+          raise SystemExit("Existing ZONE REGISTRY block not found.")
+
+      with open(path, "w") as f:
+          f.write("\n".join(out))
+
+      print("Rebuilt registry: {} top-level zones".format(len(labeled)))
+
+  if __name__ == "__main__":
+      if len(sys.argv) != 2:
+          sys.exit("Usage: python3 rebuild_registry.py <path-to-html>")
+      rebuild(sys.argv[1])
+  ════════════════════════════════════════════════════════════════════
+  SCRIPT END
+  ════════════════════════════════════════════════════════════════════
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Decision Wizard</title>
 <style>
+/* === BEGIN TOKENS === */
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@300;400&display=swap');
 
   :root {
@@ -47,7 +290,9 @@
     flex-direction: column;
     gap: 0;
   }
+/* === END TOKENS === */
 
+/* === BEGIN PHASE-BAR === */
   /* HEADER */
   .header {
     padding: 0 0 28px 0;
@@ -120,7 +365,9 @@
 
   .phase-step.active .phase-step-label { color: var(--gold); }
   .phase-step.done .phase-step-label { color: var(--gold-dim); }
+/* === END PHASE-BAR === */
 
+/* === BEGIN SHARED-COMPONENTS === */
   /* SCREENS */
   .screen { display: none; flex-direction: column; gap: 20px; }
   .screen.active { display: flex; }
@@ -249,7 +496,9 @@
     border-color: var(--gold-dim);
     color: var(--gold);
   }
+/* === END SHARED-COMPONENTS === */
 
+/* === BEGIN DECISION-LIST === */
   /* DECISION LIST */
   .decision-list {
     display: flex;
@@ -286,7 +535,9 @@
   }
 
   .decision-item-remove:hover { color: var(--danger); }
+/* === END DECISION-LIST === */
 
+/* === BEGIN MAPPER === */
   /* MAPPER */
   .mapper {
     display: grid;
@@ -396,7 +647,9 @@
     z-index: 999;
   }
 
+/* === END MAPPER === */
   /* RESULTS */
+/* === BEGIN RESULTS === */
   .result-item {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -471,7 +724,9 @@
     font-style: italic;
     line-height: 1.6;
   }
+/* === END RESULTS === */
 
+/* === BEGIN VALUE-ROWS === */
   /* VALUE ROWS */
   .value-row {
     display: flex;
@@ -553,7 +808,9 @@
     color: var(--text-muted);
     line-height: 1.5;
   }
+/* === END VALUE-ROWS === */
 
+/* === BEGIN FEASIBILITY === */
   /* NAV */
   .nav-row {
     display: flex;
@@ -722,9 +979,11 @@
     .mapper { grid-template-columns: 1fr 40px 1fr; }
     .mapper-node { font-size: 10px; padding: 8px 10px; }
   }
+/* === END FEASIBILITY === */
 </style>
 </head>
 <body>
+<!-- === BEGIN SHELL === -->
 <div class="app">
 
   <div class="header">
@@ -749,7 +1008,9 @@
       <div class="phase-step-label">Choose</div>
     </div>
   </div>
+<!-- === END SHELL === -->
 
+<!-- === BEGIN SCREEN-DISCOVER === -->
   <!-- SCREEN 0a: NAME THE DECISION -->
   <div class="screen active" id="screen0a">
     <div class="card">
@@ -802,7 +1063,9 @@
       <button class="btn btn-gold" onclick="goToScreen1a()">Continue to Values →</button>
     </div>
   </div>
+<!-- === END SCREEN-DISCOVER === -->
 
+<!-- === BEGIN SCREEN-ALIGN === -->
   <!-- SCREEN 1a: VALUE CATEGORIES -->
   <div class="screen" id="screen1a">
     <div class="card">
@@ -847,7 +1110,9 @@
       <button class="btn btn-gold" onclick="goToScreen(2)">Continue to Mapper →</button>
     </div>
   </div>
+<!-- === END SCREEN-ALIGN === -->
 
+<!-- === BEGIN SCREEN-MAPPER === -->
   <!-- SCREEN 2: VISUAL MAPPER -->
   <div class="screen" id="screen2">
     <div class="card">
@@ -876,7 +1141,9 @@
       <button class="btn btn-gold" onclick="buildResults()">See Results →</button>
     </div>
   </div>
+<!-- === END SCREEN-MAPPER === -->
 
+<!-- === BEGIN SCREEN-CHOOSE === -->
   <!-- SCREEN 3: RESULTS -->
   <div class="screen" id="screen3">
     <div class="card">
@@ -913,7 +1180,9 @@
 
 </div>
 <svg id="dragLine"></svg>
+<!-- === END SCREEN-CHOOSE === -->
 <script>
+/* === BEGIN STATE === */
 var VALUE_CATEGORIES = [
   {
     id: 'workquality',
@@ -979,7 +1248,9 @@ var customValues = [];
 var connections = [];
 var activeValue = null;
 var focusedDecision = null;
+/* === END STATE === */
 
+/* === BEGIN DECISION-ENTRY === */
 function addDecision() {
   var input = document.getElementById('decisionInput');
   var val = input.value.trim();
@@ -1025,7 +1296,9 @@ function renderDecisionList() {
 document.getElementById('decisionInput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') addDecision();
 });
+/* === END DECISION-ENTRY === */
 
+/* === BEGIN VALUES === */
 // CATEGORIES
 function renderCategories() {
   var grid = document.getElementById('categoryGrid');
@@ -1119,11 +1392,14 @@ function renderCustomChips() {
 document.getElementById('customValueInput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') addCustomValue();
 });
+/* === END VALUES === */
 
+/* === BEGIN MAPPER === */
 // MAPPER STATE
 var dragSource = null;      // { type: 'value'|'decision', id: string }
 var dragging = false;
 
+/* === BEGIN MAPPER:BUILD === */
 function buildMapper() {
   connections = [];
   activeValue = null;
@@ -1183,7 +1459,9 @@ function buildMapper() {
 
   drawLines();
 }
+/* === END MAPPER:BUILD === */
 
+/* === BEGIN MAPPER:TAP === */
 // --- TAP MODE: decision right ---
 function tapDecision(d) {
   if (dragging) return;
@@ -1229,7 +1507,9 @@ function toggleConnection(v, d) {
   }
   saveState();
 }
+/* === END MAPPER:TAP === */
 
+/* === BEGIN MAPPER:DRAG === */
 // --- DRAG MODE ---
 function startDrag(e, type, id) {
   dragSource = { type: type, id: id };
@@ -1338,7 +1618,9 @@ function clearDragOver() {
     nodes[i].classList.remove('drag-over');
   }
 }
+/* === END MAPPER:DRAG === */
 
+/* === BEGIN MAPPER:HIGHLIGHTS === */
 // --- HIGHLIGHTS ---
 function updateAllHighlights() {
   updateValueHighlights();
@@ -1469,7 +1751,10 @@ window.addEventListener('resize', function() {
     drawLines();
   }
 });
+/* === END MAPPER:HIGHLIGHTS === */
+/* === END MAPPER === */
 
+/* === BEGIN RESULTS === */
 // RESULTS
 function buildResults() {
   goToScreen(3);
@@ -1546,7 +1831,9 @@ function buildResults() {
     list.appendChild(item);
   }
 }
+/* === END RESULTS === */
 
+/* === BEGIN FEASIBILITY === */
 var feasOrder = [];
 var feasAll = [];
 var feasDragEl = null;
@@ -1739,7 +2026,9 @@ function feasOnDragEnd(e) {
 
   renderFeasList();
 }
+/* === END FEASIBILITY === */
 
+/* === BEGIN NAVIGATION === */
 // NAVIGATION
 function setPhase(n) {
   // n: 0=screen0a, 1=screen0b, 2=screen1a, 3=screen1b, 4=screen2, 5=screen3, 6=screen4
@@ -1893,9 +2182,12 @@ function startOver() {
   try { localStorage.removeItem('dw_state'); } catch(e) {}
   goToScreen0a();
 }
+/* === END NAVIGATION === */
 
+/* === BEGIN BOOT === */
 // Boot
 if (!restoreState()) { goToScreen0a(); }
+/* === END BOOT === */
 </script>
 </body>
 </html>
