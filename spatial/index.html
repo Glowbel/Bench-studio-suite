@@ -1,4 +1,248 @@
 <!DOCTYPE html>
+<!--
+  ════════════════════════════════════════════════════════════════════
+  ZONE REGISTRY — spatial calendar  (added May 2026)
+  ════════════════════════════════════════════════════════════════════
+  Grep CSS/JS:  /* === BEGIN <NAME> === */  ...  /* === END <NAME> === */
+  Grep HTML:    same shape, HTML-comment delimiters.
+  Sub-zones use NAME:CHILD (e.g. DEV-PANEL:SLIDERS) and are excluded
+  from this registry. Find them by grep.
+  Line numbers are post-marker. Rebuild script lives below this block.
+
+    LAYERS                       253 — 288  
+    DEV-PANEL (CSS)              289 — 600  
+    NAV-ARROWS                   601 — 621  
+    HANDLE-POPUPS (CSS)          623 — 682  
+    SCENE                        686 — 707  
+    DEV-PANEL (HTML)             709 — 930  
+    STATE                        932 — 1086 
+    CANVAS-SETUP                1088 — 1114 
+    RING-DRAW                   1116 — 1278 
+    CLOCK-LABELS                1280 — 1403 
+    BEZIER                      1405 — 1434 
+    NOW-ARC                     1436 — 1490 
+    GUIDE-LINE                  1492 — 1512 
+    HANDLE-POSITIONS            1514 — 1604 
+    CONNECTORS                  1606 — 1673 
+    READOUT                     1675 — 1702 
+    DRAG-HANDLERS               1703 — 1805 
+    HANDLE-POPUPS (JS)          1807 — 2034 
+    VISIBILITY-TOGGLE           2036 — 2108 
+    SLOT-MANAGER                2110 — 2455 
+    DEV-PANEL (JS)              2457 — 2972 
+    BG-IMAGE                    2974 — 3082 
+    BOOT                        3084 — 3092 
+  ════════════════════════════════════════════════════════════════════
+-->
+<!--
+  ════════════════════════════════════════════════════════════════════
+  ZONE REGISTRY REBUILDER — read me before editing the registry above
+  ════════════════════════════════════════════════════════════════════
+
+  WHEN TO RUN
+    Any time zone boundaries shift. Adding/removing lines inside an
+    existing zone pushes later zones up or down, so the line numbers
+    in the registry above go stale. This script rewrites the registry
+    to match reality. Markers themselves are never touched.
+
+  HOW TO RUN
+    1. Copy the Python script below (between the SCRIPT START and
+       SCRIPT END fences) into a file, e.g. /tmp/rebuild_registry.py
+    2. Strip the 2-space indent from each script line.
+    3. Run it, passing the HTML file path:
+         python3 /tmp/rebuild_registry.py /path/to/this-file.html
+    4. The registry block above is rewritten in place. Nothing else
+       in the file is modified.
+    5. Sanity check: grep BEGIN and END marker patterns — every
+       BEGIN should pair with a matching END.
+
+  OUTPUT CONTRACT
+    - Top-level zones only. Sub-zones (NAME:CHILD, e.g. DEV-PANEL:SLIDERS)
+      are excluded from the registry. Find them by grep.
+    - One zone per line, formatted:
+        NAME (26 chars, left-aligned)  BEGIN_LINE — END_LINE
+    - Duplicate names get a (CSS) / (HTML) / (JS) suffix based on
+      file region: before </style>, between </style> and <script>,
+      between <script> and </script>, or after </script>.
+    - Zones sorted by BEGIN line, ascending.
+
+  MARKER SYNTAXES
+    CSS / JS:  /* === BEGIN <NAME> === */  ...  /* === END <NAME> === */
+    HTML body: same idea, written as a self-contained HTML comment.
+
+  ADDING NEW ZONES
+    Manually insert the marker pair in the code (matching the syntax
+    for the surrounding region), then run the script. New zone
+    appears automatically. Removing markers works the same way.
+
+  ════════════════════════════════════════════════════════════════════
+  SCRIPT START — copy from here to SCRIPT END
+  ════════════════════════════════════════════════════════════════════
+  # rebuild_registry.py
+  # Stdlib only. Python 3.6+.
+  #
+  # Scans an HTML file for /* === BEGIN <NAME> === */ ... /* === END
+  # <NAME> === */ (CSS and JS) plus HTML-comment marker pairs (same
+  # === BEGIN/END syntax but with HTML comment delimiters), then
+  # rewrites the ZONE REGISTRY comment block at the top of the file
+  # with current line numbers. Markers themselves are never touched.
+
+  import sys
+
+  HTML_COMMENT_OPEN  = "<" + "!--"
+  HTML_COMMENT_CLOSE = "--" + ">"      # avoid literal sequence
+  STYLE_CLOSE        = "</" + "style>"
+  SCRIPT_OPEN        = "<" + "script>"
+  SCRIPT_CLOSE       = "</" + "script>"
+
+  BEGIN_CSS    = "/* === BEGIN "
+  END_CSS      = "/* === END "
+  TRAIL_CSS    = " === */"
+  BEGIN_HTML   = HTML_COMMENT_OPEN + " === BEGIN "
+  END_HTML     = HTML_COMMENT_OPEN + " === END "
+  TRAIL_HTML   = " === " + HTML_COMMENT_CLOSE
+
+  def rebuild(path):
+      with open(path, "r") as f:
+          lines = f.read().split("\n")
+
+      markers = []
+      style_close = None
+      script_open = None
+      script_close = None
+      in_html_comment = False
+
+      for i, line in enumerate(lines, start=1):
+          s = line.strip()
+
+          # HTML marker line (self-contained single-line comment).
+          # Detected before comment-skipping so we still see it.
+          if s.startswith(BEGIN_HTML) and s.endswith(TRAIL_HTML):
+              name = s[len(BEGIN_HTML):-len(TRAIL_HTML)].strip()
+              markers.append(("BEGIN", name, i))
+              continue
+          if s.startswith(END_HTML) and s.endswith(TRAIL_HTML):
+              name = s[len(END_HTML):-len(TRAIL_HTML)].strip()
+              markers.append(("END", name, i))
+              continue
+
+          # HTML comment state machine (skip non-marker comments).
+          if not in_html_comment:
+              if s.startswith(HTML_COMMENT_OPEN):
+                  in_html_comment = True
+                  if HTML_COMMENT_CLOSE in s:
+                      in_html_comment = False
+                  continue
+          else:
+              if HTML_COMMENT_CLOSE in s:
+                  in_html_comment = False
+              continue
+
+          # CSS/JS markers (only outside HTML comments).
+          if s.startswith(BEGIN_CSS) and s.endswith(TRAIL_CSS):
+              name = s[len(BEGIN_CSS):-len(TRAIL_CSS)].strip()
+              markers.append(("BEGIN", name, i))
+              continue
+          if s.startswith(END_CSS) and s.endswith(TRAIL_CSS):
+              name = s[len(END_CSS):-len(TRAIL_CSS)].strip()
+              markers.append(("END", name, i))
+              continue
+
+          # Region anchors (only outside HTML comments).
+          if style_close is None and STYLE_CLOSE in line:
+              style_close = i
+          if script_open is None and SCRIPT_OPEN in line:
+              script_open = i
+          if script_close is None and SCRIPT_CLOSE in line:
+              script_close = i
+
+      # Pair BEGIN with END. Top-level zones only (no colon).
+      zones, stack = [], {}
+      for kind, name, ln in markers:
+          if kind == "BEGIN":
+              stack[name] = ln
+          else:
+              if name in stack:
+                  b = stack.pop(name)
+                  if ":" not in name:
+                      zones.append((name, b, ln))
+      zones.sort(key=lambda z: z[1])
+
+      # Four-region classification.
+      def region_of(b):
+          if style_close and b < style_close:
+              return "CSS"
+          if script_open and b < script_open:
+              return "HTML"
+          if script_close and b < script_close:
+              return "JS"
+          return "HTML"
+
+      counts = {}
+      for n, _, _ in zones:
+          counts[n] = counts.get(n, 0) + 1
+
+      labeled = []
+      for n, b, e in zones:
+          if counts[n] > 1:
+              labeled.append((n + " (" + region_of(b) + ")", b, e))
+          else:
+              labeled.append((n, b, e))
+
+      # Build new registry block.
+      bar = "\u2550" * 68
+      reg = [HTML_COMMENT_OPEN]
+      reg.append("  " + bar)
+      reg.append("  ZONE REGISTRY \u2014 spatial calendar  (added May 2026)")
+      reg.append("  " + bar)
+      reg.append("  Grep CSS/JS:  /* === BEGIN <NAME> === */  ...  /* === END <NAME> === */")
+      reg.append("  Grep HTML:    same shape, HTML-comment delimiters.")
+      reg.append("  Sub-zones use NAME:CHILD (e.g. DEV-PANEL:SLIDERS) and are excluded")
+      reg.append("  from this registry. Find them by grep.")
+      reg.append("  Line numbers are post-marker. Rebuild script lives below this block.")
+      reg.append("")
+      for name, b, e in labeled:
+          reg.append("    {:<26s} {:>5d} \u2014 {:<5d}".format(name, b, e))
+      reg.append("  " + bar)
+      reg.append(HTML_COMMENT_CLOSE)
+      new_block = "\n".join(reg)
+
+      # Replace the existing ZONE REGISTRY block in place.
+      # The registry block always precedes the REBUILDER block in the file,
+      # so the first <!-- whose 8-line peek contains 'ZONE REGISTRY' and
+      # does NOT contain 'REBUILDER' is the registry.
+      out, i, replaced = [], 0, False
+      while i < len(lines):
+          line = lines[i]
+          if not replaced and line.strip() == HTML_COMMENT_OPEN:
+              peek = "\n".join(lines[i:min(i + 8, len(lines))])
+              if "ZONE REGISTRY" in peek and "REBUILDER" not in peek:
+                  j = i
+                  while j < len(lines) and HTML_COMMENT_CLOSE not in lines[j]:
+                      j += 1
+                  out.extend(new_block.split("\n"))
+                  i = j + 1
+                  replaced = True
+                  continue
+          out.append(line)
+          i += 1
+
+      if not replaced:
+          raise SystemExit("Existing ZONE REGISTRY block not found.")
+
+      with open(path, "w") as f:
+          f.write("\n".join(out))
+
+      print("Rebuilt registry: {} top-level zones".format(len(labeled)))
+
+  if __name__ == "__main__":
+      if len(sys.argv) != 2:
+          sys.exit("Usage: python3 rebuild_registry.py <path-to-html>")
+      rebuild(sys.argv[1])
+  ════════════════════════════════════════════════════════════════════
+  SCRIPT END
+  ════════════════════════════════════════════════════════════════════
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,6 +250,7 @@
 <title>Spatial Day View v13</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600&display=swap');
+/* === BEGIN LAYERS === */
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;height:100%;overflow:hidden;font-family:'Rajdhani',sans-serif;color:#fff;background:#000;}
 html{height:-webkit-fill-available;}
@@ -40,6 +285,9 @@ body.handles-hidden #connectors{opacity:0;}
 #ui-layer{transition:opacity 0.2s;}
 #readout{position:fixed;bottom:18px;left:0;right:0;z-index:100;text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(255,255,255,0.45);pointer-events:none;letter-spacing:0.04em;}
 
+/* === END LAYERS === */
+/* === BEGIN DEV-PANEL === */
+/* === BEGIN DEV-PANEL:SHELL === */
 /* ── DEV PANEL — compact draggable float ───────────────────────── */
 #dev-panel{
   position:fixed;right:16px;top:16px;z-index:200;
@@ -83,7 +331,9 @@ body.handles-hidden #connectors{opacity:0;}
   outline:none;
 }
 #dp-minimize:hover{background:rgba(0,220,255,0.18);}
+/* === END DEV-PANEL:SHELL === */
 
+/* === BEGIN DEV-PANEL:MODES === */
 /* mode toggle — MAP / CLOCK segmented control */
 #dp-mode-toggle{
   display:flex;
@@ -120,7 +370,9 @@ body.mode-clock .hdl-popup{display:none;}
 body.mode-clock .hdl-popup.tag-slot{display:block;}
 body.mode-clock .dp-section[data-mode-hide="clock"]{display:none;}
 body.mode-clock .dp-section[data-mode-hide="map"]{display:block;}
+/* === END DEV-PANEL:MODES === */
 body.mode-map .dp-section[data-mode-hide="map"]{display:none;}
+/* === BEGIN DEV-PANEL:CONTROLS === */
 
 /* body */
 #dp-body{overflow:hidden;transition:max-height 0.22s cubic-bezier(0.4,0,0.2,1);min-width:0;}
@@ -265,7 +517,9 @@ body.mode-map .dp-section[data-mode-hide="map"]{display:none;}
   font-size:9px;line-height:1;color:rgba(255,230,180,0.95);
   transition:background 0.12s;
 }
+/* === END DEV-PANEL:CONTROLS === */
 .dp-slot-check.on .dp-slot-box{background:rgba(255,210,130,0.3);}
+/* === BEGIN DEV-PANEL:TIERS === */
 
 /* ── Master brightness row — pinned above all sections ───────── */
 .dp-master-row{
@@ -342,6 +596,9 @@ body.mode-map .dp-section[data-mode-hide="map"]{display:none;}
   hsl(9,85%,62%), hsl(60,85%,62%), hsl(120,85%,62%),
   hsl(189,85%,62%), hsl(240,85%,62%), hsl(300,85%,62%), hsl(9,85%,62%)
 ) !important; }
+/* === END DEV-PANEL:TIERS === */
+/* === END DEV-PANEL === */
+/* === BEGIN NAV-ARROWS === */
 .nav-arrow{
   position:fixed;z-index:110;
   width:48px;height:48px;border-radius:50%;
@@ -361,7 +618,9 @@ body.mode-map .dp-section[data-mode-hide="map"]{display:none;}
 #nav-prev{left:12px;}
 #nav-next{right:12px;}
 body.handles-hidden .nav-arrow{opacity:0;pointer-events:none;}
+/* === END NAV-ARROWS === */
 
+/* === BEGIN HANDLE-POPUPS === */
 /* ── Handle popup — long-press triggered constraint editor ─────── */
 .hdl-popup{
   position:fixed;z-index:180;
@@ -420,9 +679,11 @@ body.handles-hidden .nav-arrow{opacity:0;pointer-events:none;}
 .hdl-popup.tag-arc .dp-slider::-moz-range-thumb{background:rgba(100,255,200,0.95);box-shadow:0 0 0 4px rgba(0,255,180,0.14);}
 .hdl-popup.tag-slot .dp-slider::-webkit-slider-thumb{background:rgba(255,220,150,0.95);box-shadow:0 0 0 4px rgba(255,200,100,0.14);}
 .hdl-popup.tag-slot .dp-slider::-moz-range-thumb{background:rgba(255,220,150,0.95);box-shadow:0 0 0 4px rgba(255,200,100,0.14);}
+/* === END HANDLE-POPUPS === */
 </style>
 </head>
 <body>
+<!-- === BEGIN SCENE === -->
 <div id="bg-tunnel"></div>
 <div id="bg-image"></div>
 <div id="bg-occlusion"></div>
@@ -443,7 +704,9 @@ body.handles-hidden .nav-arrow{opacity:0;pointer-events:none;}
 <div id="readout"></div>
 <div id="nav-prev" class="nav-arrow" style="display:none;">‹</div>
 <div id="nav-next" class="nav-arrow" style="display:none;">›</div>
+<!-- === END SCENE === -->
 
+<!-- === BEGIN DEV-PANEL === -->
 <!-- DEV PANEL -->
 <div id="dev-panel">
   <div id="dp-titlebar">
@@ -664,7 +927,9 @@ body.handles-hidden .nav-arrow{opacity:0;pointer-events:none;}
 
   </div>
 </div>
+<!-- === END DEV-PANEL === -->
 <script>
+/* === BEGIN STATE === */
 var VW = window.innerWidth;
 var VH = window.innerHeight;
 
@@ -818,7 +1083,9 @@ function clockTimeToT(tMs, nowMs) {
 ensureSlotCount(Math.max(2, Math.round(TC.windowHours)));
 
 var pts; // initialized in resizeCanvases so it always uses correct VW/VH
+/* === END STATE === */
 
+/* === BEGIN CANVAS-SETUP === */
 var ghostCanvas = document.getElementById('ghost-canvas');
 var ghostCtx    = ghostCanvas.getContext('2d');
 var beamCanvas  = document.getElementById('beam-canvas');
@@ -844,7 +1111,9 @@ function resizeCanvases() {
   }
   dpSyncRingVars();
 }
+/* === END CANVAS-SETUP === */
 
+/* === BEGIN RING-DRAW === */
 function drawGhostRings() {
   ghostCtx.clearRect(0, 0, VW, VH);
   var mode = (typeof window._getMode === 'function') ? window._getMode() : 'map';
@@ -1006,7 +1275,9 @@ function drawTierRing(cfg, ringX, ringY, rx, alpha, depth) {
     }
   }
 }
+/* === END RING-DRAW === */
 
+/* === BEGIN CLOCK-LABELS === */
 function drawClockTier(nowMs, intervalMs, cfg, fadeInAtT) {
   if (!cfg.on) return;
   var futureHours = DP.arcT * TC.windowHours;
@@ -1129,7 +1400,9 @@ function drawTimeLabels(nowMs) {
     ghostCtx.fillText(nowText, arcCenter.x, nowY);
   }
 }
+/* === END CLOCK-LABELS === */
 
+/* === BEGIN BEZIER === */
 // ── Bezier helpers ────────────────────────────────────────────────────────────
 function bezierPoint(t) {
   return {
@@ -1158,7 +1431,9 @@ function bezierClosestT(px, py) {
   }
   return t;
 }
+/* === END BEZIER === */
 
+/* === BEGIN NOW-ARC === */
 function drawNowArc() {
   if (!pts) return;
   var svg = document.getElementById('now-arc');
@@ -1212,7 +1487,9 @@ function drawNowArc() {
     '<path d="' + d + '" stroke="' + strokeGlow  + '" stroke-width="' + glowW + '" fill="none"/>' +
     '<path d="' + d + '" stroke="' + strokeSharp + '" stroke-width="2" fill="none" filter="url(#glow)"/>';
 }
+/* === END NOW-ARC === */
 
+/* === BEGIN GUIDE-LINE === */
 function drawBeam() {
   if (!pts) return;
   beamCtx.clearRect(0, 0, VW, VH);
@@ -1232,7 +1509,9 @@ function drawBeam() {
   beamCtx.lineWidth   = 1;
   beamCtx.stroke();
 }
+/* === END GUIDE-LINE === */
 
+/* === BEGIN HANDLE-POSITIONS === */
 function posHandles() {
   if (!pts) return;
   var ha   = document.getElementById('hdl-a');
@@ -1322,7 +1601,9 @@ function computeNowHandleOffset(pt) {
   else if (y > vh - MARGIN) y = vh - MARGIN;
   return { x: x, y: y };
 }
+/* === END HANDLE-POSITIONS === */
 
+/* === BEGIN CONNECTORS === */
 function drawConnectors(tA, offA, tB, offB, tArc, offArc, nodeLines) {
   var svg = document.getElementById('connectors');
   if (!svg) return;
@@ -1389,7 +1670,9 @@ function ringFloorPath(t0, t1, color, width) {
   }
   return '<path d="' + d + '" stroke="' + color + '" stroke-width="' + width + '" fill="none" stroke-linecap="round"/>';
 }
+/* === END CONNECTORS === */
 
+/* === BEGIN READOUT === */
 function updateReadout() {
   if (!pts) return;
   var aY = (pts.a.y / VH * 100).toFixed(1);
@@ -1416,6 +1699,8 @@ function initBlocks() {
   return; // remove this line to show blocks
 }
 
+/* === END READOUT === */
+/* === BEGIN DRAG-HANDLERS === */
 var dragging    = null;  // 'a','b','c' for geometry handles
 var draggingArc = false; // separate flag for arc handle
 var dragOffX = 0;
@@ -1517,13 +1802,16 @@ window.addEventListener('resize', function() {
 });
 
 function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnimationFrame(loop); }
+/* === END DRAG-HANDLERS === */
 
+/* === BEGIN HANDLE-POPUPS === */
 // ── Long-press popup on handles A, B, NOW ─────────────────────────
 (function() {
   var LONGPRESS_MS = 500;
   var MOVE_CANCEL  = 8; // px — movement before timer fires cancels long-press
 
   // Popup definitions per handle
+/* === BEGIN HANDLE-POPUPS:DEFS === */
   var POPUPS = {
     a: {
       title: 'A · vanish',
@@ -1551,7 +1839,9 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
 
   var popupEl = null;
   var popupKey = null;
+/* === END HANDLE-POPUPS:DEFS === */
 
+/* === BEGIN HANDLE-POPUPS:BUILD === */
   function buildPopup(key) {
     var def = POPUPS[key];
     var el = document.createElement('div');
@@ -1615,7 +1905,9 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
 
     return el;
   }
+/* === END HANDLE-POPUPS:BUILD === */
 
+/* === BEGIN HANDLE-POPUPS:POSITION === */
   function positionPopup(el, handleKey) {
     // Anchor to the actual handle element's position (which is now offset from the true point)
     var handleEl = document.getElementById('hdl-' + handleKey);
@@ -1642,7 +1934,9 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
     el.style.left = x + 'px';
     el.style.top  = y + 'px';
   }
+/* === END HANDLE-POPUPS:POSITION === */
 
+/* === BEGIN HANDLE-POPUPS:OPEN-CLOSE === */
   function openPopup(key) {
     closePopup(); // clear any existing
     popupEl  = buildPopup(key);
@@ -1684,7 +1978,9 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
     if (owner && owner.contains(e.target)) return;
     closePopup();
   }, true);
+/* === END HANDLE-POPUPS:OPEN-CLOSE === */
 
+/* === BEGIN HANDLE-POPUPS:LONGPRESS === */
   // Long-press detection on each handle
   ['a', 'b', 'arc'].forEach(function(key) {
     var el = document.getElementById('hdl-' + key);
@@ -1733,8 +2029,11 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
     document.addEventListener('mouseup',   onEnd);
     document.addEventListener('touchend',  onEnd);
   });
+/* === END HANDLE-POPUPS:LONGPRESS === */
 })();
+/* === END HANDLE-POPUPS === */
 
+/* === BEGIN VISIBILITY-TOGGLE === */
 // ── Double-tap empty space to toggle handle visibility ────────────────────
 (function() {
   var TAP_MOVE_MAX    = 10;  // px — single-tap movement tolerance
@@ -1806,7 +2105,9 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
   document.addEventListener('mousemove',  onMove);
   document.addEventListener('mouseup',    onEnd);
 })();
+/* === END VISIBILITY-TOGGLE === */
 
+/* === BEGIN SLOT-MANAGER === */
 // ── Slot calibration manager ────────────────────────────────────
 // Each slot represents a time band (default 1 hour) at a position along the pipe.
 // Users adjust each slot's t-offset to match visual tunnel features in a background photo.
@@ -1828,6 +2129,7 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
     return (TC.slots.focus === i) || !!TC.slots.shown[i];
   }
 
+/* === BEGIN SLOT-MANAGER:DOM === */
   // --- DOM creation/removal ---
   function ensureSlotDom(i) {
     var hdl = document.getElementById('hdl-s' + i);
@@ -1889,7 +2191,9 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
     posHandles();
   }
   window._renderSlots = renderAll;
+/* === END SLOT-MANAGER:DOM === */
 
+/* === BEGIN SLOT-MANAGER:DRAG === */
   // --- Drag (bezier scrub, slower than NOW) ---
   var draggingSlot = -1;
   var slotDragStartX = 0;
@@ -1930,7 +2234,9 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
   document.addEventListener('touchend', function() {
     if (draggingSlot >= 0) { draggingSlot = -1; if (typeof savePrefsGlobal === 'function') savePrefsGlobal(); }
   });
+/* === END SLOT-MANAGER:DRAG === */
 
+/* === BEGIN SLOT-MANAGER:POPUP === */
   // --- Long-press popup: just a "reset" action for the focused slot ---
   var slotPopup = null;
   var slotPopupIndex = -1;
@@ -2044,7 +2350,9 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
     document.addEventListener('mouseup',   function() { clearTimeout(timer); timer = null; });
     document.addEventListener('touchend',  function() { clearTimeout(timer); timer = null; });
   }
+/* === END SLOT-MANAGER:POPUP === */
 
+/* === BEGIN SLOT-MANAGER:FOCUS-NAV === */
   // --- Focus navigation ---
   function setFocus(i) {
     if (i < -1) i = -1;
@@ -2142,8 +2450,11 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
   };
 
   renderAll();
+/* === END SLOT-MANAGER:FOCUS-NAV === */
 })();
+/* === END SLOT-MANAGER === */
 
+/* === BEGIN DEV-PANEL === */
 // ── Dev panel: drag, collapse, snap, wire + persist ───────────
 (function() {
   var panel    = document.getElementById('dev-panel');
@@ -2155,6 +2466,7 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
 
   var LS_PREFS = 'spatialday_prefs';
 
+/* === BEGIN DEV-PANEL:STORAGE === */
   // ── Persist helpers ──────────────────────────────────────────
   function savePrefs() {
     try {
@@ -2185,7 +2497,9 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
       return JSON.parse(raw);
     } catch(e) { return null; }
   }
+/* === END DEV-PANEL:STORAGE === */
 
+/* === BEGIN DEV-PANEL:MODE-WIRE === */
   // ── Mode toggle (map / clock) ────────────────────────────────
   var currentMode = 'map'; // default; overridden by saved prefs if present
   var modeBtnMap   = document.getElementById('dp-mode-map');
@@ -2209,6 +2523,7 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
     applyMode('clock'); savePrefs();
   });
   applyMode('map'); // initial; load step below may override
+/* === END DEV-PANEL:MODE-WIRE === */
 
   // ── Draggable ────────────────────────────────────────────────────
   var startX = 0, startY = 0, isPanelDrag = false;
@@ -2242,6 +2557,7 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
   document.addEventListener('mouseup',  function() { if (isPanelDrag) { isPanelDrag = false; window._isPanelDrag = false; savePrefs(); } });
   document.addEventListener('touchend', function() { if (isPanelDrag) { isPanelDrag = false; window._isPanelDrag = false; savePrefs(); } });
 
+/* === BEGIN DEV-PANEL:PANEL-DRAG === */
   // ── Minimize ─────────────────────────────────────────────────────────
   var minimized = false;
   function setMinimized(v) {
@@ -2251,6 +2567,7 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
     minBtn.textContent = minimized ? '+' : '−';
   }
   minBtn.addEventListener('click', function() { setMinimized(!minimized); savePrefs(); });
+/* === END DEV-PANEL:PANEL-DRAG === */
   body.style.maxHeight = '600px';
 
   // ── Collapsible sections ────────────────────────────────────────────────
@@ -2281,6 +2598,7 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
   var SNAP_VAL = 1.00, SNAP_ZONE = 0.06;
   function snapRound(v) { return (Math.abs(v - SNAP_VAL) < SNAP_ZONE) ? SNAP_VAL : v; }
 
+/* === BEGIN DEV-PANEL:SLIDERS === */
   // ── Slider wiring ────────────────────────────────────────────────────────
   function wire(sliderId, valId, dpKey, digits, isRound, redrawArc) {
     var sl = document.getElementById(sliderId);
@@ -2419,7 +2737,9 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
       styCyc._sync = syncStyle;
     }
   });
+/* === END DEV-PANEL:SLIDERS === */
 
+/* === BEGIN DEV-PANEL:LABEL-WIRE === */
   // ── Time labels wiring (NOW readout, hour digits, font size) ─────────
   (function() {
     function wireLblToggle(togId, key) {
@@ -2471,7 +2791,9 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
     btnUp.addEventListener('click', function() { applyWhr(TC.windowHours + 0.5); savePrefs(); });
     applyWhr(TC.windowHours); // initial render
   })();
+/* === END DEV-PANEL:LABEL-WIRE === */
 
+/* === BEGIN DEV-PANEL:RESTORE === */
   // ── Restore saved prefs ──────────────────────────────────────────────────
   var saved = loadPrefs();
   if (saved) {
@@ -2591,7 +2913,9 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
     }
     if (saved.mode) applyMode(saved.mode);
   }
+/* === END DEV-PANEL:RESTORE === */
 
+/* === BEGIN DEV-PANEL:DUMP === */
   // ── State dump ───────────────────────────────────────────────────────────────
   dumpBtn.addEventListener('click', function() {
     var aY = (pts.a.y / VH * 100).toFixed(2);
@@ -2643,8 +2967,11 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
     window.getSelection().removeAllRanges();
     window.getSelection().addRange(r);
   });
+/* === END DEV-PANEL:DUMP === */
 })();
+/* === END DEV-PANEL === */
 
+/* === BEGIN BG-IMAGE === */
 // ── BG image: load, persist, opacity ────────────────────────────
 (function() {
   var bgEl      = document.getElementById('bg-image');
@@ -2752,7 +3079,9 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
     try { localStorage.setItem(LS_KEY_OPACITY, v); } catch(e) {}
   });
 })();
+/* === END BG-IMAGE === */
 
+/* === BEGIN BOOT === */
 resizeCanvases();
 posHandles();
 drawBeam();
@@ -2760,6 +3089,7 @@ drawNowArc();
 initBlocks();
 updateReadout();
 loop();
+/* === END BOOT === */
 </script>
 </body>
 </html>

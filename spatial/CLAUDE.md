@@ -31,6 +31,7 @@ Spatial is the face of a calendar app — viewer and scheduler in one. It redefi
 file: index.html
 lines: ~2,765
 state: working, stable, no mid-build
+zones: 23 top-level zones | in-file registry + rebuilder (line 2)
 phase: 4 shipped | 5 active (events on pipe — design session pending)
 ```
 
@@ -56,7 +57,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
-(empty — populate as fixes/features ship)
+[2026-05-18] ref | zone markers + in-file registry — 23 zones, BEGIN/END pairs throughout | touches: all
 ```
 
 ---
