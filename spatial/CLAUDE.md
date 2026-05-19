@@ -57,6 +57,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-05-19] fix | arc-length LUT — equal visual ring spacing regardless of bezier shape | touches: [pipe], [rings], [clock]
 [2026-05-19] fix | now arc desync — apply slot calibration to arcT in drawNowArc | touches: [now-arc]
 [2026-05-18] ref | zone markers + in-file registry — 23 zones, BEGIN/END pairs throughout | touches: all
 ```
