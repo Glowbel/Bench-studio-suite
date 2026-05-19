@@ -1441,10 +1441,11 @@ function drawNowArc() {
   svg.setAttribute('height', VH);
   svg.setAttribute('viewBox', '0 0 ' + VW + ' ' + VH);
 
-  var center = bezierPoint(DP.arcT);
+  var arcTcal = applySlotCalibration(DP.arcT);
+  var center  = bezierPoint(arcTcal);
   var cx = center.x;
   var cy = center.y;
-  var autoRX = RING_MIN_RX + (RING_MAX_RX - RING_MIN_RX) * DP.arcT;
+  var autoRX = RING_MIN_RX + (RING_MAX_RX - RING_MIN_RX) * arcTcal;
   var rx = autoRX * DP.arcRX;
   var ry = rx;
 
