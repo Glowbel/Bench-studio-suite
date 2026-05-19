@@ -1063,26 +1063,32 @@ function applySlotCalibration(linearT) {
 
 // Given a clock time (ms since epoch) and the current NOW (ms), return t on the pipe.
 // Returns null if outside the visible window.
+// Distributes rings by arc length (equal visual spacing) rather than linear t,
+// so rings stay evenly spaced regardless of how the bezier curves.
 function clockTimeToT(tMs, nowMs) {
-  var deltaHours = (tMs - nowMs) / 3600000;
+  var deltaHours  = (tMs - nowMs) / 3600000;
   var futureHours = DP.arcT * TC.windowHours;
   var pastHours   = (1 - DP.arcT) * TC.windowHours;
-  var linearT;
+  var arcFracNow  = tToArcFrac(DP.arcT);
+  var targetFrac;
   if (deltaHours >= 0) {
     if (deltaHours > futureHours) return null;
-    linearT = (futureHours < 0.0001) ? DP.arcT : DP.arcT * (1 - deltaHours / futureHours);
+    var ff = (futureHours < 0.0001) ? 0 : (1 - deltaHours / futureHours);
+    targetFrac = arcFracNow * ff;
   } else {
     var past = -deltaHours;
     if (past > pastHours) return null;
-    linearT = (pastHours < 0.0001) ? DP.arcT : DP.arcT + (past / pastHours) * (1 - DP.arcT);
+    var pf = (pastHours < 0.0001) ? 0 : past / pastHours;
+    targetFrac = arcFracNow + pf * (1 - arcFracNow);
   }
-  return applySlotCalibration(linearT);
+  return applySlotCalibration(arcFracToT(targetFrac));
 }
 
 // Initialize slot count from default windowHours
 ensureSlotCount(Math.max(2, Math.round(TC.windowHours)));
 
-var pts; // initialized in resizeCanvases so it always uses correct VW/VH
+var pts;    // initialized in resizeCanvases so it always uses correct VW/VH
+var arcLUT; // arc-length LUT; rebuilt whenever pts changes
 /* === END STATE === */
 
 /* === BEGIN CANVAS-SETUP === */
@@ -1110,8 +1116,64 @@ function resizeCanvases() {
     };
   }
   dpSyncRingVars();
+  buildArcLUT();
 }
 /* === END CANVAS-SETUP === */
+
+/* === BEGIN ARC-LUT === */
+// Builds a 200-sample arc-length LUT for the current bezier (pts).
+// Gives tToArcFrac / arcFracToT — used by clockTimeToT so equal time
+// intervals map to equal visual distances regardless of curve shape.
+function buildArcLUT() {
+  if (!pts) return;
+  var N = 200;
+  var lens = [];
+  var total = 0;
+  var px = pts.a.x, py = pts.a.y;
+  lens.push(0);
+  for (var i = 1; i <= N; i++) {
+    var bt = i / N;
+    var qx = (1-bt)*(1-bt)*pts.a.x + 2*(1-bt)*bt*pts.c.x + bt*bt*pts.b.x;
+    var qy = (1-bt)*(1-bt)*pts.a.y + 2*(1-bt)*bt*pts.c.y + bt*bt*pts.b.y;
+    var dx = qx - px, dy = qy - py;
+    total = total + Math.sqrt(dx*dx + dy*dy);
+    lens.push(total);
+    px = qx; py = qy;
+  }
+  var fracs = [];
+  for (var j = 0; j <= N; j++) {
+    fracs.push(total > 0 ? lens[j] / total : j / N);
+  }
+  arcLUT = { n: N, fracs: fracs };
+}
+
+function tToArcFrac(t) {
+  if (!arcLUT) return t;
+  var N = arcLUT.n;
+  var idx = Math.floor(t * N);
+  if (idx < 0) return 0;
+  if (idx >= N) return arcLUT.fracs[N];
+  var f0 = arcLUT.fracs[idx];
+  var f1 = arcLUT.fracs[idx + 1];
+  return f0 + (t * N - idx) * (f1 - f0);
+}
+
+function arcFracToT(frac) {
+  if (!arcLUT) return frac;
+  if (frac <= 0) return 0;
+  if (frac >= 1) return 1;
+  var lo = 0, hi = arcLUT.n;
+  while (lo < hi) {
+    var mid = (lo + hi) >> 1;
+    if (arcLUT.fracs[mid] < frac) { lo = mid + 1; } else { hi = mid; }
+  }
+  if (lo === 0) return 0;
+  var fa = arcLUT.fracs[lo - 1];
+  var fb = arcLUT.fracs[lo];
+  var interp = (fb > fa) ? (frac - fa) / (fb - fa) : 0;
+  return (lo - 1 + interp) / arcLUT.n;
+}
+/* === END ARC-LUT === */
 
 /* === BEGIN RING-DRAW === */
 function drawGhostRings() {
@@ -1762,6 +1824,7 @@ document.addEventListener('mousemove', function(e) {
   pts[dragging].x = e.clientX - dragOffX;
   pts[dragging].y = e.clientY - dragOffY;
   VP_X = pts.a.x; VP_Y = pts.a.y; NOW_Y = pts.b.y;
+  buildArcLUT();
   posHandles(); drawBeam(); drawNowArc(); updateReadout();
   if (window._followPopup) window._followPopup();
 });
@@ -1779,6 +1842,7 @@ document.addEventListener('touchmove', function(e) {
   pts[dragging].x = e.touches[0].clientX - dragOffX;
   pts[dragging].y = e.touches[0].clientY - dragOffY;
   VP_X = pts.a.x; VP_Y = pts.a.y; NOW_Y = pts.b.y;
+  buildArcLUT();
   posHandles(); drawBeam(); drawNowArc(); updateReadout();
   if (window._followPopup) window._followPopup();
 }, { passive: false });
@@ -1798,6 +1862,7 @@ window.addEventListener('resize', function() {
     pts.b.x = pts.b.x / oldVW * VW; pts.b.y = pts.b.y / oldVH * VH;
     pts.c.x = pts.c.x / oldVW * VW; pts.c.y = pts.c.y / oldVH * VH;
   }
+  buildArcLUT();
   posHandles(); drawBeam(); drawNowArc(); updateReadout();
   if (window._followPopup) window._followPopup();
 });
@@ -2878,6 +2943,7 @@ function loop() { dpSyncRingVars(); drawGhostRings(); drawNowArc(); requestAnima
         b: { x: f.bx * VW, y: f.by * VH },
         c: { x: f.cx * VW, y: f.cy * VH }
       };
+      buildArcLUT();
     }
     if (saved.panelX !== undefined) {
       var nx = Math.max(0, Math.min(window.innerWidth  - panel.offsetWidth,  saved.panelX));
