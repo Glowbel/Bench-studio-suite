@@ -235,4 +235,4 @@ phase 2 [active]: extending the flow — zoom-out + count-the-cost
 - **`wizard-suite-architecture.md`** — full design spec for the three-tool suite; fetch when working on Zoom Out or Count the Cost design
 - **External Count the Cost design** — when count-the-cost work begins, fetch Jordan's latest design notes (active externally)
 - **`bench/CLAUDE.md`** — when wizard → bench skills integration is being designed, fetch Bench skill data shape
-- **Session close** — delete the auto-created session branch: `git push origin --delete [your claude/* branch name]` (branch name is in your session instructions)
+- **Session close** — the platform auto-creates a `claude/*` branch; Jordan cleans it up manually — never push code there, it's a platform artifact
