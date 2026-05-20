@@ -29,8 +29,8 @@ This is the convergent engine of the suite.
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~6,630
-phase: 4.5 in-progress (node orbs done, L3 modal next)
+lines: ~6,989
+phase: 4.5 in-progress (L3 modal done, intake conversation next)
 ```
 
 ---
@@ -56,6 +56,8 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[may-20] feat | L3 node detail modal — compact progress pop-over (orb, intention, metal bar, begin/complete/+todo/delete), alive-node pulse in L2 | touches: SKILLS, [node-detail], STATE, CSS
+[may-20] fix | +/- goal stepper + sessions/hours toggle in node create modal — in-place DOM updates, no render(), eliminates flash + keyboard retrigger | touches: EVENTS:NODE-CREATE
 [may-15] feat | Nodes rendered as orbs (was shields) — tab-orb glow language at 56px, type-color halo+ring+glyph, metal arc just outside ring | touches: SKILLS-WORKSHOP, [node-progress], [node-orbs]
 [may-15] rm | nodeTypeGlyph (full-shield) + nodeProgressArcSvg (52-coord helper) + dead .node-shield/.node-conn-* CSS — orphaned by orb switch | touches: SKILLS
 [may-15] fix | Tab orb colors hollow + diffused outer light + quiet vs active mode — when timer runs, orbs brighten and pulse faster; idle stays soft | touches: TAB-ORBS, CAPSULE-EDGE-ORBS, CSS
@@ -357,8 +359,8 @@ floating modal | dark bg | gold border | NOT full-screen
 5. workshop L2 node path | sticky crest | vertical parabolic nodes [DONE may-14]
 6. crest modal | name + letter picker + symbol picker + glow color picker [DONE may-14]
 7. node creation | type picker + intention input [DONE may-14]
-8. L3 node modal | journal layout | 4 types | begin/complete/+to-do/delete [NEXT]
-9. intake conversation (the door) | icon picker
+8. L3 node modal | compact progress pop-over | begin/complete/+to-do/delete | alive-node pulse [DONE may-20]
+9. intake conversation (the door) | icon picker [NEXT]
 10. dreaming list | begin-the-journey
 11. archive | crest field + dossier
 12. compendium stubs | 3 nav modes | search data model
