@@ -1,264 +1,210 @@
-<!doctype html><html><head><meta charset="utf-8"><style>@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@400;500&display=swap");@keyframes fadeIn{from{opacity:0}to{opacity:1}}body{margin:0;background:#14151a;font-family:sans-serif;}.row{display:flex;flex-wrap:wrap;gap:10px;padding:20px;align-items:flex-start;justify-content:center;}.stage{position:relative;width:420px;height:760px;background:radial-gradient(ellipse 80% 60% at 75% 20%, rgba(95,213,193,0.05), transparent 60%),#14151a;border-radius:12px;overflow:hidden;}.stage .node-create-overlay{position:absolute;}.cap{color:#8a9692;font-family:monospace;font-size:12px;text-align:center;padding:6px;}/* === BEGIN NODE-CREATE-MODAL === */
-/* Ceremonial node creation — Filigree visual system.
-   Hero orb (triple-ring frame, heraldic diamonds, arcane pulse, smoke
-   atmosphere, per-type glyph) + selector strip + config. First surface
-   in the new design language; tokens below mirror designs/bench/colors_and_type.css
-   (different names than the app's --c-* set, so additive + non-breaking).
-*/
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@400;500&display=swap");
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+body{margin:0;background:#14151a;font-family:sans-serif;}
+.row{display:flex;flex-wrap:wrap;gap:10px;padding:20px;align-items:flex-start;justify-content:center;}
+.stage{position:relative;width:420px;height:760px;background:radial-gradient(ellipse 80% 60% at 75% 20%,rgba(95,213,193,0.05),transparent 60%),#14151a;border-radius:12px;overflow:hidden;}
+.stage .node-create-overlay{position:absolute;}
+.cap{color:#8a9692;font-family:monospace;font-size:12px;text-align:center;padding:6px;}
 
-/* -- Filigree tokens (subset; seeds the eventual global fusion) -- */
-:root {
-  --ink-950:#1c1d22; --ink-900:#232531; --ink-800:#2c2f42;
-  --ink-700:#353953; --ink-600:#404663; --ink-500:#4c537a;
-  --teal-300:#4acc85; --violet-300:#b083d8; --gold-300:#f0d28a; --gold-400:#d9b465;
-  --mist-100:#f3f6f5; --mist-200:#d8dfdc; --mist-300:#b3bdba; --mist-400:#8a9692; --mist-500:#5e6a66;
-  --fil-border:rgba(76,83,122,0.40); --fil-border-faint:rgba(76,83,122,0.20);
+:root{
+  --ink-950:#1c1d22;--ink-900:#232531;--ink-800:#2c2f42;--ink-700:#353953;
+  --teal-300:#4acc85;--violet-300:#b083d8;--gold-300:#f0d28a;--gold-400:#d9b465;
+  --mist-100:#f3f6f5;--mist-200:#d8dfdc;--mist-300:#b3bdba;--mist-400:#8a9692;--mist-500:#5e6a66;
+  --fil-border:rgba(76,83,122,0.40);--fil-border-faint:rgba(76,83,122,0.20);
 }
-
-.node-create-overlay {
-  position:fixed; inset:0; z-index:550;
+.node-create-overlay{
+  position:fixed;inset:0;z-index:550;
   background:rgba(12,13,18,0.74);
   backdrop-filter:blur(12px) saturate(120%);
   -webkit-backdrop-filter:blur(12px) saturate(120%);
-  display:flex; align-items:center; justify-content:center;
-  padding:20px;
-  animation:fadeIn 0.22s ease;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;animation:fadeIn 0.22s ease;
 }
-.nch-modal {
-  position:relative;
-  background:var(--ink-900);
-  border:1px solid var(--fil-border);
-  border-radius:20px;
-  width:min(384px,94vw);
-  max-height:90vh;
-  overflow-y:auto;
-  box-shadow:0 24px 64px rgba(0,0,0,0.62), 0 0 80px rgba(124,68,184,0.10);
+.nch-modal{
+  position:relative;background:var(--ink-900);
+  border:1px solid var(--fil-border);border-radius:20px;
+  width:min(384px,94vw);max-height:90vh;overflow-y:auto;
+  box-shadow:0 24px 64px rgba(0,0,0,0.62),0 0 80px rgba(124,68,184,0.10);
   animation:nchRise 0.42s cubic-bezier(0.16,1,0.3,1);
 }
-/* Color-immersion wash — JS sets the type-tinted radial via .style on this layer */
-.nch-atmos {
-  position:absolute; inset:0; border-radius:20px;
-  pointer-events:none; z-index:0;
-  transition:background 0.5s cubic-bezier(0.25,0.8,0.25,1);
-}
-.nch-modal > * { position:relative; z-index:1; }
+.nch-atmos{position:absolute;inset:0;border-radius:20px;pointer-events:none;z-index:0;transition:background 0.5s cubic-bezier(0.25,0.8,0.25,1);}
+.nch-modal > *{position:relative;z-index:1;}
+@keyframes nchRise{from{opacity:0;transform:translateY(16px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.nch-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 4px;}
+.nch-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-variant:small-caps;letter-spacing:0.10em;font-size:1.18rem;color:var(--gold-300);}
+.nch-close{background:none;border:none;cursor:pointer;color:var(--mist-400);font-size:1.3rem;line-height:1;width:30px;height:30px;border-radius:9999px;display:flex;align-items:center;justify-content:center;}
+.nch-hero{position:relative;width:100%;height:188px;display:flex;align-items:center;justify-content:center;isolation:isolate;overflow:hidden;}
+.nch-smoke-a,.nch-smoke-b{position:absolute;border-radius:50%;mix-blend-mode:screen;pointer-events:none;}
+.nch-smoke-a{width:200px;height:200px;filter:blur(20px);animation:nchHalo 5.6s ease-in-out infinite;}
+.nch-smoke-b{width:150px;height:150px;filter:blur(13px);animation:nchAuraSpin 17s linear infinite,nchAuraBreath 3.4s ease-in-out infinite;}
+@keyframes nchHalo{0%,100%{transform:scale(0.9);opacity:0.5}50%{transform:scale(1.1);opacity:0.9}}
+@keyframes nchAuraBreath{0%,100%{opacity:0.55}50%{opacity:0.85}}
+@keyframes nchAuraSpin{to{transform:rotate(360deg)}}
+.nch-orb-ring{position:absolute;width:55%;height:55%;border-radius:50%;border:1px solid currentColor;opacity:0;animation:nchRingOut 4s ease-out infinite;mix-blend-mode:screen;pointer-events:none;}
+.nch-orb-ring.r2{animation-delay:2s;}
+@keyframes nchRingOut{0%{transform:scale(0.5);opacity:0}20%{opacity:0.45}100%{transform:scale(2.2);opacity:0}}
+.nch-orb-core{position:absolute;width:28%;height:28%;border-radius:50%;filter:blur(2px);animation:nchCorePulse 2.8s ease-in-out infinite;mix-blend-mode:screen;pointer-events:none;z-index:1;}
+.nch-orb-core::after{content:"";position:absolute;inset:28%;background:radial-gradient(circle,rgba(255,255,255,0.9),rgba(255,255,255,0.2) 50%,transparent 80%);border-radius:50%;filter:blur(1px);}
+@keyframes nchCorePulse{0%,100%{transform:scale(1);opacity:0.75}50%{transform:scale(1.16);opacity:1}}
+.nch-orb-p{position:absolute;width:3px;height:3px;border-radius:50%;background:currentColor;box-shadow:0 0 6px currentColor,0 0 12px currentColor;top:50%;left:50%;margin:-1.5px 0 0 -1.5px;mix-blend-mode:screen;pointer-events:none;z-index:4;will-change:transform,opacity;}
+.nch-orb-p.big{width:4px;height:4px;margin:-2px 0 0 -2px;}
+.nch-orb-p.p1{animation:nchDriftA 5.4s ease-in-out infinite;}
+.nch-orb-p.p2{animation:nchDriftB 6.2s ease-in-out infinite 0.8s;}
+.nch-orb-p.p3{animation:nchDriftC 7.0s ease-in-out infinite 1.6s;}
+.nch-orb-p.p4{animation:nchDriftD 5.8s ease-in-out infinite 2.4s;}
+.nch-orb-p.p5{animation:nchDriftE 6.6s ease-in-out infinite 3.2s;}
+.nch-orb-p.p6{animation:nchDriftF 7.4s ease-in-out infinite 4.0s;}
+@keyframes nchDriftA{0%{transform:translate(-2px,-38px) scale(0.6);opacity:0}20%{opacity:1}100%{transform:translate(-42px,16px) scale(1);opacity:0}}
+@keyframes nchDriftB{0%{transform:translate(36px,-12px) scale(0.7);opacity:0}25%{opacity:1}100%{transform:translate(18px,44px) scale(0.5);opacity:0}}
+@keyframes nchDriftC{0%{transform:translate(-30px,8px) scale(0.5);opacity:0}30%{opacity:1}100%{transform:translate(10px,36px) scale(1.1);opacity:0}}
+@keyframes nchDriftD{0%{transform:translate(18px,30px) scale(0.5);opacity:0}25%{opacity:0.9}100%{transform:translate(38px,-22px) scale(1);opacity:0}}
+@keyframes nchDriftE{0%{transform:translate(-26px,-22px) scale(0.4);opacity:0}35%{opacity:1}100%{transform:translate(-44px,30px) scale(0.7);opacity:0}}
+@keyframes nchDriftF{0%{transform:translate(8px,36px) scale(0.7);opacity:0}20%{opacity:0.8}100%{transform:translate(-12px,-38px) scale(1.1);opacity:0}}
+.nch-orb-svg{width:158px;height:158px;position:relative;z-index:2;filter:drop-shadow(0 0 5px currentColor);}
+.nch-hero.is-empty .nch-orb-svg{opacity:0.55;}
+.nch-desc{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.0rem;color:var(--mist-300);text-align:center;padding:0 26px 4px;min-height:1.4em;}
+.nch-strip{display:flex;justify-content:center;gap:8px;padding:14px 12px 6px;}
+.nch-strip-item{display:flex;flex-direction:column;align-items:center;gap:3px;flex:0 0 auto;width:64px;}
+.nch-strip-orb{width:48px;height:48px;border-radius:50%;background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;position:relative;opacity:0.42;transition:opacity 0.24s ease,transform 0.18s ease;}
+.nch-strip-orb svg{width:46px;height:46px;}
+.nch-strip-orb.active{opacity:1;filter:drop-shadow(0 0 6px currentColor);animation:nchBloom 0.42s cubic-bezier(0.16,1,0.3,1);}
+@keyframes nchBloom{0%{transform:scale(0.86)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+.nch-strip-label{font-family:'DM Mono',monospace;font-size:0.45rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--mist-500);text-align:center;padding:0 2px;}
+.nch-strip-item.active .nch-strip-label{color:var(--mist-200);}
+.nch-divider{display:flex;align-items:center;justify-content:center;padding:10px 0 4px;color:var(--mist-500);opacity:0.7;}
+.nch-divider svg{width:140px;height:18px;}
+.nch-section-label{font-family:'Cormorant Garamond',serif;font-variant:small-caps;font-weight:500;font-size:0.74rem;letter-spacing:0.16em;color:var(--mist-400);display:block;padding:12px 26px 4px;}
+.nch-intention-input{width:calc(100% - 52px);box-sizing:border-box;margin:0 26px;background:var(--ink-950);border:1px solid var(--fil-border);color:var(--mist-100);font-family:'Cormorant Garamond',serif;font-size:1.0rem;font-style:italic;padding:9px 16px 9px 13px;border-radius:8px;outline:none;display:block;}
+.nch-intention-input::placeholder{color:var(--mist-500);font-style:italic;}
+.nch-goal-kind-row{display:flex;gap:8px;padding:6px 26px 0;}
+.nch-goal-kind-btn{flex:1;background:var(--ink-950);border:1px solid var(--fil-border);color:var(--mist-400);font-family:'DM Mono',monospace;font-size:0.56rem;letter-spacing:0.14em;text-transform:uppercase;padding:9px 4px;border-radius:8px;cursor:pointer;}
+.nch-goal-kind-btn.active{border-color:rgba(74,204,133,0.55);color:var(--teal-300);background:var(--ink-800);box-shadow:inset 0 0 14px rgba(74,204,133,0.14);}
+.nch-goal-count-row{display:flex;align-items:center;justify-content:center;gap:18px;padding:14px 26px 6px;}
+.nch-goal-step{width:34px;height:34px;border-radius:50%;background:none;border:1px solid var(--fil-border);color:var(--teal-300);font-family:'DM Mono',monospace;font-size:1.05rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.nch-goal-display{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--mist-100);min-width:62px;text-align:center;}
+.nch-goal-unit{font-family:'DM Mono',monospace;font-size:0.5rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--mist-400);}
+.nch-actions{display:flex;gap:10px;padding:18px 26px 22px;margin-top:12px;justify-content:flex-end;}
+.nch-btn{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;padding:10px 18px;border-radius:9999px;cursor:pointer;border:1px solid var(--fil-border);background:none;color:var(--mist-300);}
+.nch-btn.primary{background:var(--teal-300);color:var(--ink-950);border-color:transparent;font-weight:500;}
+.nch-btn.primary.is-disabled{opacity:0.32;pointer-events:none;}
+</style></head><body><div class="row">
 
-@keyframes nchRise {
-  from { opacity:0; transform:translateY(16px) scale(0.97); }
-  to   { opacity:1; transform:translateY(0) scale(1); }
-}
+<!-- ============================================================ STAGE 1: empty -->
+<div><div class="cap">empty / unselected</div><div class="stage"><div class="node-create-overlay"><div class="nch-modal">
+  <div class="nch-atmos" style="background:transparent"></div>
+  <div class="nch-topbar"><div class="nch-title">a new node</div><button class="nch-close">&#215;</button></div>
+  <div class="nch-hero is-empty">
+    <div class="nch-smoke-a" style="background:radial-gradient(circle, rgba(74,204,133,0.5) 0%, rgba(74,204,133,0.14) 38%, transparent 68%)"></div>
+    <div class="nch-smoke-b" style="background:radial-gradient(circle, rgba(74,204,133,0.6) 0%, rgba(74,204,133,0.2) 45%, transparent 72%)"></div>
+    <div class="nch-orb-ring" style="color:#4acc85"></div>
+    <div class="nch-orb-ring r2" style="color:#4acc85"></div>
+    <div class="nch-orb-core" style="background:radial-gradient(circle, rgba(166,240,220,0.95) 0%, rgba(74,204,133,0.55) 40%, transparent 75%)"></div>
+    <svg class="nch-orb-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="color:#4acc85"><g transform="translate(100,100)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="92" stroke-width="1.4" opacity="0.85"></circle><circle r="86" stroke-width="0.9" opacity="0.5"></circle><circle r="80" stroke-width="0.6" opacity="0.25"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(90)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(180)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(270)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g></g><g transform="rotate(-90)"><path d="M 0 -6 C 12 -8, 20 -16, 16 -26 C 13 -32, 4 -30, 6 -22" stroke="currentColor" stroke-width="2"></path><circle cx="6" cy="-22" r="1.8" fill="currentColor" stroke="none"></circle></g><g transform="rotate(30)"><path d="M 0 -6 C 12 -8, 20 -16, 16 -26 C 13 -32, 4 -30, 6 -22" stroke="currentColor" stroke-width="2"></path><circle cx="6" cy="-22" r="1.8" fill="currentColor" stroke="none"></circle></g><g transform="rotate(150)"><path d="M 0 -6 C 12 -8, 20 -16, 16 -26 C 13 -32, 4 -30, 6 -22" stroke="currentColor" stroke-width="2"></path><circle cx="6" cy="-22" r="1.8" fill="currentColor" stroke="none"></circle></g><circle r="5" stroke="currentColor" stroke-width="1.3"></circle><circle r="2" fill="currentColor" stroke="none"></circle></g></svg>
+    <div class="nch-orb-p p1" style="color:#4acc85"></div><div class="nch-orb-p p2 big" style="color:#4acc85"></div><div class="nch-orb-p p3" style="color:#4acc85"></div><div class="nch-orb-p p4" style="color:#4acc85"></div><div class="nch-orb-p p5 big" style="color:#4acc85"></div><div class="nch-orb-p p6" style="color:#4acc85"></div>
+  </div>
+  <div class="nch-desc">Choose what this node is for.</div>
+  <div class="nch-strip">
+    <div class="nch-strip-item"><button class="nch-strip-orb" style="color:#b083d8"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#b083d8"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><g transform="rotate(-52)"><path d="M 0 -5 C 11 -8 20 -15 16 -25 C 13 -32 4 -30 6 -22" stroke="currentColor" stroke-width="2"></path><circle cx="6" cy="-22" r="2" fill="currentColor" stroke="none"></circle></g><g transform="rotate(52)"><path d="M 0 -5 C 11 -8 20 -15 16 -25 C 13 -32 4 -30 6 -22" stroke="currentColor" stroke-width="1.7" opacity="0.72"></path><circle cx="6" cy="-22" r="1.8" fill="currentColor" stroke="none" opacity="0.72"></circle></g><line x1="0" y1="-5" x2="0" y2="14" stroke="currentColor" stroke-width="1.3" opacity="0.48"></line><path d="M 0 19 l 4 5 l -4 5 l -4 -5 Z" fill="currentColor" stroke="none" opacity="0.82"></path></g></g></svg></button><div class="nch-strip-label">research</div></div>
+    <div class="nch-strip-item"><button class="nch-strip-orb" style="color:#4acc85"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#4acc85"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M 0 5 C 11 1 20 -9 16 -20 C 13 -27 4 -25 6 -18" stroke="currentColor" stroke-width="2.4"></path><circle cx="6" cy="-18" r="2.2" fill="currentColor" stroke="none"></circle><path d="M 0 -30 l 4 5 l -4 5 l -4 -5 Z" fill="currentColor" stroke="none"></path><line x1="0" y1="5" x2="0" y2="24" stroke="currentColor" stroke-width="1.4" opacity="0.58"></line><circle cx="0" cy="26" r="1.9" fill="currentColor" stroke="none" opacity="0.58"></circle></g></g></svg></button><div class="nch-strip-label">session</div></div>
+    <div class="nch-strip-item"><button class="nch-strip-orb" style="color:#5a9fd4"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#5a9fd4"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M 18 -13 C 26 -4 26 10 18 18 C 10 24 -4 24 -14 16 C -24 8 -26 -7 -18 -17" stroke="currentColor" stroke-width="1.8"></path><circle cx="-18" cy="-17" r="2.2" fill="currentColor" stroke="none"></circle><circle r="9" stroke="currentColor" stroke-width="1.4" opacity="0.8"></circle><circle r="2.8" fill="currentColor" stroke="none"></circle><path d="M 22 -16 l 3.4 4.2 l -3.4 4.2 l -3.4 -4.2 Z" fill="currentColor" stroke="none" opacity="0.72"></path></g></g></svg></button><div class="nch-strip-label">immersion</div></div>
+    <div class="nch-strip-item"><button class="nch-strip-orb" style="color:#f0d28a"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#f0d28a"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M 0 -4 C 12 -9 22 -19 18 -29 C 15 -36 6 -34 8 -26" stroke="currentColor" stroke-width="1.9"></path><circle cx="8" cy="-26" r="2" fill="currentColor" stroke="none"></circle><path d="M 0 -4 C -12 -9 -22 -19 -18 -29 C -15 -36 -6 -34 -8 -26" stroke="currentColor" stroke-width="1.6" opacity="0.74"></path><circle cx="-8" cy="-26" r="1.8" fill="currentColor" stroke="none" opacity="0.74"></circle><circle r="3" fill="currentColor" stroke="none" opacity="0.92"></circle><path d="M 0 8 Q -3 14 -3 20 Q -3 24 0 24 Q 3 24 3 20 Q 3 14 0 8 Z" fill="currentColor" stroke="none" opacity="0.82"></path></g></g></svg></button><div class="nch-strip-label">note</div></div>
+  </div>
+  <div class="nch-divider"><svg viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="0" y1="9" x2="54" y2="9" opacity="0.5"></line><line x1="86" y1="9" x2="140" y2="9" opacity="0.5"></line><g transform="translate(70,9)"><path d="M 0 -7 L -2 -3 L 0 0 L 2 -3 Z" fill="currentColor" stroke="none"></path><path d="M 0 0 L 5 4 L 0 8 L -5 4 Z"></path><circle r="1.4" fill="currentColor" stroke="none"></circle></g></svg></div>
+  <span class="nch-section-label">focus</span>
+  <input type="text" class="nch-intention-input" placeholder="what are you working toward?" value="" />
+  <span class="nch-section-label">goal</span>
+  <div class="nch-goal-kind-row"><button class="nch-goal-kind-btn active">sessions</button><button class="nch-goal-kind-btn">hours</button></div>
+  <div class="nch-goal-count-row"><button class="nch-goal-step">&#8722;</button><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div class="nch-goal-display">3</div><div class="nch-goal-unit">sessions</div></div><button class="nch-goal-step">&#43;</button></div>
+  <div class="nch-actions"><button class="nch-btn">cancel</button><button class="nch-btn primary is-disabled">create</button></div>
+</div></div></div></div>
 
-/* -- Top bar -- */
-.nch-topbar {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 18px 4px;
-}
-.nch-title {
-  font-family:'Cormorant Garamond',serif;
-  font-style:italic; font-weight:500;
-  font-variant:small-caps; letter-spacing:0.10em;
-  font-size:1.18rem; color:var(--gold-300);
-}
-.nch-close {
-  background:none; border:none; cursor:pointer;
-  color:var(--mist-400); font-size:1.3rem; line-height:1;
-  width:30px; height:30px; border-radius:9999px;
-  display:flex; align-items:center; justify-content:center;
-  transition:color 0.16s ease, background 0.16s ease;
-}
-.nch-close:hover { color:var(--mist-100); background:rgba(255,255,255,0.05); }
+<!-- ============================================================ STAGE 2: research -->
+<div><div class="cap">research selected</div><div class="stage"><div class="node-create-overlay"><div class="nch-modal">
+  <div class="nch-atmos" style="background:radial-gradient(ellipse 72% 52% at 50% 32%, rgba(176,131,216,0.10), transparent 62%)"></div>
+  <div class="nch-topbar"><div class="nch-title">a new node</div><button class="nch-close">&#215;</button></div>
+  <div class="nch-hero">
+    <div class="nch-smoke-a" style="background:radial-gradient(circle, rgba(176,131,216,0.5) 0%, rgba(176,131,216,0.14) 38%, transparent 68%)"></div>
+    <div class="nch-smoke-b" style="background:radial-gradient(circle, rgba(176,131,216,0.6) 0%, rgba(176,131,216,0.2) 45%, transparent 72%)"></div>
+    <div class="nch-orb-ring" style="color:#b083d8"></div>
+    <div class="nch-orb-ring r2" style="color:#b083d8"></div>
+    <div class="nch-orb-core" style="background:radial-gradient(circle, rgba(220,180,245,0.95) 0%, rgba(176,131,216,0.55) 40%, transparent 75%)"></div>
+    <svg class="nch-orb-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="color:#b083d8"><g transform="translate(100,100)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="92" stroke-width="1.4" opacity="0.85"></circle><circle r="86" stroke-width="0.9" opacity="0.5"></circle><circle r="80" stroke-width="0.6" opacity="0.25"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(90)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(180)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(270)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g></g><g transform="rotate(-52)"><path d="M 0 -5 C 11 -8 20 -15 16 -25 C 13 -32 4 -30 6 -22" stroke="currentColor" stroke-width="2"></path><circle cx="6" cy="-22" r="2" fill="currentColor" stroke="none"></circle></g><g transform="rotate(52)"><path d="M 0 -5 C 11 -8 20 -15 16 -25 C 13 -32 4 -30 6 -22" stroke="currentColor" stroke-width="1.7" opacity="0.72"></path><circle cx="6" cy="-22" r="1.8" fill="currentColor" stroke="none" opacity="0.72"></circle></g><line x1="0" y1="-5" x2="0" y2="14" stroke="currentColor" stroke-width="1.3" opacity="0.48"></line><path d="M 0 19 l 4 5 l -4 5 l -4 -5 Z" fill="currentColor" stroke="none" opacity="0.82"></path></g></svg>
+    <div class="nch-orb-p p1" style="color:#b083d8"></div><div class="nch-orb-p p2 big" style="color:#b083d8"></div><div class="nch-orb-p p3" style="color:#b083d8"></div><div class="nch-orb-p p4" style="color:#b083d8"></div><div class="nch-orb-p p5 big" style="color:#b083d8"></div><div class="nch-orb-p p6" style="color:#b083d8"></div>
+  </div>
+  <div class="nch-desc">Understanding, before the build.</div>
+  <div class="nch-strip">
+    <div class="nch-strip-item active"><button class="nch-strip-orb active" style="color:#b083d8"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#b083d8"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><g transform="rotate(-52)"><path d="M 0 -5 C 11 -8 20 -15 16 -25 C 13 -32 4 -30 6 -22" stroke="currentColor" stroke-width="2"></path><circle cx="6" cy="-22" r="2" fill="currentColor" stroke="none"></circle></g><g transform="rotate(52)"><path d="M 0 -5 C 11 -8 20 -15 16 -25 C 13 -32 4 -30 6 -22" stroke="currentColor" stroke-width="1.7" opacity="0.72"></path><circle cx="6" cy="-22" r="1.8" fill="currentColor" stroke="none" opacity="0.72"></circle></g><line x1="0" y1="-5" x2="0" y2="14" stroke="currentColor" stroke-width="1.3" opacity="0.48"></line><path d="M 0 19 l 4 5 l -4 5 l -4 -5 Z" fill="currentColor" stroke="none" opacity="0.82"></path></g></g></svg></button><div class="nch-strip-label">research</div></div>
+    <div class="nch-strip-item"><button class="nch-strip-orb" style="color:#4acc85"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#4acc85"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M 0 5 C 11 1 20 -9 16 -20 C 13 -27 4 -25 6 -18" stroke="currentColor" stroke-width="2.4"></path><circle cx="6" cy="-18" r="2.2" fill="currentColor" stroke="none"></circle><path d="M 0 -30 l 4 5 l -4 5 l -4 -5 Z" fill="currentColor" stroke="none"></path><line x1="0" y1="5" x2="0" y2="24" stroke="currentColor" stroke-width="1.4" opacity="0.58"></line><circle cx="0" cy="26" r="1.9" fill="currentColor" stroke="none" opacity="0.58"></circle></g></g></svg></button><div class="nch-strip-label">session</div></div>
+    <div class="nch-strip-item"><button class="nch-strip-orb" style="color:#5a9fd4"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#5a9fd4"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M 18 -13 C 26 -4 26 10 18 18 C 10 24 -4 24 -14 16 C -24 8 -26 -7 -18 -17" stroke="currentColor" stroke-width="1.8"></path><circle cx="-18" cy="-17" r="2.2" fill="currentColor" stroke="none"></circle><circle r="9" stroke="currentColor" stroke-width="1.4" opacity="0.8"></circle><circle r="2.8" fill="currentColor" stroke="none"></circle><path d="M 22 -16 l 3.4 4.2 l -3.4 4.2 l -3.4 -4.2 Z" fill="currentColor" stroke="none" opacity="0.72"></path></g></g></svg></button><div class="nch-strip-label">immersion</div></div>
+    <div class="nch-strip-item"><button class="nch-strip-orb" style="color:#f0d28a"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#f0d28a"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M 0 -4 C 12 -9 22 -19 18 -29 C 15 -36 6 -34 8 -26" stroke="currentColor" stroke-width="1.9"></path><circle cx="8" cy="-26" r="2" fill="currentColor" stroke="none"></circle><path d="M 0 -4 C -12 -9 -22 -19 -18 -29 C -15 -36 -6 -34 -8 -26" stroke="currentColor" stroke-width="1.6" opacity="0.74"></path><circle cx="-8" cy="-26" r="1.8" fill="currentColor" stroke="none" opacity="0.74"></circle><circle r="3" fill="currentColor" stroke="none" opacity="0.92"></circle><path d="M 0 8 Q -3 14 -3 20 Q -3 24 0 24 Q 3 24 3 20 Q 3 14 0 8 Z" fill="currentColor" stroke="none" opacity="0.82"></path></g></g></svg></button><div class="nch-strip-label">note</div></div>
+  </div>
+  <div class="nch-divider"><svg viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="0" y1="9" x2="54" y2="9" opacity="0.5"></line><line x1="86" y1="9" x2="140" y2="9" opacity="0.5"></line><g transform="translate(70,9)"><path d="M 0 -7 L -2 -3 L 0 0 L 2 -3 Z" fill="currentColor" stroke="none"></path><path d="M 0 0 L 5 4 L 0 8 L -5 4 Z"></path><circle r="1.4" fill="currentColor" stroke="none"></circle></g></svg></div>
+  <span class="nch-section-label">focus</span>
+  <input type="text" class="nch-intention-input" placeholder="what are you working toward?" value="Learn bezel settings" />
+  <span class="nch-section-label">goal</span>
+  <div class="nch-goal-kind-row"><button class="nch-goal-kind-btn active">sessions</button><button class="nch-goal-kind-btn">hours</button></div>
+  <div class="nch-goal-count-row"><button class="nch-goal-step">&#8722;</button><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div class="nch-goal-display">3</div><div class="nch-goal-unit">sessions</div></div><button class="nch-goal-step">&#43;</button></div>
+  <div class="nch-actions"><button class="nch-btn">cancel</button><button class="nch-btn primary">create</button></div>
+</div></div></div></div>
 
-/* -- Hero — the main event -- */
-.nch-hero {
-  position:relative;
-  width:100%; height:188px;
-  display:flex; align-items:center; justify-content:center;
-  isolation:isolate;
-}
-/* Smoke atmosphere — two soft blurred layers, color set by JS */
-.nch-smoke-a, .nch-smoke-b {
-  position:absolute; border-radius:50%;
-  mix-blend-mode:screen; pointer-events:none;
-}
-.nch-smoke-a {
-  width:200px; height:200px;
-  filter:blur(20px);
-  animation:nchHalo 5.6s ease-in-out infinite;
-}
-.nch-smoke-b {
-  width:150px; height:150px;
-  filter:blur(13px);
-  animation:nchAuraSpin 17s linear infinite, nchAuraBreath 3.4s ease-in-out infinite;
-}
-@keyframes nchHalo {
-  0%,100% { transform:scale(0.9);  opacity:0.5; }
-  50%     { transform:scale(1.1);  opacity:0.9; }
-}
-@keyframes nchAuraBreath {
-  0%,100% { opacity:0.55; }
-  50%     { opacity:0.85; }
-}
-@keyframes nchAuraSpin { to { transform:rotate(360deg); } }
+<!-- ============================================================ STAGE 3: immersion (new blue) -->
+<div><div class="cap">immersion selected — new blue</div><div class="stage"><div class="node-create-overlay"><div class="nch-modal">
+  <div class="nch-atmos" style="background:radial-gradient(ellipse 72% 52% at 50% 32%, rgba(90,159,212,0.10), transparent 62%)"></div>
+  <div class="nch-topbar"><div class="nch-title">a new node</div><button class="nch-close">&#215;</button></div>
+  <div class="nch-hero">
+    <div class="nch-smoke-a" style="background:radial-gradient(circle, rgba(90,159,212,0.5) 0%, rgba(90,159,212,0.14) 38%, transparent 68%)"></div>
+    <div class="nch-smoke-b" style="background:radial-gradient(circle, rgba(90,159,212,0.6) 0%, rgba(90,159,212,0.2) 45%, transparent 72%)"></div>
+    <div class="nch-orb-ring" style="color:#5a9fd4"></div>
+    <div class="nch-orb-ring r2" style="color:#5a9fd4"></div>
+    <div class="nch-orb-core" style="background:radial-gradient(circle, rgba(180,215,245,0.95) 0%, rgba(90,159,212,0.55) 40%, transparent 75%)"></div>
+    <svg class="nch-orb-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="color:#5a9fd4"><g transform="translate(100,100)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="92" stroke-width="1.4" opacity="0.85"></circle><circle r="86" stroke-width="0.9" opacity="0.5"></circle><circle r="80" stroke-width="0.6" opacity="0.25"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(90)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(180)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(270)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g></g><path d="M 18 -13 C 26 -4 26 10 18 18 C 10 24 -4 24 -14 16 C -24 8 -26 -7 -18 -17" stroke="currentColor" stroke-width="1.8"></path><circle cx="-18" cy="-17" r="2.2" fill="currentColor" stroke="none"></circle><circle r="9" stroke="currentColor" stroke-width="1.4" opacity="0.8"></circle><circle r="2.8" fill="currentColor" stroke="none"></circle><path d="M 22 -16 l 3.4 4.2 l -3.4 4.2 l -3.4 -4.2 Z" fill="currentColor" stroke="none" opacity="0.72"></path></g></svg>
+    <div class="nch-orb-p p1" style="color:#5a9fd4"></div><div class="nch-orb-p p2 big" style="color:#5a9fd4"></div><div class="nch-orb-p p3" style="color:#5a9fd4"></div><div class="nch-orb-p p4" style="color:#5a9fd4"></div><div class="nch-orb-p p5 big" style="color:#5a9fd4"></div><div class="nch-orb-p p6" style="color:#5a9fd4"></div>
+  </div>
+  <div class="nch-desc">Long focus. No friction. Just reps.</div>
+  <div class="nch-strip">
+    <div class="nch-strip-item"><button class="nch-strip-orb" style="color:#b083d8"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#b083d8"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><g transform="rotate(-52)"><path d="M 0 -5 C 11 -8 20 -15 16 -25 C 13 -32 4 -30 6 -22" stroke="currentColor" stroke-width="2"></path><circle cx="6" cy="-22" r="2" fill="currentColor" stroke="none"></circle></g><g transform="rotate(52)"><path d="M 0 -5 C 11 -8 20 -15 16 -25 C 13 -32 4 -30 6 -22" stroke="currentColor" stroke-width="1.7" opacity="0.72"></path><circle cx="6" cy="-22" r="1.8" fill="currentColor" stroke="none" opacity="0.72"></circle></g><line x1="0" y1="-5" x2="0" y2="14" stroke="currentColor" stroke-width="1.3" opacity="0.48"></line><path d="M 0 19 l 4 5 l -4 5 l -4 -5 Z" fill="currentColor" stroke="none" opacity="0.82"></path></g></g></svg></button><div class="nch-strip-label">research</div></div>
+    <div class="nch-strip-item"><button class="nch-strip-orb" style="color:#4acc85"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#4acc85"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M 0 5 C 11 1 20 -9 16 -20 C 13 -27 4 -25 6 -18" stroke="currentColor" stroke-width="2.4"></path><circle cx="6" cy="-18" r="2.2" fill="currentColor" stroke="none"></circle><path d="M 0 -30 l 4 5 l -4 5 l -4 -5 Z" fill="currentColor" stroke="none"></path><line x1="0" y1="5" x2="0" y2="24" stroke="currentColor" stroke-width="1.4" opacity="0.58"></line><circle cx="0" cy="26" r="1.9" fill="currentColor" stroke="none" opacity="0.58"></circle></g></g></svg></button><div class="nch-strip-label">session</div></div>
+    <div class="nch-strip-item active"><button class="nch-strip-orb active" style="color:#5a9fd4"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#5a9fd4"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M 18 -13 C 26 -4 26 10 18 18 C 10 24 -4 24 -14 16 C -24 8 -26 -7 -18 -17" stroke="currentColor" stroke-width="1.8"></path><circle cx="-18" cy="-17" r="2.2" fill="currentColor" stroke="none"></circle><circle r="9" stroke="currentColor" stroke-width="1.4" opacity="0.8"></circle><circle r="2.8" fill="currentColor" stroke="none"></circle><path d="M 22 -16 l 3.4 4.2 l -3.4 4.2 l -3.4 -4.2 Z" fill="currentColor" stroke="none" opacity="0.72"></path></g></g></svg></button><div class="nch-strip-label">immersion</div></div>
+    <div class="nch-strip-item"><button class="nch-strip-orb" style="color:#f0d28a"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#f0d28a"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M 0 -4 C 12 -9 22 -19 18 -29 C 15 -36 6 -34 8 -26" stroke="currentColor" stroke-width="1.9"></path><circle cx="8" cy="-26" r="2" fill="currentColor" stroke="none"></circle><path d="M 0 -4 C -12 -9 -22 -19 -18 -29 C -15 -36 -6 -34 -8 -26" stroke="currentColor" stroke-width="1.6" opacity="0.74"></path><circle cx="-8" cy="-26" r="1.8" fill="currentColor" stroke="none" opacity="0.74"></circle><circle r="3" fill="currentColor" stroke="none" opacity="0.92"></circle><path d="M 0 8 Q -3 14 -3 20 Q -3 24 0 24 Q 3 24 3 20 Q 3 14 0 8 Z" fill="currentColor" stroke="none" opacity="0.82"></path></g></g></svg></button><div class="nch-strip-label">note</div></div>
+  </div>
+  <div class="nch-divider"><svg viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="0" y1="9" x2="54" y2="9" opacity="0.5"></line><line x1="86" y1="9" x2="140" y2="9" opacity="0.5"></line><g transform="translate(70,9)"><path d="M 0 -7 L -2 -3 L 0 0 L 2 -3 Z" fill="currentColor" stroke="none"></path><path d="M 0 0 L 5 4 L 0 8 L -5 4 Z"></path><circle r="1.4" fill="currentColor" stroke="none"></circle></g></svg></div>
+  <span class="nch-section-label">focus</span>
+  <input type="text" class="nch-intention-input" placeholder="what are you working toward?" value="Push the gauge setting" />
+  <span class="nch-section-label">goal</span>
+  <div class="nch-goal-kind-row"><button class="nch-goal-kind-btn">sessions</button><button class="nch-goal-kind-btn active">hours</button></div>
+  <div class="nch-goal-count-row"><button class="nch-goal-step">&#8722;</button><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div class="nch-goal-display">4</div><div class="nch-goal-unit">hours</div></div><button class="nch-goal-step">&#43;</button></div>
+  <div class="nch-actions"><button class="nch-btn">cancel</button><button class="nch-btn primary">create</button></div>
+</div></div></div></div>
 
-/* Arcane pulse — a bright point orbiting the outer ring */
-.nch-orbit {
-  position:absolute; width:158px; height:158px;
-  animation:nchOrbit 4.6s linear infinite;
-  pointer-events:none;
-}
-.nch-pulse {
-  position:absolute; top:-3px; left:50%; margin-left:-3px;
-  width:6px; height:6px; border-radius:50%;
-  background:currentColor;
-  box-shadow:0 0 8px currentColor, 0 0 16px currentColor;
-}
-@keyframes nchOrbit { to { transform:rotate(360deg); } }
+<!-- ============================================================ STAGE 4: note -->
+<div><div class="cap">note selected</div><div class="stage"><div class="node-create-overlay"><div class="nch-modal">
+  <div class="nch-atmos" style="background:radial-gradient(ellipse 72% 52% at 50% 32%, rgba(240,210,138,0.10), transparent 62%)"></div>
+  <div class="nch-topbar"><div class="nch-title">a new node</div><button class="nch-close">&#215;</button></div>
+  <div class="nch-hero">
+    <div class="nch-smoke-a" style="background:radial-gradient(circle, rgba(240,210,138,0.5) 0%, rgba(240,210,138,0.14) 38%, transparent 68%)"></div>
+    <div class="nch-smoke-b" style="background:radial-gradient(circle, rgba(240,210,138,0.6) 0%, rgba(240,210,138,0.2) 45%, transparent 72%)"></div>
+    <div class="nch-orb-ring" style="color:#f0d28a"></div>
+    <div class="nch-orb-ring r2" style="color:#f0d28a"></div>
+    <div class="nch-orb-core" style="background:radial-gradient(circle, rgba(255,238,190,0.95) 0%, rgba(240,210,138,0.55) 40%, transparent 75%)"></div>
+    <svg class="nch-orb-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="color:#f0d28a"><g transform="translate(100,100)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="92" stroke-width="1.4" opacity="0.85"></circle><circle r="86" stroke-width="0.9" opacity="0.5"></circle><circle r="80" stroke-width="0.6" opacity="0.25"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(90)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(180)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(270)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g></g><path d="M 0 -4 C 12 -9 22 -19 18 -29 C 15 -36 6 -34 8 -26" stroke="currentColor" stroke-width="1.9"></path><circle cx="8" cy="-26" r="2" fill="currentColor" stroke="none"></circle><path d="M 0 -4 C -12 -9 -22 -19 -18 -29 C -15 -36 -6 -34 -8 -26" stroke="currentColor" stroke-width="1.6" opacity="0.74"></path><circle cx="-8" cy="-26" r="1.8" fill="currentColor" stroke="none" opacity="0.74"></circle><circle r="3" fill="currentColor" stroke="none" opacity="0.92"></circle><path d="M 0 8 Q -3 14 -3 20 Q -3 24 0 24 Q 3 24 3 20 Q 3 14 0 8 Z" fill="currentColor" stroke="none" opacity="0.82"></path></g></svg>
+    <div class="nch-orb-p p1" style="color:#f0d28a"></div><div class="nch-orb-p p2 big" style="color:#f0d28a"></div><div class="nch-orb-p p3" style="color:#f0d28a"></div><div class="nch-orb-p p4" style="color:#f0d28a"></div><div class="nch-orb-p p5 big" style="color:#f0d28a"></div><div class="nch-orb-p p6" style="color:#f0d28a"></div>
+  </div>
+  <div class="nch-desc">Where thoughts about the work live.</div>
+  <div class="nch-strip">
+    <div class="nch-strip-item"><button class="nch-strip-orb" style="color:#b083d8"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#b083d8"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><g transform="rotate(-52)"><path d="M 0 -5 C 11 -8 20 -15 16 -25 C 13 -32 4 -30 6 -22" stroke="currentColor" stroke-width="2"></path><circle cx="6" cy="-22" r="2" fill="currentColor" stroke="none"></circle></g><g transform="rotate(52)"><path d="M 0 -5 C 11 -8 20 -15 16 -25 C 13 -32 4 -30 6 -22" stroke="currentColor" stroke-width="1.7" opacity="0.72"></path><circle cx="6" cy="-22" r="1.8" fill="currentColor" stroke="none" opacity="0.72"></circle></g><line x1="0" y1="-5" x2="0" y2="14" stroke="currentColor" stroke-width="1.3" opacity="0.48"></line><path d="M 0 19 l 4 5 l -4 5 l -4 -5 Z" fill="currentColor" stroke="none" opacity="0.82"></path></g></g></svg></button><div class="nch-strip-label">research</div></div>
+    <div class="nch-strip-item"><button class="nch-strip-orb" style="color:#4acc85"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#4acc85"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M 0 5 C 11 1 20 -9 16 -20 C 13 -27 4 -25 6 -18" stroke="currentColor" stroke-width="2.4"></path><circle cx="6" cy="-18" r="2.2" fill="currentColor" stroke="none"></circle><path d="M 0 -30 l 4 5 l -4 5 l -4 -5 Z" fill="currentColor" stroke="none"></path><line x1="0" y1="5" x2="0" y2="24" stroke="currentColor" stroke-width="1.4" opacity="0.58"></line><circle cx="0" cy="26" r="1.9" fill="currentColor" stroke="none" opacity="0.58"></circle></g></g></svg></button><div class="nch-strip-label">session</div></div>
+    <div class="nch-strip-item"><button class="nch-strip-orb" style="color:#5a9fd4"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#5a9fd4"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M 18 -13 C 26 -4 26 10 18 18 C 10 24 -4 24 -14 16 C -24 8 -26 -7 -18 -17" stroke="currentColor" stroke-width="1.8"></path><circle cx="-18" cy="-17" r="2.2" fill="currentColor" stroke="none"></circle><circle r="9" stroke="currentColor" stroke-width="1.4" opacity="0.8"></circle><circle r="2.8" fill="currentColor" stroke="none"></circle><path d="M 22 -16 l 3.4 4.2 l -3.4 4.2 l -3.4 -4.2 Z" fill="currentColor" stroke="none" opacity="0.72"></path></g></g></svg></button><div class="nch-strip-label">immersion</div></div>
+    <div class="nch-strip-item active"><button class="nch-strip-orb active" style="color:#f0d28a"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#f0d28a"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M 0 -4 C 12 -9 22 -19 18 -29 C 15 -36 6 -34 8 -26" stroke="currentColor" stroke-width="1.9"></path><circle cx="8" cy="-26" r="2" fill="currentColor" stroke="none"></circle><path d="M 0 -4 C -12 -9 -22 -19 -18 -29 C -15 -36 -6 -34 -8 -26" stroke="currentColor" stroke-width="1.6" opacity="0.74"></path><circle cx="-8" cy="-26" r="1.8" fill="currentColor" stroke="none" opacity="0.74"></circle><circle r="3" fill="currentColor" stroke="none" opacity="0.92"></circle><path d="M 0 8 Q -3 14 -3 20 Q -3 24 0 24 Q 3 24 3 20 Q 3 14 0 8 Z" fill="currentColor" stroke="none" opacity="0.82"></path></g></g></svg></button><div class="nch-strip-label">note</div></div>
+  </div>
+  <div class="nch-divider"><svg viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="0" y1="9" x2="54" y2="9" opacity="0.5"></line><line x1="86" y1="9" x2="140" y2="9" opacity="0.5"></line><g transform="translate(70,9)"><path d="M 0 -7 L -2 -3 L 0 0 L 2 -3 Z" fill="currentColor" stroke="none"></path><path d="M 0 0 L 5 4 L 0 8 L -5 4 Z"></path><circle r="1.4" fill="currentColor" stroke="none"></circle></g></svg></div>
+  <span class="nch-section-label">focus</span>
+  <input type="text" class="nch-intention-input" placeholder="what are you working toward?" value="Where this piece is going" />
+  <span class="nch-section-label">goal</span>
+  <div class="nch-goal-kind-row"><button class="nch-goal-kind-btn">sessions</button><button class="nch-goal-kind-btn active">hours</button></div>
+  <div class="nch-goal-count-row"><button class="nch-goal-step">&#8722;</button><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div class="nch-goal-display">6</div><div class="nch-goal-unit">hours</div></div><button class="nch-goal-step">&#43;</button></div>
+  <div class="nch-actions"><button class="nch-btn">cancel</button><button class="nch-btn primary">create</button></div>
+</div></div></div></div>
 
-.nch-orb-svg { width:158px; height:158px; position:relative; z-index:2;
-  filter:drop-shadow(0 0 5px currentColor); }
-.nch-hero.is-empty .nch-orbit,
-.nch-hero.is-empty .nch-orb-svg { opacity:0.55; }
-
-/* -- Description line -- */
-.nch-desc {
-  font-family:'Cormorant Garamond',serif;
-  font-style:italic; font-size:1.0rem;
-  color:var(--mist-300); text-align:center;
-  padding:0 26px 4px; min-height:1.4em;
-  transition:opacity 0.28s ease;
-}
-
-/* -- Selector strip -- */
-.nch-strip {
-  display:flex; justify-content:center; gap:8px;
-  padding:14px 12px 6px;
-}
-.nch-strip-item {
-  display:flex; flex-direction:column; align-items:center; gap:3px;
-  flex:0 0 auto; width:64px;
-}
-.nch-strip-orb {
-  width:48px; height:48px; border-radius:50%;
-  background:none; border:none; cursor:pointer; padding:0;
-  display:flex; align-items:center; justify-content:center;
-  position:relative; opacity:0.42;
-  transition:opacity 0.24s ease, transform 0.18s ease;
-}
-.nch-strip-orb svg { width:46px; height:46px; }
-.nch-strip-orb:hover { opacity:0.78; transform:translateY(-2px); }
-.nch-strip-orb.active {
-  opacity:1;
-  filter:drop-shadow(0 0 6px currentColor);
-  animation:nchBloom 0.42s cubic-bezier(0.16,1,0.3,1);
-}
-@keyframes nchBloom {
-  0%   { transform:scale(0.86); }
-  60%  { transform:scale(1.12); }
-  100% { transform:scale(1); }
-}
-.nch-strip-label {
-  font-family:'DM Mono',monospace;
-  font-size:0.45rem; letter-spacing:0.14em; text-transform:uppercase;
-  color:var(--mist-500); text-align:center;
-  padding:0 2px; transition:color 0.2s ease;
-}
-.nch-strip-item.active .nch-strip-label { color:var(--mist-200); }
-
-/* -- Ornament divider (Filigree flourish) -- */
-.nch-divider {
-  display:flex; align-items:center; justify-content:center;
-  padding:10px 0 4px; color:var(--mist-500); opacity:0.7;
-}
-.nch-divider svg { width:140px; height:18px; }
-
-/* -- Config: intention + goal -- */
-.nch-section-label {
-  font-family:'Cormorant Garamond',serif;
-  font-variant:small-caps; font-weight:500;
-  font-size:0.74rem; letter-spacing:0.16em;
-  color:var(--mist-400);
-  display:block; padding:12px 26px 4px;
-}
-.nch-intention-input {
-  width:calc(100% - 52px);
-  margin:0 26px;
-  background:var(--ink-950);
-  border:1px solid var(--fil-border);
-  color:var(--mist-100);
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.0rem; font-style:italic;
-  padding:9px 13px; border-radius:8px;
-  outline:none; display:block;
-  transition:border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.nch-intention-input:focus {
-  border-color:rgba(74,204,133,0.55);
-  box-shadow:inset 0 0 14px rgba(74,204,133,0.10);
-}
-.nch-intention-input::placeholder { color:var(--mist-500); font-style:italic; }
-
-.nch-goal-kind-row { display:flex; gap:8px; padding:6px 26px 0; }
-.nch-goal-kind-btn {
-  flex:1;
-  background:var(--ink-950);
-  border:1px solid var(--fil-border);
-  color:var(--mist-400);
-  font-family:'DM Mono',monospace;
-  font-size:0.56rem; letter-spacing:0.14em; text-transform:uppercase;
-  padding:9px 4px; border-radius:8px; cursor:pointer;
-  transition:all 0.16s ease;
-}
-.nch-goal-kind-btn:hover { border-color:var(--fil-border); color:var(--mist-300); }
-.nch-goal-kind-btn.active {
-  border-color:rgba(74,204,133,0.55);
-  color:var(--teal-300);
-  background:var(--ink-800);
-  box-shadow:inset 0 0 14px rgba(74,204,133,0.14);
-}
-
-.nch-goal-count-row {
-  display:flex; align-items:center; justify-content:center;
-  gap:18px; padding:14px 26px 6px;
-}
-.nch-goal-step {
-  width:34px; height:34px; border-radius:50%;
-  background:none; border:1px solid var(--fil-border);
-  color:var(--teal-300);
-  font-family:'DM Mono',monospace; font-size:1.05rem; line-height:1;
-  cursor:pointer; display:flex; align-items:center; justify-content:center;
-  transition:all 0.15s ease;
-}
-.nch-goal-step:hover { border-color:rgba(74,204,133,0.55); background:rgba(74,204,133,0.08); }
-.nch-goal-step:active { transform:scale(0.92); }
-.nch-goal-display {
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.7rem; color:var(--mist-100);
-  min-width:62px; text-align:center; font-variant-numeric:tabular-nums;
-}
-.nch-goal-unit {
-  font-family:'DM Mono',monospace;
-  font-size:0.5rem; letter-spacing:0.18em; text-transform:uppercase;
-  color:var(--mist-400);
-}
-
-.nch-actions {
-  display:flex; gap:10px; padding:18px 26px 22px;
-  margin-top:12px; justify-content:flex-end;
-}
-.nch-btn {
-  font-family:'DM Mono',monospace;
-  font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase;
-  padding:10px 18px; border-radius:9999px; cursor:pointer;
-  border:1px solid var(--fil-border); background:none; color:var(--mist-300);
-  transition:all 0.16s ease;
-}
-.nch-btn:hover { color:var(--mist-100); border-color:var(--fil-border); background:rgba(255,255,255,0.03); }
-.nch-btn.primary {
-  background:var(--teal-300); color:var(--ink-950);
-  border-color:transparent; font-weight:500;
-}
-.nch-btn.primary:hover { box-shadow:0 0 18px rgba(74,204,133,0.4); background:var(--teal-300); }
-.nch-btn.primary.is-disabled {
-  opacity:0.32; pointer-events:none;
-}
-/* === END NODE-CREATE-MODAL === */</style></head><body><div class="row"><div><div class="cap">empty / unselected</div><div class="stage"><div class="node-create-overlay" id="nodeCreateOverlay"><div class="nch-modal"><div class="nch-atmos" id="nchAtmos" style="background:transparent"></div><div class="nch-topbar"><div class="nch-title">a new node</div><button class="nch-close" id="nodeCreateClose" aria-label="close">&#215;</button></div><div class="nch-hero is-empty" id="nchHero"><div class="nch-smoke-a" style="background:radial-gradient(circle, rgba(74,204,133,0.5) 0%, rgba(74,204,133,0.14) 38%, transparent 68%)"></div><div class="nch-smoke-b" style="background:radial-gradient(circle, rgba(74,204,133,0.6) 0%, rgba(74,204,133,0.2) 45%, transparent 72%)"></div><div class="nch-orbit" style="color:#4acc85"><div class="nch-pulse"></div></div><svg class="nch-orb-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="color:#4acc85"><g transform="translate(100,100)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="92" stroke-width="1.4" opacity="0.85"></circle><circle r="86" stroke-width="0.9" opacity="0.5"></circle><circle r="80" stroke-width="0.6" opacity="0.25"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(90)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(180)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(270)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g></g><g transform="rotate(-90)"><path d="M 0 -6 C 12 -8, 20 -16, 16 -26 C 13 -32, 4 -30, 6 -22" stroke="currentColor" stroke-width="2"></path><circle cx="6" cy="-22" r="1.8" fill="currentColor" stroke="none"></circle></g><g transform="rotate(30)"><path d="M 0 -6 C 12 -8, 20 -16, 16 -26 C 13 -32, 4 -30, 6 -22" stroke="currentColor" stroke-width="2"></path><circle cx="6" cy="-22" r="1.8" fill="currentColor" stroke="none"></circle></g><g transform="rotate(150)"><path d="M 0 -6 C 12 -8, 20 -16, 16 -26 C 13 -32, 4 -30, 6 -22" stroke="currentColor" stroke-width="2"></path><circle cx="6" cy="-22" r="1.8" fill="currentColor" stroke="none"></circle></g><circle r="5" stroke="currentColor" stroke-width="1.3"></circle><circle r="2" fill="currentColor" stroke="none"></circle></g></svg></div><div class="nch-desc" id="nchDesc">Choose what this node is for.</div><div class="nch-strip" id="nchStrip"><div class="nch-strip-item"><button class="nch-strip-orb" data-node-type="research" style="color:#b083d8" aria-label="research"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#b083d8"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><line x1="-22" y1="-18" x2="-22" y2="16" stroke="currentColor" stroke-width="1.6" opacity="0.85"></line><circle cx="-22" cy="-18" r="1.8" fill="currentColor" stroke="none"></circle><circle cx="-22" cy="16" r="1.8" fill="currentColor" stroke="none"></circle><line x1="-16" y1="-12" x2="14" y2="-12" stroke="currentColor" stroke-width="2"></line><line x1="-16" y1="-1" x2="8" y2="-1" stroke="currentColor" stroke-width="2" opacity="0.82"></line><line x1="-16" y1="10" x2="2" y2="10" stroke="currentColor" stroke-width="2" opacity="0.66"></line><path d="M 14 -12 C 26 -14, 30 -26, 22 -32 C 17 -36, 9 -33, 12 -27" stroke="currentColor" stroke-width="1.6"></path><circle cx="12" cy="-27" r="1.9" fill="currentColor" stroke="none"></circle><path d="M 19 4 l 2.4 2.4 l -2.4 2.4 l -2.4 -2.4 Z" fill="currentColor" stroke="none" opacity="0.8"></path></g></g></svg></button><div class="nch-strip-label">research</div></div><div class="nch-strip-item"><button class="nch-strip-orb" data-node-type="session" style="color:#4acc85" aria-label="session"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#4acc85"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M -17 9 L 0 -11 L 17 9" stroke="currentColor" stroke-width="2.4"></path><path d="M -10 16 L 0 4 L 10 16" stroke="currentColor" stroke-width="1.4" opacity="0.6"></path><path d="M 0 -20 l -3.4 4.4 l 3.4 4.4 l 3.4 -4.4 Z" fill="currentColor" stroke="none"></path><line x1="0" y1="16" x2="0" y2="22" stroke="currentColor" stroke-width="1.3" opacity="0.7"></line><circle cx="0" cy="24" r="1.6" fill="currentColor" stroke="none" opacity="0.7"></circle></g></g></svg></button><div class="nch-strip-label">session</div></div><div class="nch-strip-item"><button class="nch-strip-orb" data-node-type="immersion" style="color:#1fa97a" aria-label="immersion"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#1fa97a"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><circle r="20" stroke="currentColor" stroke-width="1.7"></circle><circle r="11" stroke="currentColor" stroke-width="1.4" opacity="0.85"></circle><circle r="3.4" fill="currentColor" stroke="none"></circle><line x1="0" y1="-30" x2="0" y2="-24" stroke="currentColor" stroke-width="1.5"></line><line x1="0" y1="24" x2="0" y2="30" stroke="currentColor" stroke-width="1.5"></line><line x1="-30" y1="0" x2="-24" y2="0" stroke="currentColor" stroke-width="1.5"></line><line x1="24" y1="0" x2="30" y2="0" stroke="currentColor" stroke-width="1.5"></line><path d="M 17 -17 l 2.2 2.2 l -2.2 2.2 l -2.2 -2.2 Z" fill="currentColor" stroke="none" opacity="0.7"></path><path d="M -17 17 l 2.2 2.2 l -2.2 2.2 l -2.2 -2.2 Z" fill="currentColor" stroke="none" opacity="0.7"></path></g></g></svg></button><div class="nch-strip-label">immersion</div></div><div class="nch-strip-item"><button class="nch-strip-orb" data-node-type="note" style="color:#f0d28a" aria-label="note"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#f0d28a"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M -22 0 Q -11 -11 0 -11 Q 11 -11 22 0 Q 11 11 0 11 Q -11 11 -22 0 Z" stroke="currentColor" stroke-width="1.8"></path><circle r="3.8" fill="currentColor" stroke="none"></circle><line x1="0" y1="-11" x2="0" y2="-25" stroke="currentColor" stroke-width="1.5"></line><line x1="-8" y1="-8" x2="-15" y2="-21" stroke="currentColor" stroke-width="1.3" opacity="0.8"></line><line x1="8" y1="-8" x2="15" y2="-21" stroke="currentColor" stroke-width="1.3" opacity="0.8"></line><path d="M 0 12 Q -3 16 -3 20 Q -3 23 0 23 Q 3 23 3 20 Q 3 16 0 12 Z" fill="currentColor" stroke="none"></path></g></g></svg></button><div class="nch-strip-label">note</div></div></div><div class="nch-divider"><svg viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="0" y1="9" x2="54" y2="9" opacity="0.5"></line><line x1="86" y1="9" x2="140" y2="9" opacity="0.5"></line><g transform="translate(70,9)"><path d="M 0 -7 L -2 -3 L 0 0 L 2 -3 Z" fill="currentColor" stroke="none"></path><path d="M 0 0 L 5 4 L 0 8 L -5 4 Z"></path><circle r="1.4" fill="currentColor" stroke="none"></circle></g></svg></div><span class="nch-section-label">intention</span><input type="text" class="nch-intention-input" id="nodeIntentionInput" placeholder="what is this node for?" value="" /><span class="nch-section-label">goal</span><div class="nch-goal-kind-row"><button class="nch-goal-kind-btn active" data-goal-kind="sessions">sessions</button><button class="nch-goal-kind-btn " data-goal-kind="hours">hours</button></div><div class="nch-goal-count-row"><button class="nch-goal-step" id="nodeGoalDown">&#8722;</button><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div class="nch-goal-display" id="nodeGoalDisplay">3</div><div class="nch-goal-unit" id="nodeGoalUnit">sessions</div></div><button class="nch-goal-step" id="nodeGoalUp">&#43;</button></div><div class="nch-actions"><button class="nch-btn" id="nodeCreateCancel">cancel</button><button class="nch-btn primary is-disabled" id="nodeCreateConfirm">create</button></div></div></div></div></div><div><div class="cap">research selected</div><div class="stage"><div class="node-create-overlay" id="nodeCreateOverlay"><div class="nch-modal"><div class="nch-atmos" id="nchAtmos" style="background:radial-gradient(ellipse 72% 52% at 50% 32%, rgba(176,131,216,0.10), transparent 62%)"></div><div class="nch-topbar"><div class="nch-title">a new node</div><button class="nch-close" id="nodeCreateClose" aria-label="close">&#215;</button></div><div class="nch-hero" id="nchHero"><div class="nch-smoke-a" style="background:radial-gradient(circle, rgba(176,131,216,0.5) 0%, rgba(176,131,216,0.14) 38%, transparent 68%)"></div><div class="nch-smoke-b" style="background:radial-gradient(circle, rgba(176,131,216,0.6) 0%, rgba(176,131,216,0.2) 45%, transparent 72%)"></div><div class="nch-orbit" style="color:#b083d8"><div class="nch-pulse"></div></div><svg class="nch-orb-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="color:#b083d8"><g transform="translate(100,100)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="92" stroke-width="1.4" opacity="0.85"></circle><circle r="86" stroke-width="0.9" opacity="0.5"></circle><circle r="80" stroke-width="0.6" opacity="0.25"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(90)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(180)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(270)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g></g><line x1="-22" y1="-18" x2="-22" y2="16" stroke="currentColor" stroke-width="1.6" opacity="0.85"></line><circle cx="-22" cy="-18" r="1.8" fill="currentColor" stroke="none"></circle><circle cx="-22" cy="16" r="1.8" fill="currentColor" stroke="none"></circle><line x1="-16" y1="-12" x2="14" y2="-12" stroke="currentColor" stroke-width="2"></line><line x1="-16" y1="-1" x2="8" y2="-1" stroke="currentColor" stroke-width="2" opacity="0.82"></line><line x1="-16" y1="10" x2="2" y2="10" stroke="currentColor" stroke-width="2" opacity="0.66"></line><path d="M 14 -12 C 26 -14, 30 -26, 22 -32 C 17 -36, 9 -33, 12 -27" stroke="currentColor" stroke-width="1.6"></path><circle cx="12" cy="-27" r="1.9" fill="currentColor" stroke="none"></circle><path d="M 19 4 l 2.4 2.4 l -2.4 2.4 l -2.4 -2.4 Z" fill="currentColor" stroke="none" opacity="0.8"></path></g></svg></div><div class="nch-desc" id="nchDesc">Understanding, before the build.</div><div class="nch-strip" id="nchStrip"><div class="nch-strip-item active"><button class="nch-strip-orb active" data-node-type="research" style="color:#b083d8" aria-label="research"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#b083d8"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><line x1="-22" y1="-18" x2="-22" y2="16" stroke="currentColor" stroke-width="1.6" opacity="0.85"></line><circle cx="-22" cy="-18" r="1.8" fill="currentColor" stroke="none"></circle><circle cx="-22" cy="16" r="1.8" fill="currentColor" stroke="none"></circle><line x1="-16" y1="-12" x2="14" y2="-12" stroke="currentColor" stroke-width="2"></line><line x1="-16" y1="-1" x2="8" y2="-1" stroke="currentColor" stroke-width="2" opacity="0.82"></line><line x1="-16" y1="10" x2="2" y2="10" stroke="currentColor" stroke-width="2" opacity="0.66"></line><path d="M 14 -12 C 26 -14, 30 -26, 22 -32 C 17 -36, 9 -33, 12 -27" stroke="currentColor" stroke-width="1.6"></path><circle cx="12" cy="-27" r="1.9" fill="currentColor" stroke="none"></circle><path d="M 19 4 l 2.4 2.4 l -2.4 2.4 l -2.4 -2.4 Z" fill="currentColor" stroke="none" opacity="0.8"></path></g></g></svg></button><div class="nch-strip-label">research</div></div><div class="nch-strip-item"><button class="nch-strip-orb" data-node-type="session" style="color:#4acc85" aria-label="session"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#4acc85"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M -17 9 L 0 -11 L 17 9" stroke="currentColor" stroke-width="2.4"></path><path d="M -10 16 L 0 4 L 10 16" stroke="currentColor" stroke-width="1.4" opacity="0.6"></path><path d="M 0 -20 l -3.4 4.4 l 3.4 4.4 l 3.4 -4.4 Z" fill="currentColor" stroke="none"></path><line x1="0" y1="16" x2="0" y2="22" stroke="currentColor" stroke-width="1.3" opacity="0.7"></line><circle cx="0" cy="24" r="1.6" fill="currentColor" stroke="none" opacity="0.7"></circle></g></g></svg></button><div class="nch-strip-label">session</div></div><div class="nch-strip-item"><button class="nch-strip-orb" data-node-type="immersion" style="color:#1fa97a" aria-label="immersion"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#1fa97a"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><circle r="20" stroke="currentColor" stroke-width="1.7"></circle><circle r="11" stroke="currentColor" stroke-width="1.4" opacity="0.85"></circle><circle r="3.4" fill="currentColor" stroke="none"></circle><line x1="0" y1="-30" x2="0" y2="-24" stroke="currentColor" stroke-width="1.5"></line><line x1="0" y1="24" x2="0" y2="30" stroke="currentColor" stroke-width="1.5"></line><line x1="-30" y1="0" x2="-24" y2="0" stroke="currentColor" stroke-width="1.5"></line><line x1="24" y1="0" x2="30" y2="0" stroke="currentColor" stroke-width="1.5"></line><path d="M 17 -17 l 2.2 2.2 l -2.2 2.2 l -2.2 -2.2 Z" fill="currentColor" stroke="none" opacity="0.7"></path><path d="M -17 17 l 2.2 2.2 l -2.2 2.2 l -2.2 -2.2 Z" fill="currentColor" stroke="none" opacity="0.7"></path></g></g></svg></button><div class="nch-strip-label">immersion</div></div><div class="nch-strip-item"><button class="nch-strip-orb" data-node-type="note" style="color:#f0d28a" aria-label="note"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#f0d28a"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M -22 0 Q -11 -11 0 -11 Q 11 -11 22 0 Q 11 11 0 11 Q -11 11 -22 0 Z" stroke="currentColor" stroke-width="1.8"></path><circle r="3.8" fill="currentColor" stroke="none"></circle><line x1="0" y1="-11" x2="0" y2="-25" stroke="currentColor" stroke-width="1.5"></line><line x1="-8" y1="-8" x2="-15" y2="-21" stroke="currentColor" stroke-width="1.3" opacity="0.8"></line><line x1="8" y1="-8" x2="15" y2="-21" stroke="currentColor" stroke-width="1.3" opacity="0.8"></line><path d="M 0 12 Q -3 16 -3 20 Q -3 23 0 23 Q 3 23 3 20 Q 3 16 0 12 Z" fill="currentColor" stroke="none"></path></g></g></svg></button><div class="nch-strip-label">note</div></div></div><div class="nch-divider"><svg viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="0" y1="9" x2="54" y2="9" opacity="0.5"></line><line x1="86" y1="9" x2="140" y2="9" opacity="0.5"></line><g transform="translate(70,9)"><path d="M 0 -7 L -2 -3 L 0 0 L 2 -3 Z" fill="currentColor" stroke="none"></path><path d="M 0 0 L 5 4 L 0 8 L -5 4 Z"></path><circle r="1.4" fill="currentColor" stroke="none"></circle></g></svg></div><span class="nch-section-label">intention</span><input type="text" class="nch-intention-input" id="nodeIntentionInput" placeholder="what is this node for?" value="Learn bezel settings" /><span class="nch-section-label">goal</span><div class="nch-goal-kind-row"><button class="nch-goal-kind-btn active" data-goal-kind="sessions">sessions</button><button class="nch-goal-kind-btn " data-goal-kind="hours">hours</button></div><div class="nch-goal-count-row"><button class="nch-goal-step" id="nodeGoalDown">&#8722;</button><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div class="nch-goal-display" id="nodeGoalDisplay">3</div><div class="nch-goal-unit" id="nodeGoalUnit">sessions</div></div><button class="nch-goal-step" id="nodeGoalUp">&#43;</button></div><div class="nch-actions"><button class="nch-btn" id="nodeCreateCancel">cancel</button><button class="nch-btn primary" id="nodeCreateConfirm">create</button></div></div></div></div></div><div><div class="cap">note selected</div><div class="stage"><div class="node-create-overlay" id="nodeCreateOverlay"><div class="nch-modal"><div class="nch-atmos" id="nchAtmos" style="background:radial-gradient(ellipse 72% 52% at 50% 32%, rgba(240,210,138,0.10), transparent 62%)"></div><div class="nch-topbar"><div class="nch-title">a new node</div><button class="nch-close" id="nodeCreateClose" aria-label="close">&#215;</button></div><div class="nch-hero" id="nchHero"><div class="nch-smoke-a" style="background:radial-gradient(circle, rgba(240,210,138,0.5) 0%, rgba(240,210,138,0.14) 38%, transparent 68%)"></div><div class="nch-smoke-b" style="background:radial-gradient(circle, rgba(240,210,138,0.6) 0%, rgba(240,210,138,0.2) 45%, transparent 72%)"></div><div class="nch-orbit" style="color:#f0d28a"><div class="nch-pulse"></div></div><svg class="nch-orb-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="color:#f0d28a"><g transform="translate(100,100)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="92" stroke-width="1.4" opacity="0.85"></circle><circle r="86" stroke-width="0.9" opacity="0.5"></circle><circle r="80" stroke-width="0.6" opacity="0.25"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(90)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(180)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g><g transform="rotate(270)"><path d="M 0 -92 L -5 -84 L 0 -77 L 5 -84 Z"></path></g></g><path d="M -22 0 Q -11 -11 0 -11 Q 11 -11 22 0 Q 11 11 0 11 Q -11 11 -22 0 Z" stroke="currentColor" stroke-width="1.8"></path><circle r="3.8" fill="currentColor" stroke="none"></circle><line x1="0" y1="-11" x2="0" y2="-25" stroke="currentColor" stroke-width="1.5"></line><line x1="-8" y1="-8" x2="-15" y2="-21" stroke="currentColor" stroke-width="1.3" opacity="0.8"></line><line x1="8" y1="-8" x2="15" y2="-21" stroke="currentColor" stroke-width="1.3" opacity="0.8"></line><path d="M 0 12 Q -3 16 -3 20 Q -3 23 0 23 Q 3 23 3 20 Q 3 16 0 12 Z" fill="currentColor" stroke="none"></path></g></svg></div><div class="nch-desc" id="nchDesc">Where thoughts about the work live.</div><div class="nch-strip" id="nchStrip"><div class="nch-strip-item"><button class="nch-strip-orb" data-node-type="research" style="color:#b083d8" aria-label="research"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#b083d8"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><line x1="-22" y1="-18" x2="-22" y2="16" stroke="currentColor" stroke-width="1.6" opacity="0.85"></line><circle cx="-22" cy="-18" r="1.8" fill="currentColor" stroke="none"></circle><circle cx="-22" cy="16" r="1.8" fill="currentColor" stroke="none"></circle><line x1="-16" y1="-12" x2="14" y2="-12" stroke="currentColor" stroke-width="2"></line><line x1="-16" y1="-1" x2="8" y2="-1" stroke="currentColor" stroke-width="2" opacity="0.82"></line><line x1="-16" y1="10" x2="2" y2="10" stroke="currentColor" stroke-width="2" opacity="0.66"></line><path d="M 14 -12 C 26 -14, 30 -26, 22 -32 C 17 -36, 9 -33, 12 -27" stroke="currentColor" stroke-width="1.6"></path><circle cx="12" cy="-27" r="1.9" fill="currentColor" stroke="none"></circle><path d="M 19 4 l 2.4 2.4 l -2.4 2.4 l -2.4 -2.4 Z" fill="currentColor" stroke="none" opacity="0.8"></path></g></g></svg></button><div class="nch-strip-label">research</div></div><div class="nch-strip-item"><button class="nch-strip-orb" data-node-type="session" style="color:#4acc85" aria-label="session"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#4acc85"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M -17 9 L 0 -11 L 17 9" stroke="currentColor" stroke-width="2.4"></path><path d="M -10 16 L 0 4 L 10 16" stroke="currentColor" stroke-width="1.4" opacity="0.6"></path><path d="M 0 -20 l -3.4 4.4 l 3.4 4.4 l 3.4 -4.4 Z" fill="currentColor" stroke="none"></path><line x1="0" y1="16" x2="0" y2="22" stroke="currentColor" stroke-width="1.3" opacity="0.7"></line><circle cx="0" cy="24" r="1.6" fill="currentColor" stroke="none" opacity="0.7"></circle></g></g></svg></button><div class="nch-strip-label">session</div></div><div class="nch-strip-item"><button class="nch-strip-orb" data-node-type="immersion" style="color:#1fa97a" aria-label="immersion"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#1fa97a"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><circle r="20" stroke="currentColor" stroke-width="1.7"></circle><circle r="11" stroke="currentColor" stroke-width="1.4" opacity="0.85"></circle><circle r="3.4" fill="currentColor" stroke="none"></circle><line x1="0" y1="-30" x2="0" y2="-24" stroke="currentColor" stroke-width="1.5"></line><line x1="0" y1="24" x2="0" y2="30" stroke="currentColor" stroke-width="1.5"></line><line x1="-30" y1="0" x2="-24" y2="0" stroke="currentColor" stroke-width="1.5"></line><line x1="24" y1="0" x2="30" y2="0" stroke="currentColor" stroke-width="1.5"></line><path d="M 17 -17 l 2.2 2.2 l -2.2 2.2 l -2.2 -2.2 Z" fill="currentColor" stroke="none" opacity="0.7"></path><path d="M -17 17 l 2.2 2.2 l -2.2 2.2 l -2.2 -2.2 Z" fill="currentColor" stroke="none" opacity="0.7"></path></g></g></svg></button><div class="nch-strip-label">immersion</div></div><div class="nch-strip-item active"><button class="nch-strip-orb active" data-node-type="note" style="color:#f0d28a" aria-label="note"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:#f0d28a"><g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle r="45" stroke-width="1.5" opacity="0.7"></circle><g fill="currentColor" stroke="none"><g transform="rotate(0)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(90)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(180)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g><g transform="rotate(270)"><path d="M 0 -45 L -3 -40 L 0 -33 L 3 -40 Z"></path></g></g><g transform="scale(0.6)"><path d="M -22 0 Q -11 -11 0 -11 Q 11 -11 22 0 Q 11 11 0 11 Q -11 11 -22 0 Z" stroke="currentColor" stroke-width="1.8"></path><circle r="3.8" fill="currentColor" stroke="none"></circle><line x1="0" y1="-11" x2="0" y2="-25" stroke="currentColor" stroke-width="1.5"></line><line x1="-8" y1="-8" x2="-15" y2="-21" stroke="currentColor" stroke-width="1.3" opacity="0.8"></line><line x1="8" y1="-8" x2="15" y2="-21" stroke="currentColor" stroke-width="1.3" opacity="0.8"></line><path d="M 0 12 Q -3 16 -3 20 Q -3 23 0 23 Q 3 23 3 20 Q 3 16 0 12 Z" fill="currentColor" stroke="none"></path></g></g></svg></button><div class="nch-strip-label">note</div></div></div><div class="nch-divider"><svg viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"><line x1="0" y1="9" x2="54" y2="9" opacity="0.5"></line><line x1="86" y1="9" x2="140" y2="9" opacity="0.5"></line><g transform="translate(70,9)"><path d="M 0 -7 L -2 -3 L 0 0 L 2 -3 Z" fill="currentColor" stroke="none"></path><path d="M 0 0 L 5 4 L 0 8 L -5 4 Z"></path><circle r="1.4" fill="currentColor" stroke="none"></circle></g></svg></div><span class="nch-section-label">intention</span><input type="text" class="nch-intention-input" id="nodeIntentionInput" placeholder="what is this node for?" value="Where this piece is going" /><span class="nch-section-label">goal</span><div class="nch-goal-kind-row"><button class="nch-goal-kind-btn " data-goal-kind="sessions">sessions</button><button class="nch-goal-kind-btn active" data-goal-kind="hours">hours</button></div><div class="nch-goal-count-row"><button class="nch-goal-step" id="nodeGoalDown">&#8722;</button><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div class="nch-goal-display" id="nodeGoalDisplay">6</div><div class="nch-goal-unit" id="nodeGoalUnit">hours</div></div><button class="nch-goal-step" id="nodeGoalUp">&#43;</button></div><div class="nch-actions"><button class="nch-btn" id="nodeCreateCancel">cancel</button><button class="nch-btn primary" id="nodeCreateConfirm">create</button></div></div></div></div></div></div></body></html>
+</div></body></html>
