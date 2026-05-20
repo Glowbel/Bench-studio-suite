@@ -1841,6 +1841,166 @@ body { font-family:'DM Mono',monospace; color:var(--c-text); -webkit-font-smooth
   cursor:not-allowed;
 }
 /* === END NODE-CREATE-MODAL === */
+/* === BEGIN NODE-DETAIL-MODAL === */
+/* L3 node detail — compact visual progress pop-over */
+.node-detail-overlay {
+  position:fixed; inset:0; z-index:560;
+  background:rgba(0,0,0,0.80);
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+  animation:fadeIn 0.18s ease;
+}
+.node-detail-modal {
+  background:var(--c-surface-1);
+  border:1px solid var(--c-border-mid);
+  border-top:1px solid #ffffff14;
+  border-radius:14px;
+  width:min(320px,92vw);
+  max-height:88vh;
+  overflow-y:auto;
+  box-shadow:0 24px 70px -12px #000000cc;
+  animation:slideUp 0.22s ease;
+  padding-bottom:20px;
+}
+.node-detail-header-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 14px 0;
+}
+.nd-close {
+  margin:0;
+}
+.nd-header-actions {
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.nd-icon-btn {
+  background:none;
+  border:1px solid var(--c-border-soft);
+  border-radius:6px;
+  color:var(--c-slate);
+  font-family:'DM Mono',monospace;
+  font-size:0.55rem;
+  letter-spacing:0.06em;
+  padding:4px 8px;
+  cursor:pointer;
+  transition:color 0.18s ease, border-color 0.18s ease;
+}
+.nd-icon-btn:hover {
+  color:var(--c-text);
+  border-color:var(--c-border-mid);
+}
+.nd-orb-wrap {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  padding:18px 0 8px;
+}
+.nd-type-orb {
+  width:56px; height:56px;
+  border-radius:50%;
+  border:1.5px solid;
+  background:transparent;
+  display:flex; align-items:center; justify-content:center;
+  filter:drop-shadow(0 0 7px currentColor);
+}
+.nd-type-orb svg { width:34px; height:34px; }
+.nd-type-label {
+  font-family:'DM Mono',monospace;
+  font-size:0.44rem;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--c-slate);
+}
+.nd-intention {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.0rem;
+  font-style:italic;
+  color:var(--c-text);
+  text-align:center;
+  padding:0 20px 14px;
+  line-height:1.35;
+}
+.nd-progress-section {
+  padding:0 20px 16px;
+}
+.nd-progress-track {
+  width:100%;
+  height:5px;
+  background:var(--c-border-soft);
+  border-radius:3px;
+  overflow:hidden;
+  margin-bottom:6px;
+}
+.nd-progress-fill {
+  height:100%;
+  border-radius:3px;
+  transition:width 0.4s ease;
+  min-width:3px;
+}
+.nd-progress-label {
+  font-family:'DM Mono',monospace;
+  font-size:0.5rem;
+  letter-spacing:0.12em;
+  color:var(--c-slate);
+  text-align:center;
+}
+.node-detail-begin-btn {
+  display:block;
+  width:calc(100% - 40px);
+  margin:0 20px 12px;
+  background:var(--c-teal);
+  color:#080a0b;
+  border:none;
+  border-radius:8px;
+  font-family:'DM Mono',monospace;
+  font-size:0.6rem;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  padding:11px 0;
+  cursor:pointer;
+  transition:opacity 0.18s ease, transform 0.12s ease;
+}
+.node-detail-begin-btn:hover { opacity:0.88; transform:scale(0.99); }
+.node-detail-begin-btn.disabled {
+  opacity:0.28;
+  cursor:default;
+  pointer-events:none;
+}
+.nd-secondary-row {
+  display:flex;
+  gap:10px;
+  padding:0 20px;
+}
+.node-detail-sec-btn {
+  flex:1;
+  font-size:0.5rem;
+  letter-spacing:0.12em;
+  padding:7px 0;
+  text-align:center;
+}
+.nd-complete-done {
+  color:var(--c-gold) !important;
+  border-color:var(--c-gold) !important;
+  opacity:0.7;
+  pointer-events:none;
+}
+.nd-delete-btn { color:var(--c-slate); }
+.nd-delete-btn:hover { color:#c86a5a; border-color:#c86a5a; }
+
+/* Node orb alive — active nodes with progress > 0 pulse softly */
+@keyframes nodeOrbPulse {
+  0%   { filter: drop-shadow(0 0 4px currentColor); }
+  50%  { filter: drop-shadow(0 0 9px currentColor); }
+  100% { filter: drop-shadow(0 0 4px currentColor); }
+}
+.node-orb.node-orb-alive {
+  animation: nodeOrbPulse 2.8s ease-in-out infinite;
+}
+/* === END NODE-DETAIL-MODAL === */
 /* === BEGIN CREST-MODAL === */
 /* Crest creation modal — uses cohesive modal-header / modal-actions language
    from TIMER-MODAL zone, with crest-specific layout (preview left + form right).
@@ -3317,6 +3477,7 @@ var state = {
   skillsView:"carousel", skillsActiveCard:2, skillsActiveSkillId:null, skillsNotesOpen:null, skillsNodeMenuId:null,
   crestModalOpen:false, crestDraft:null, crestSubModal:null, crestEditSkillId:null,
   nodeCreateOpen:false, nodeCreateDraft:null,
+  nodeDetailOpen:false, nodeDetailId:null, nodeDetailDeleteConfirm:false,
   skillsCardMenu:null, skillsCardMenuConfirm:false,
   customers:DEFAULT_CUSTOMERS, leads:DEFAULT_LEADS, skills:DEFAULT_SKILLS, events:DEFAULT_EVENTS,
   pieces:DEFAULT_PIECES, benchLibrary:DEFAULT_BENCH_LIBRARY, todos:DEFAULT_TODOS,
@@ -3369,6 +3530,7 @@ function buildHTML() {
     +(state.capLinkCheck ? buildLinkCheck() : "")
     +(state.crestModalOpen ? buildCrestModal() : "")
     +(state.nodeCreateOpen ? buildNodeCreateModal() : "")
+    +(state.nodeDetailOpen ? buildNodeDetailModal() : "")
     +'<div class="sticky-chrome">'
       +'<div class="header">'
         +'<div class="header-title-row"><div>'
@@ -4081,9 +4243,11 @@ function buildSkillsNodePath() {
     var label = n.intended ? escHtml(n.intended) : '<span class="node-label-blank">(no intention set)</span>';
 
     // Inline color on .node-orb feeds currentColor for CSS idle/hover glow.
+    // node-orb-alive: active nodes with progress > 0 pulse softly to show life.
+    var orbAliveCls = (n.status === "active" && (n.progress || 0) > 0) ? " node-orb-alive" : "";
     nodeRows += connector
       +'<div class="node-row" style="transform:translateX('+offset+'px)">'
-        +'<button class="node-orb" data-sk-node="'+n.id+'" style="color:'+typeColor+'">'
+        +'<button class="node-orb'+orbAliveCls+'" data-sk-node="'+n.id+'" style="color:'+typeColor+'">'
           + orbSvg
         +'</button>'
         +'<div class="node-label">'+label+'</div>'
@@ -4656,14 +4820,96 @@ function buildNodeCreateModal() {
       + '<div class="node-goal-count-row">'
         + '<button class="node-goal-step" id="nodeGoalDown">&#8722;</button>'
         + '<div style="display:flex;flex-direction:column;align-items:center;gap:2px;">'
-          + '<div class="node-goal-display">'+goalCount+'</div>'
-          + '<div class="node-goal-unit">'+unit+'</div>'
+          + '<div class="node-goal-display" id="nodeGoalDisplay">'+goalCount+'</div>'
+          + '<div class="node-goal-unit" id="nodeGoalUnit">'+unit+'</div>'
         + '</div>'
         + '<button class="node-goal-step" id="nodeGoalUp">&#43;</button>'
       + '</div>'
       + '<div class="node-create-actions">'
         + '<button class="modal-btn subtle" id="nodeCreateCancel">cancel</button>'
         + '<button class="'+confirmCls+'" id="nodeCreateConfirm">create</button>'
+      + '</div>'
+    + '</div>'
+  + '</div>';
+}
+
+function buildNodeDetailModal() {
+  var sid = state.skillsActiveSkillId;
+  var node = null;
+  if (sid && state.skills) {
+    for (var di = 0; di < state.skills.length; di++) {
+      if (state.skills[di].id === sid) {
+        var dnodes = state.skills[di].nodes || [];
+        for (var dni = 0; dni < dnodes.length; dni++) {
+          if (dnodes[dni].id === state.nodeDetailId) { node = dnodes[dni]; break; }
+        }
+        break;
+      }
+    }
+  }
+  if (!node) return "";
+
+  var typeInfo = null;
+  for (var ti = 0; ti < NODE_TYPES.length; ti++) {
+    if (NODE_TYPES[ti].id === node.type) { typeInfo = NODE_TYPES[ti]; break; }
+  }
+  var typeColor = typeInfo ? typeInfo.color : "#6ab3a0";
+
+  var ratio    = nodeProgressRatio(node);
+  var fillPct  = Math.round(ratio * 100);
+  var fillColor = nodeMetalColor(ratio);
+
+  var goalKind = node.goalKind || "sessions";
+  var prog     = node.progress || 0;
+  var tgt      = node.goalTarget || 1;
+  var unitLabel = (goalKind === "hours")
+    ? (tgt === 1 ? "hour" : "hours")
+    : (tgt === 1 ? "session" : "sessions");
+
+  var isComplete = (node.status === "complete");
+
+  // Begin button label
+  var beginLabel = (prog === 0) ? "begin"
+    : ((goalKind === "hours") ? "+ hour" : "+ session");
+  var beginCls = "node-detail-begin-btn" + (isComplete ? " disabled" : "");
+
+  // Complete button state
+  var completeCls = "modal-btn subtle node-detail-sec-btn" + (isComplete ? " nd-complete-done" : "");
+  var completeLabel = isComplete ? "complete ✓" : "complete";
+
+  // Type orb SVG (46px, same language as create-modal orbs)
+  var orbSvg = '<svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:' + typeColor + '">'
+    + nodeTypeGlyphInner(node.type)
+    + '</svg>';
+
+  var intentionText = escHtml(node.intended || "");
+  var typeLabel = typeInfo ? typeInfo.label : node.type;
+
+  return '<div class="node-detail-overlay" id="nodeDetailOverlay">'
+    + '<div class="node-detail-modal">'
+      + '<div class="node-detail-header-row">'
+        + '<button class="close-btn nd-close" id="nodeDetailClose" aria-label="close">&#215;</button>'
+        + '<div class="nd-header-actions">'
+          + '<button class="nd-icon-btn" id="nodeDetailTodo" title="add to capsule">+&#9633;</button>'
+        + '</div>'
+      + '</div>'
+      + '<div class="nd-orb-wrap">'
+        + '<div class="nd-type-orb" style="color:' + typeColor + '; border-color:' + typeColor + '">'
+          + orbSvg
+        + '</div>'
+        + '<div class="nd-type-label">' + escHtml(typeLabel) + '</div>'
+      + '</div>'
+      + '<div class="nd-intention">' + intentionText + '</div>'
+      + '<div class="nd-progress-section">'
+        + '<div class="nd-progress-track">'
+          + '<div class="nd-progress-fill" style="width:' + fillPct + '%;background:' + fillColor + '"></div>'
+        + '</div>'
+        + '<div class="nd-progress-label">' + prog + ' / ' + tgt + ' ' + unitLabel + '</div>'
+      + '</div>'
+      + '<button class="' + beginCls + '" id="nodeDetailBegin">' + beginLabel + '</button>'
+      + '<div class="nd-secondary-row">'
+        + '<button class="' + completeCls + '" id="nodeDetailComplete">' + completeLabel + '</button>'
+        + '<button class="modal-btn subtle node-detail-sec-btn nd-delete-btn" id="nodeDetailDelete">delete</button>'
       + '</div>'
     + '</div>'
   + '</div>';
@@ -5957,24 +6203,51 @@ function bindEvents() {
     });
   }
 
-  // Goal kind toggle
+  // In-place updater for goal count/kind — avoids render() so intention input keeps focus
+  function _updateGoalInPlace() {
+    var d = state.nodeCreateDraft || {};
+    var goalKind  = d.goalKind || "sessions";
+    var goalCount = (typeof d.goalCount === "number") ? d.goalCount : 3;
+    var unit = (goalKind === "hours")
+      ? (goalCount === 1 ? "hour" : "hours")
+      : (goalCount === 1 ? "session" : "sessions");
+    var dispEl = document.getElementById("nodeGoalDisplay");
+    var unitEl = document.getElementById("nodeGoalUnit");
+    if (dispEl) dispEl.textContent = goalCount;
+    if (unitEl) unitEl.textContent = unit;
+    var confirmBtn = document.getElementById("nodeCreateConfirm");
+    if (confirmBtn) {
+      var ok = !!(d.type && d.intended && d.intended.trim().length > 0 && goalCount > 0);
+      if (ok) confirmBtn.classList.remove("node-create-confirm-disabled");
+      else    confirmBtn.classList.add("node-create-confirm-disabled");
+    }
+  }
+
+  // Goal kind toggle — in-place class swap, no full render
   var goalKindBtns = document.querySelectorAll("[data-goal-kind]");
   for (var gki = 0; gki < goalKindBtns.length; gki++)(function(btn){
     btn.addEventListener("click", function(){
       if (!state.nodeCreateDraft) state.nodeCreateDraft = {};
       state.nodeCreateDraft.goalKind = btn.getAttribute("data-goal-kind");
-      render();
+      var allKind = document.querySelectorAll("[data-goal-kind]");
+      for (var ki = 0; ki < allKind.length; ki++) {
+        if (allKind[ki].getAttribute("data-goal-kind") === state.nodeCreateDraft.goalKind)
+          allKind[ki].classList.add("active");
+        else
+          allKind[ki].classList.remove("active");
+      }
+      _updateGoalInPlace();
     });
   })(goalKindBtns[gki]);
 
-  // Goal count stepper
+  // Goal count stepper — in-place update, no full render
   var goalUp = document.getElementById("nodeGoalUp");
   if (goalUp) goalUp.addEventListener("click", function(){
     if (!state.nodeCreateDraft) state.nodeCreateDraft = {};
     var cur = (typeof state.nodeCreateDraft.goalCount === "number") ? state.nodeCreateDraft.goalCount : 3;
     state.nodeCreateDraft.goalCount = cur + 1;
     if (state.nodeCreateDraft.goalCount > 99) state.nodeCreateDraft.goalCount = 99;
-    render();
+    _updateGoalInPlace();
   });
   var goalDown = document.getElementById("nodeGoalDown");
   if (goalDown) goalDown.addEventListener("click", function(){
@@ -5982,7 +6255,7 @@ function bindEvents() {
     var cur = (typeof state.nodeCreateDraft.goalCount === "number") ? state.nodeCreateDraft.goalCount : 3;
     state.nodeCreateDraft.goalCount = cur - 1;
     if (state.nodeCreateDraft.goalCount < 1) state.nodeCreateDraft.goalCount = 1;
-    render();
+    _updateGoalInPlace();
   });
 
   // Cancel + close
@@ -6029,14 +6302,100 @@ function bindEvents() {
     render();
   });
 
-  // Node shield tap → L3 node modal (next session — placeholder)
+  // Node orb tap → L3 node detail modal
   var skNodes = document.querySelectorAll("[data-sk-node]");
   for (var sn = 0; sn < skNodes.length; sn++)(function(nodeBtn){
     nodeBtn.addEventListener("click", function(){
       var nid = parseInt(nodeBtn.getAttribute("data-sk-node"), 10);
-      console.log("Node tapped (L3 modal next session):", nid);
+      state.nodeDetailOpen = true;
+      state.nodeDetailId = nid;
+      state.nodeDetailDeleteConfirm = false;
+      render();
     });
   })(skNodes[sn]);
+
+  // ── NODE DETAIL MODAL — event wiring ──
+  function _closeNodeDetail() {
+    state.nodeDetailOpen = false;
+    state.nodeDetailId = null;
+    state.nodeDetailDeleteConfirm = false;
+    render();
+  }
+  function _findNodeDetail() {
+    var sid = state.skillsActiveSkillId;
+    if (!sid || !state.skills) return null;
+    for (var fi = 0; fi < state.skills.length; fi++) {
+      if (state.skills[fi].id === sid) {
+        var fnodes = state.skills[fi].nodes || [];
+        for (var fni = 0; fni < fnodes.length; fni++) {
+          if (fnodes[fni].id === state.nodeDetailId) return { skill: state.skills[fi], node: fnodes[fni], si: fi, ni: fni };
+        }
+      }
+    }
+    return null;
+  }
+
+  var ndClose = document.getElementById("nodeDetailClose");
+  if (ndClose) ndClose.addEventListener("click", _closeNodeDetail);
+  var ndOverlay = document.getElementById("nodeDetailOverlay");
+  if (ndOverlay) ndOverlay.addEventListener("click", function(e){
+    if (e.target === ndOverlay) _closeNodeDetail();
+  });
+
+  // Begin / +session button
+  var ndBegin = document.getElementById("nodeDetailBegin");
+  if (ndBegin) ndBegin.addEventListener("click", function(){
+    var found = _findNodeDetail();
+    if (!found) return;
+    var node = found.node;
+    if (node.status === "complete") return;
+    node.progress = Math.min((node.progress || 0) + 1, node.goalTarget);
+    saveData("bench-skills", state.skills);
+    render();
+  });
+
+  // Complete button
+  var ndComplete = document.getElementById("nodeDetailComplete");
+  if (ndComplete) ndComplete.addEventListener("click", function(){
+    var found = _findNodeDetail();
+    if (!found) return;
+    if (found.node.status === "complete") return;
+    found.node.status = "complete";
+    if ((found.node.progress || 0) < found.node.goalTarget) found.node.progress = found.node.goalTarget;
+    saveData("bench-skills", state.skills);
+    render();
+  });
+
+  // +Todo button (header icon)
+  var ndTodo = document.getElementById("nodeDetailTodo");
+  if (ndTodo) ndTodo.addEventListener("click", function(){
+    var found = _findNodeDetail();
+    if (!found) return;
+    addTodo({ label: found.node.intended, skillId: state.skillsActiveSkillId, durationMins: 0 });
+    // Brief in-place feedback — swap icon to a check mark for 1.2s
+    ndTodo.textContent = "✓";
+    ndTodo.style.color = "#6ab3a0";
+    setTimeout(function(){ ndTodo.textContent = "+□"; ndTodo.style.color = ""; }, 1200);
+  });
+
+  // Delete — first tap shows confirm prompt in-place, second tap removes node
+  var ndDelete = document.getElementById("nodeDetailDelete");
+  if (ndDelete) ndDelete.addEventListener("click", function(){
+    if (!state.nodeDetailDeleteConfirm) {
+      state.nodeDetailDeleteConfirm = true;
+      ndDelete.textContent = "confirm delete?";
+      ndDelete.style.color = "#c86a5a";
+    } else {
+      var found = _findNodeDetail();
+      if (!found) { _closeNodeDetail(); return; }
+      found.skill.nodes.splice(found.ni, 1);
+      saveData("bench-skills", state.skills);
+      state.nodeDetailOpen = false;
+      state.nodeDetailId = null;
+      state.nodeDetailDeleteConfirm = false;
+      render();
+    }
+  });
 
   // ── CREST CREATION MODAL — event wiring ──
   // Modal re-renders on most field changes (state-driven). The name input
