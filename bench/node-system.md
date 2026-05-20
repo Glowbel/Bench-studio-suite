@@ -327,8 +327,15 @@ Phase 4.5 items affected:
 - **#9 (intake / the door)** — unchanged
 - **#13 (capsule on-deck wiring)** — now also includes timerNodeId link
 
+DECISIONS LOCKED (may-20 build):
+- Color model: HYBRID — type sets a base tint, progress state drives glow + universal gold-rim on completion
+- Tints (provisional, pending full design-system fusion): research=violet #b083d8, session=teal #4acc85, immersion=jade #1fa97a, note=gold #f0d28a
+- Fonts in modal: Cormorant + DM Mono (already loaded). Outfit/JetBrains Mono deferred to the full fusion dive.
+- Filigree tokens seeded into bench :root (--ink-*, --teal-300, --violet-300, --gold-*, --mist-*) — additive, non-breaking
+- Preview snapshot: designs/bench/preview/node-create-modal.html
+
 New sessions implied (in rough sequence):
-1. Node creation modal — ceremonial visual system (hero orb, selector strip, color immersion) ← NEXT
+1. Node creation modal — ceremonial visual system [BUILT may-20 — needs Jordan's feel-test in browser]
 2. Research widget system (big picture questions locked, ready to build)
 3. Note node multi-tab
 4. Debrief mini-node auto-insertion + voice capture

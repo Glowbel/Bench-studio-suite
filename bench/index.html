@@ -1666,179 +1666,267 @@ body { font-family:'DM Mono',monospace; color:var(--c-text); -webkit-font-smooth
 
 /* === END SKILLS-WORKSHOP === */
 /* === BEGIN NODE-CREATE-MODAL === */
-/* Node creation modal — type orbs + intention + goal picker
-   Reuses modal-header/modal-actions language from TIMER-MODAL zone.
+/* Ceremonial node creation — Filigree visual system.
+   Hero orb (triple-ring frame, heraldic diamonds, arcane pulse, smoke
+   atmosphere, per-type glyph) + selector strip + config. First surface
+   in the new design language; tokens below mirror designs/bench/colors_and_type.css
+   (different names than the app's --c-* set, so additive + non-breaking).
 */
+
+/* -- Filigree tokens (subset; seeds the eventual global fusion) -- */
+:root {
+  --ink-950:#1c1d22; --ink-900:#232531; --ink-800:#2c2f42;
+  --ink-700:#353953; --ink-600:#404663; --ink-500:#4c537a;
+  --teal-300:#4acc85; --violet-300:#b083d8; --gold-300:#f0d28a; --gold-400:#d9b465;
+  --mist-100:#f3f6f5; --mist-200:#d8dfdc; --mist-300:#b3bdba; --mist-400:#8a9692; --mist-500:#5e6a66;
+  --fil-border:rgba(76,83,122,0.40); --fil-border-faint:rgba(76,83,122,0.20);
+}
+
 .node-create-overlay {
   position:fixed; inset:0; z-index:550;
-  background:rgba(0,0,0,0.78);
+  background:rgba(12,13,18,0.74);
+  backdrop-filter:blur(12px) saturate(120%);
+  -webkit-backdrop-filter:blur(12px) saturate(120%);
   display:flex; align-items:center; justify-content:center;
   padding:20px;
-  animation:fadeIn 0.18s ease;
+  animation:fadeIn 0.22s ease;
 }
-.node-create-modal {
-  background:var(--c-surface-1);
-  border:1px solid var(--c-border-mid);
-  border-top:1px solid #ffffff14;
-  border-radius:14px;
-  width:min(380px,94vw);
-  max-height:88vh;
-  overflow-y:auto;
-  box-shadow:0 24px 70px -12px #000000cc;
-  animation:slideUp 0.22s ease;
-}
-.node-create-title {
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.1rem;
-  color:var(--c-text);
-  font-style:italic;
-}
-
-/* Type orbs row — 4 hollow rings, tap to select */
-.node-type-row {
-  display:flex; justify-content:space-around;
-  padding:18px 16px 8px;
-  gap:8px;
-}
-.node-type-orb-wrap {
-  display:flex; flex-direction:column;
-  align-items:center;
-  gap:6px;
-  cursor:pointer;
-  flex:1;
-}
-.node-type-orb {
-  width:46px; height:46px;
-  border-radius:50%;
-  border:1.5px solid;
-  background:transparent;
-  display:flex; align-items:center; justify-content:center;
-  transition:transform 0.18s ease, box-shadow 0.22s ease, background 0.18s ease;
+.nch-modal {
   position:relative;
+  background:var(--ink-900);
+  border:1px solid var(--fil-border);
+  border-radius:20px;
+  width:min(384px,94vw);
+  max-height:90vh;
+  overflow-y:auto;
+  box-shadow:0 24px 64px rgba(0,0,0,0.62), 0 0 80px rgba(124,68,184,0.10);
+  animation:nchRise 0.42s cubic-bezier(0.16,1,0.3,1);
 }
-.node-type-orb svg { width:30px; height:30px; }
-.node-type-orb-wrap:hover .node-type-orb {
-  transform:scale(1.08);
+/* Color-immersion wash — JS sets the type-tinted radial via .style on this layer */
+.nch-atmos {
+  position:absolute; inset:0; border-radius:20px;
+  pointer-events:none; z-index:0;
+  transition:background 0.5s cubic-bezier(0.25,0.8,0.25,1);
 }
-.node-type-orb.active {
-  background:rgba(255,255,255,0.04);
-  box-shadow:0 0 18px -2px currentColor, inset 0 0 8px -2px currentColor;
-  transform:scale(1.08);
-}
-.node-type-label {
-  font-family:'DM Mono',monospace;
-  font-size:0.42rem;
-  letter-spacing:0.14em;
-  text-transform:uppercase;
-  color:var(--c-slate);
-  transition:color 0.18s ease;
-  text-align:center;
-}
-.node-type-orb-wrap.active .node-type-label { color:var(--c-text); }
+.nch-modal > * { position:relative; z-index:1; }
 
-/* Intention input */
-.node-section-label {
-  font-size:0.46rem;
-  letter-spacing:0.18em;
-  color:var(--c-slate);
-  text-transform:uppercase;
-  display:block;
-  padding:14px 20px 4px;
+@keyframes nchRise {
+  from { opacity:0; transform:translateY(16px) scale(0.97); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
 }
-.node-intention-input {
-  width:calc(100% - 40px);
-  margin:0 20px;
-  background:var(--c-surface-0);
-  border:1px solid var(--c-border-dim);
-  color:var(--c-text);
+
+/* -- Top bar -- */
+.nch-topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px 4px;
+}
+.nch-title {
   font-family:'Cormorant Garamond',serif;
-  font-size:0.9rem;
-  font-style:italic;
-  padding:8px 12px;
-  border-radius:4px;
-  outline:none;
-  display:block;
-  transition:border-color 0.2s;
+  font-style:italic; font-weight:500;
+  font-variant:small-caps; letter-spacing:0.10em;
+  font-size:1.18rem; color:var(--gold-300);
 }
-.node-intention-input:focus { border-color:var(--c-teal-44); }
-.node-intention-input::placeholder {
-  color:var(--c-border-mid);
-  font-style:italic;
+.nch-close {
+  background:none; border:none; cursor:pointer;
+  color:var(--mist-400); font-size:1.3rem; line-height:1;
+  width:30px; height:30px; border-radius:9999px;
+  display:flex; align-items:center; justify-content:center;
+  transition:color 0.16s ease, background 0.16s ease;
+}
+.nch-close:hover { color:var(--mist-100); background:rgba(255,255,255,0.05); }
+
+/* -- Hero — the main event -- */
+.nch-hero {
+  position:relative;
+  width:100%; height:188px;
+  display:flex; align-items:center; justify-content:center;
+  isolation:isolate;
+}
+/* Smoke atmosphere — two soft blurred layers, color set by JS */
+.nch-smoke-a, .nch-smoke-b {
+  position:absolute; border-radius:50%;
+  mix-blend-mode:screen; pointer-events:none;
+}
+.nch-smoke-a {
+  width:200px; height:200px;
+  filter:blur(20px);
+  animation:nchHalo 5.6s ease-in-out infinite;
+}
+.nch-smoke-b {
+  width:150px; height:150px;
+  filter:blur(13px);
+  animation:nchAuraSpin 17s linear infinite, nchAuraBreath 3.4s ease-in-out infinite;
+}
+@keyframes nchHalo {
+  0%,100% { transform:scale(0.9);  opacity:0.5; }
+  50%     { transform:scale(1.1);  opacity:0.9; }
+}
+@keyframes nchAuraBreath {
+  0%,100% { opacity:0.55; }
+  50%     { opacity:0.85; }
+}
+@keyframes nchAuraSpin { to { transform:rotate(360deg); } }
+
+/* Arcane pulse — a bright point orbiting the outer ring */
+.nch-orbit {
+  position:absolute; width:158px; height:158px;
+  animation:nchOrbit 4.6s linear infinite;
+  pointer-events:none;
+}
+.nch-pulse {
+  position:absolute; top:-3px; left:50%; margin-left:-3px;
+  width:6px; height:6px; border-radius:50%;
+  background:currentColor;
+  box-shadow:0 0 8px currentColor, 0 0 16px currentColor;
+}
+@keyframes nchOrbit { to { transform:rotate(360deg); } }
+
+.nch-orb-svg { width:158px; height:158px; position:relative; z-index:2;
+  filter:drop-shadow(0 0 5px currentColor); }
+.nch-hero.is-empty .nch-orbit,
+.nch-hero.is-empty .nch-orb-svg { opacity:0.55; }
+
+/* -- Description line -- */
+.nch-desc {
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic; font-size:1.0rem;
+  color:var(--mist-300); text-align:center;
+  padding:0 26px 4px; min-height:1.4em;
+  transition:opacity 0.28s ease;
 }
 
-/* Goal picker — kind toggle + count stepper */
-.node-goal-kind-row {
-  display:flex;
-  gap:8px;
-  padding:6px 20px 0;
+/* -- Selector strip -- */
+.nch-strip {
+  display:flex; justify-content:center; gap:8px;
+  padding:14px 12px 6px;
 }
-.node-goal-kind-btn {
+.nch-strip-item {
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  flex:0 0 auto; width:64px;
+}
+.nch-strip-orb {
+  width:48px; height:48px; border-radius:50%;
+  background:none; border:none; cursor:pointer; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; opacity:0.42;
+  transition:opacity 0.24s ease, transform 0.18s ease;
+}
+.nch-strip-orb svg { width:46px; height:46px; }
+.nch-strip-orb:hover { opacity:0.78; transform:translateY(-2px); }
+.nch-strip-orb.active {
+  opacity:1;
+  filter:drop-shadow(0 0 6px currentColor);
+  animation:nchBloom 0.42s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes nchBloom {
+  0%   { transform:scale(0.86); }
+  60%  { transform:scale(1.12); }
+  100% { transform:scale(1); }
+}
+.nch-strip-label {
+  font-family:'DM Mono',monospace;
+  font-size:0.45rem; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--mist-500); text-align:center;
+  padding:0 2px; transition:color 0.2s ease;
+}
+.nch-strip-item.active .nch-strip-label { color:var(--mist-200); }
+
+/* -- Ornament divider (Filigree flourish) -- */
+.nch-divider {
+  display:flex; align-items:center; justify-content:center;
+  padding:10px 0 4px; color:var(--mist-500); opacity:0.7;
+}
+.nch-divider svg { width:140px; height:18px; }
+
+/* -- Config: intention + goal -- */
+.nch-section-label {
+  font-family:'Cormorant Garamond',serif;
+  font-variant:small-caps; font-weight:500;
+  font-size:0.74rem; letter-spacing:0.16em;
+  color:var(--mist-400);
+  display:block; padding:12px 26px 4px;
+}
+.nch-intention-input {
+  width:calc(100% - 52px);
+  margin:0 26px;
+  background:var(--ink-950);
+  border:1px solid var(--fil-border);
+  color:var(--mist-100);
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.0rem; font-style:italic;
+  padding:9px 13px; border-radius:8px;
+  outline:none; display:block;
+  transition:border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.nch-intention-input:focus {
+  border-color:rgba(74,204,133,0.55);
+  box-shadow:inset 0 0 14px rgba(74,204,133,0.10);
+}
+.nch-intention-input::placeholder { color:var(--mist-500); font-style:italic; }
+
+.nch-goal-kind-row { display:flex; gap:8px; padding:6px 26px 0; }
+.nch-goal-kind-btn {
   flex:1;
-  background:var(--c-surface-0);
-  border:1px solid var(--c-border-dim);
-  color:var(--c-slate);
+  background:var(--ink-950);
+  border:1px solid var(--fil-border);
+  color:var(--mist-400);
   font-family:'DM Mono',monospace;
-  font-size:0.55rem;
-  letter-spacing:0.14em;
-  text-transform:uppercase;
-  padding:8px 4px;
-  border-radius:6px;
-  cursor:pointer;
-  transition:all 0.15s;
+  font-size:0.56rem; letter-spacing:0.14em; text-transform:uppercase;
+  padding:9px 4px; border-radius:8px; cursor:pointer;
+  transition:all 0.16s ease;
 }
-.node-goal-kind-btn:hover { border-color:var(--c-border-mid); }
-.node-goal-kind-btn.active {
-  border-color:var(--c-teal-66);
-  color:var(--c-teal-hi);
-  background:var(--c-surface-1);
+.nch-goal-kind-btn:hover { border-color:var(--fil-border); color:var(--mist-300); }
+.nch-goal-kind-btn.active {
+  border-color:rgba(74,204,133,0.55);
+  color:var(--teal-300);
+  background:var(--ink-800);
+  box-shadow:inset 0 0 14px rgba(74,204,133,0.14);
 }
 
-.node-goal-count-row {
+.nch-goal-count-row {
   display:flex; align-items:center; justify-content:center;
-  gap:14px;
-  padding:14px 20px 6px;
+  gap:18px; padding:14px 26px 6px;
 }
-.node-goal-step {
-  width:32px; height:32px;
-  border-radius:50%;
-  background:none;
-  border:1px solid var(--c-border-mid);
-  color:var(--c-teal);
-  font-family:'DM Mono',monospace;
-  font-size:1rem;
-  line-height:1;
-  cursor:pointer;
-  transition:all 0.15s;
-  display:flex; align-items:center; justify-content:center;
+.nch-goal-step {
+  width:34px; height:34px; border-radius:50%;
+  background:none; border:1px solid var(--fil-border);
+  color:var(--teal-300);
+  font-family:'DM Mono',monospace; font-size:1.05rem; line-height:1;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all 0.15s ease;
 }
-.node-goal-step:hover { border-color:var(--c-teal-66); background:var(--c-teal-11); }
-.node-goal-step:active { transform:scale(0.92); }
-.node-goal-display {
+.nch-goal-step:hover { border-color:rgba(74,204,133,0.55); background:rgba(74,204,133,0.08); }
+.nch-goal-step:active { transform:scale(0.92); }
+.nch-goal-display {
   font-family:'Cormorant Garamond',serif;
-  font-size:1.6rem;
-  color:var(--c-text);
-  min-width:60px;
-  text-align:center;
-  font-variant-numeric:tabular-nums;
+  font-size:1.7rem; color:var(--mist-100);
+  min-width:62px; text-align:center; font-variant-numeric:tabular-nums;
 }
-.node-goal-unit {
+.nch-goal-unit {
   font-family:'DM Mono',monospace;
-  font-size:0.48rem;
-  letter-spacing:0.18em;
-  color:var(--c-slate);
-  text-transform:uppercase;
+  font-size:0.5rem; letter-spacing:0.18em; text-transform:uppercase;
+  color:var(--mist-400);
 }
 
-.node-create-actions {
-  display:flex; gap:8px;
-  padding:16px 20px;
-  border-top:1px solid var(--c-border-dim);
-  margin-top:14px;
-  justify-content:flex-end;
+.nch-actions {
+  display:flex; gap:10px; padding:18px 26px 22px;
+  margin-top:12px; justify-content:flex-end;
 }
-.node-create-confirm-disabled {
-  opacity:0.4;
-  cursor:not-allowed;
+.nch-btn {
+  font-family:'DM Mono',monospace;
+  font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase;
+  padding:10px 18px; border-radius:9999px; cursor:pointer;
+  border:1px solid var(--fil-border); background:none; color:var(--mist-300);
+  transition:all 0.16s ease;
+}
+.nch-btn:hover { color:var(--mist-100); border-color:var(--fil-border); background:rgba(255,255,255,0.03); }
+.nch-btn.primary {
+  background:var(--teal-300); color:var(--ink-950);
+  border-color:transparent; font-weight:500;
+}
+.nch-btn.primary:hover { box-shadow:0 0 18px rgba(74,204,133,0.4); background:var(--teal-300); }
+.nch-btn.primary.is-disabled {
+  opacity:0.32; pointer-events:none;
 }
 /* === END NODE-CREATE-MODAL === */
 /* === BEGIN NODE-DETAIL-MODAL === */
@@ -2589,11 +2677,18 @@ var CREST_SYMBOLS = [
 //   session:    teal-green   | hands-on practice    (bench tools)
 //   immersion:  amber-red    | deep dive            (lens)
 //   debrief:    warm-gold    | reflection/synthesis (quill)
+// Hybrid color model (Filigree): type sets a base tint; progress state drives
+// glow intensity + a universal gold rim on completion. Tints provisional pending
+// the full design-system fusion dive.
+//   research  -> violet  (the deep — knowledge, planning)
+//   session   -> teal    (the alive — active reps)
+//   immersion -> jade    (sustained flow — a deeper teal)
+//   note      -> gold    (the finished — synthesis)
 var NODE_TYPES = [
-  { id:"research",  label:"research",  color:"#7a8fc4", desc:"knowledge"  },
-  { id:"session",   label:"session",   color:"#6ab3a0", desc:"practice"   },
-  { id:"immersion", label:"immersion", color:"#c48570", desc:"deep dive"  },
-  { id:"debrief",   label:"debrief",   color:"#c9a96e", desc:"reflection" }
+  { id:"research",  label:"research",  color:"#b083d8", tint:"176,131,216", desc:"Understanding, before the build." },
+  { id:"session",   label:"session",   color:"#4acc85", tint:"74,204,133",  desc:"A direction — and showing up for it." },
+  { id:"immersion", label:"immersion", color:"#1fa97a", tint:"31,169,122",  desc:"Long focus. No friction. Just reps." },
+  { id:"note",      label:"note",      color:"#f0d28a", tint:"240,210,138", desc:"Where thoughts about the work live." }
 ];
 
 /* === END CONSTANTS === */
@@ -4777,57 +4872,181 @@ function nodeMetalColor(ratio) {
 // ── NODE CREATE MODAL ──────────────────────────────────────────────
 // Type orbs row -> intention text -> goal kind toggle + count stepper.
 // Confirm spawns an active node onto state.skills[activeId].nodes[].
+// Look up a node type record by id.
+function nodeTypeById(id) {
+  for (var i = 0; i < NODE_TYPES.length; i++) {
+    if (NODE_TYPES[i].id === id) return NODE_TYPES[i];
+  }
+  return null;
+}
+
+// Per-type glyph in the Filigree language — stroke marks, diamond pips, bud dots.
+// Centered at (0,0); designed to sit in a group translated to the orb center.
+// Falls back to the triskelion brand mark when no type is chosen.
+function buildHeroGlyph(typeId) {
+  if (typeId === "research") {
+    // bound study pages + an unfurling spiral of understanding
+    return '<line x1="-22" y1="-18" x2="-22" y2="16" stroke="currentColor" stroke-width="1.6" opacity="0.85"></line>'
+      + '<circle cx="-22" cy="-18" r="1.8" fill="currentColor" stroke="none"></circle>'
+      + '<circle cx="-22" cy="16" r="1.8" fill="currentColor" stroke="none"></circle>'
+      + '<line x1="-16" y1="-12" x2="14" y2="-12" stroke="currentColor" stroke-width="2"></line>'
+      + '<line x1="-16" y1="-1" x2="8" y2="-1" stroke="currentColor" stroke-width="2" opacity="0.82"></line>'
+      + '<line x1="-16" y1="10" x2="2" y2="10" stroke="currentColor" stroke-width="2" opacity="0.66"></line>'
+      + '<path d="M 14 -12 C 26 -14, 30 -26, 22 -32 C 17 -36, 9 -33, 12 -27" stroke="currentColor" stroke-width="1.6"></path>'
+      + '<circle cx="12" cy="-27" r="1.9" fill="currentColor" stroke="none"></circle>'
+      + '<path d="M 19 4 l 2.4 2.4 l -2.4 2.4 l -2.4 -2.4 Z" fill="currentColor" stroke="none" opacity="0.8"></path>';
+  } else if (typeId === "session") {
+    // ascending direction chevrons + apex diamond
+    return '<path d="M -17 9 L 0 -11 L 17 9" stroke="currentColor" stroke-width="2.4"></path>'
+      + '<path d="M -10 16 L 0 4 L 10 16" stroke="currentColor" stroke-width="1.4" opacity="0.6"></path>'
+      + '<path d="M 0 -20 l -3.4 4.4 l 3.4 4.4 l 3.4 -4.4 Z" fill="currentColor" stroke="none"></path>'
+      + '<line x1="0" y1="16" x2="0" y2="22" stroke="currentColor" stroke-width="1.3" opacity="0.7"></line>'
+      + '<circle cx="0" cy="24" r="1.6" fill="currentColor" stroke="none" opacity="0.7"></circle>';
+  } else if (typeId === "immersion") {
+    // concentric focus well + radial ticks
+    return '<circle r="20" stroke="currentColor" stroke-width="1.7"></circle>'
+      + '<circle r="11" stroke="currentColor" stroke-width="1.4" opacity="0.85"></circle>'
+      + '<circle r="3.4" fill="currentColor" stroke="none"></circle>'
+      + '<line x1="0" y1="-30" x2="0" y2="-24" stroke="currentColor" stroke-width="1.5"></line>'
+      + '<line x1="0" y1="24" x2="0" y2="30" stroke="currentColor" stroke-width="1.5"></line>'
+      + '<line x1="-30" y1="0" x2="-24" y2="0" stroke="currentColor" stroke-width="1.5"></line>'
+      + '<line x1="24" y1="0" x2="30" y2="0" stroke="currentColor" stroke-width="1.5"></line>'
+      + '<path d="M 17 -17 l 2.2 2.2 l -2.2 2.2 l -2.2 -2.2 Z" fill="currentColor" stroke="none" opacity="0.7"></path>'
+      + '<path d="M -17 17 l 2.2 2.2 l -2.2 2.2 l -2.2 -2.2 Z" fill="currentColor" stroke="none" opacity="0.7"></path>';
+  } else if (typeId === "note") {
+    // vesica eye + rising rays + drop — echoes the brand monogram (synthesis)
+    return '<path d="M -22 0 Q -11 -11 0 -11 Q 11 -11 22 0 Q 11 11 0 11 Q -11 11 -22 0 Z" stroke="currentColor" stroke-width="1.8"></path>'
+      + '<circle r="3.8" fill="currentColor" stroke="none"></circle>'
+      + '<line x1="0" y1="-11" x2="0" y2="-25" stroke="currentColor" stroke-width="1.5"></line>'
+      + '<line x1="-8" y1="-8" x2="-15" y2="-21" stroke="currentColor" stroke-width="1.3" opacity="0.8"></line>'
+      + '<line x1="8" y1="-8" x2="15" y2="-21" stroke="currentColor" stroke-width="1.3" opacity="0.8"></line>'
+      + '<path d="M 0 12 Q -3 16 -3 20 Q -3 23 0 23 Q 3 23 3 20 Q 3 16 0 12 Z" fill="currentColor" stroke="none"></path>';
+  }
+  // default — compact triskelion (brand mark) for the unselected state
+  var arms = "";
+  var rots = [-90, 30, 150];
+  for (var r = 0; r < rots.length; r++) {
+    arms += '<g transform="rotate(' + rots[r] + ')">'
+      + '<path d="M 0 -6 C 12 -8, 20 -16, 16 -26 C 13 -32, 4 -30, 6 -22" stroke="currentColor" stroke-width="2"></path>'
+      + '<circle cx="6" cy="-22" r="1.8" fill="currentColor" stroke="none"></circle>'
+      + '</g>';
+  }
+  return arms
+    + '<circle r="5" stroke="currentColor" stroke-width="1.3"></circle>'
+    + '<circle r="2" fill="currentColor" stroke="none"></circle>';
+}
+
+// The four heraldic diamonds (cardinal) at a given orbit radius.
+function nchDiamonds(rad, half, depth) {
+  var d = '<g fill="currentColor" stroke="none">';
+  var rots = [0, 90, 180, 270];
+  for (var i = 0; i < rots.length; i++) {
+    d += '<g transform="rotate(' + rots[i] + ')"><path d="M 0 ' + (-rad) + ' L ' + (-half) + ' ' + (-(rad - depth)) + ' L 0 ' + (-(rad - depth - 7)) + ' L ' + half + ' ' + (-(rad - depth)) + ' Z"></path></g>';
+  }
+  return d + '</g>';
+}
+
+// Hero orb visual — smoke atmosphere + arcane pulse + triple-ring frame +
+// heraldic diamonds + per-type glyph. Rebuilt in place on type change.
+function buildHeroInner(typeId) {
+  var t = nodeTypeById(typeId);
+  var color = t ? t.color : "#4acc85";
+  var tint  = t ? t.tint  : "74,204,133";
+  return '<div class="nch-smoke-a" style="background:radial-gradient(circle, rgba(' + tint + ',0.5) 0%, rgba(' + tint + ',0.14) 38%, transparent 68%)"></div>'
+    + '<div class="nch-smoke-b" style="background:radial-gradient(circle, rgba(' + tint + ',0.6) 0%, rgba(' + tint + ',0.2) 45%, transparent 72%)"></div>'
+    + '<div class="nch-orbit" style="color:' + color + '"><div class="nch-pulse"></div></div>'
+    + '<svg class="nch-orb-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="color:' + color + '">'
+      + '<g transform="translate(100,100)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">'
+        + '<circle r="92" stroke-width="1.4" opacity="0.85"></circle>'
+        + '<circle r="86" stroke-width="0.9" opacity="0.5"></circle>'
+        + '<circle r="80" stroke-width="0.6" opacity="0.25"></circle>'
+        + nchDiamonds(92, 5, 8)
+        + buildHeroGlyph(typeId)
+      + '</g>'
+    + '</svg>';
+}
+
+// One selector-strip orb (smaller single-ring orb + glyph).
+function buildStripOrb(typeId, selectedId) {
+  var t = nodeTypeById(typeId);
+  var active = (typeId === selectedId);
+  return '<div class="nch-strip-item' + (active ? " active" : "") + '">'
+    + '<button class="nch-strip-orb' + (active ? " active" : "") + '" data-node-type="' + typeId + '" style="color:' + t.color + '" aria-label="' + t.label + '">'
+      + '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="color:' + t.color + '">'
+        + '<g transform="translate(50,50)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">'
+          + '<circle r="45" stroke-width="1.5" opacity="0.7"></circle>'
+          + nchDiamonds(45, 3, 5)
+          + '<g transform="scale(0.6)">' + buildHeroGlyph(typeId) + '</g>'
+        + '</g>'
+      + '</svg>'
+    + '</button>'
+    + '<div class="nch-strip-label">' + t.label + '</div>'
+  + '</div>';
+}
+
 function buildNodeCreateModal() {
   var d = state.nodeCreateDraft || {};
-  var typeOrbs = "";
+  var sel = d.type || null;
+
+  var strip = "";
   for (var ti = 0; ti < NODE_TYPES.length; ti++) {
-    var nt = NODE_TYPES[ti];
-    var active = (d.type === nt.id);
-    var wrapCls = "node-type-orb-wrap" + (active ? " active" : "");
-    var orbCls  = "node-type-orb"      + (active ? " active" : "");
-    typeOrbs += '<div class="'+wrapCls+'" data-node-type="'+nt.id+'">'
-      + '<div class="'+orbCls+'" style="color:'+nt.color+'; border-color:'+nt.color+'">'
-        + '<svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="color:'+nt.color+'">'
-          + nodeTypeGlyphInner(nt.id)
-        + '</svg>'
-      + '</div>'
-      + '<div class="node-type-label">'+nt.label+'</div>'
-    + '</div>';
+    strip += buildStripOrb(NODE_TYPES[ti].id, sel);
   }
+
+  var selType = nodeTypeById(sel);
+  var descText = selType ? selType.desc : "Choose what this node is for.";
 
   var goalKind = d.goalKind || "sessions";
   var goalCount = (typeof d.goalCount === "number") ? d.goalCount : 3;
   var unit = (goalKind === "hours") ? (goalCount === 1 ? "hour" : "hours") : (goalCount === 1 ? "session" : "sessions");
 
-  var canConfirm = !!(d.type && d.intended && d.intended.trim().length > 0 && goalCount > 0);
-  var confirmCls = "modal-btn primary" + (canConfirm ? "" : " node-create-confirm-disabled");
+  var canConfirm = !!(sel && d.intended && d.intended.trim().length > 0 && goalCount > 0);
+  var confirmCls = "nch-btn primary" + (canConfirm ? "" : " is-disabled");
+
+  var heroCls = "nch-hero" + (sel ? "" : " is-empty");
+  var atmosBg = sel
+    ? "radial-gradient(ellipse 72% 52% at 50% 32%, rgba(" + selType.tint + ",0.10), transparent 62%)"
+    : "transparent";
+
+  var divider = '<div class="nch-divider"><svg viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">'
+    + '<line x1="0" y1="9" x2="54" y2="9" opacity="0.5"></line>'
+    + '<line x1="86" y1="9" x2="140" y2="9" opacity="0.5"></line>'
+    + '<g transform="translate(70,9)">'
+      + '<path d="M 0 -7 L -2 -3 L 0 0 L 2 -3 Z" fill="currentColor" stroke="none"></path>'
+      + '<path d="M 0 0 L 5 4 L 0 8 L -5 4 Z"></path>'
+      + '<circle r="1.4" fill="currentColor" stroke="none"></circle>'
+    + '</g>'
+    + '</svg></div>';
 
   return '<div class="node-create-overlay" id="nodeCreateOverlay">'
-    + '<div class="node-create-modal">'
-      + '<div class="modal-header">'
-        + '<div class="modal-title node-create-title">new node</div>'
-        + '<button class="close-btn" id="nodeCreateClose" aria-label="close">&#215;</button>'
+    + '<div class="nch-modal">'
+      + '<div class="nch-atmos" id="nchAtmos" style="background:' + atmosBg + '"></div>'
+      + '<div class="nch-topbar">'
+        + '<div class="nch-title">a new node</div>'
+        + '<button class="nch-close" id="nodeCreateClose" aria-label="close">&#215;</button>'
       + '</div>'
-      + '<span class="node-section-label">type</span>'
-      + '<div class="node-type-row">' + typeOrbs + '</div>'
-      + '<span class="node-section-label">intention</span>'
-      + '<input type="text" class="node-intention-input" id="nodeIntentionInput" placeholder="what is this node for?" value="'+escAttr(d.intended || "")+'" />'
-      + '<span class="node-section-label">goal</span>'
-      + '<div class="node-goal-kind-row">'
-        + '<button class="node-goal-kind-btn '+(goalKind === "sessions" ? "active" : "")+'" data-goal-kind="sessions">sessions</button>'
-        + '<button class="node-goal-kind-btn '+(goalKind === "hours"    ? "active" : "")+'" data-goal-kind="hours">hours</button>'
+      + '<div class="' + heroCls + '" id="nchHero">' + buildHeroInner(sel) + '</div>'
+      + '<div class="nch-desc" id="nchDesc">' + escHtml(descText) + '</div>'
+      + '<div class="nch-strip" id="nchStrip">' + strip + '</div>'
+      + divider
+      + '<span class="nch-section-label">intention</span>'
+      + '<input type="text" class="nch-intention-input" id="nodeIntentionInput" placeholder="what is this node for?" value="' + escAttr(d.intended || "") + '" />'
+      + '<span class="nch-section-label">goal</span>'
+      + '<div class="nch-goal-kind-row">'
+        + '<button class="nch-goal-kind-btn ' + (goalKind === "sessions" ? "active" : "") + '" data-goal-kind="sessions">sessions</button>'
+        + '<button class="nch-goal-kind-btn ' + (goalKind === "hours" ? "active" : "") + '" data-goal-kind="hours">hours</button>'
       + '</div>'
-      + '<div class="node-goal-count-row">'
-        + '<button class="node-goal-step" id="nodeGoalDown">&#8722;</button>'
+      + '<div class="nch-goal-count-row">'
+        + '<button class="nch-goal-step" id="nodeGoalDown">&#8722;</button>'
         + '<div style="display:flex;flex-direction:column;align-items:center;gap:2px;">'
-          + '<div class="node-goal-display" id="nodeGoalDisplay">'+goalCount+'</div>'
-          + '<div class="node-goal-unit" id="nodeGoalUnit">'+unit+'</div>'
+          + '<div class="nch-goal-display" id="nodeGoalDisplay">' + goalCount + '</div>'
+          + '<div class="nch-goal-unit" id="nodeGoalUnit">' + unit + '</div>'
         + '</div>'
-        + '<button class="node-goal-step" id="nodeGoalUp">&#43;</button>'
+        + '<button class="nch-goal-step" id="nodeGoalUp">&#43;</button>'
       + '</div>'
-      + '<div class="node-create-actions">'
-        + '<button class="modal-btn subtle" id="nodeCreateCancel">cancel</button>'
-        + '<button class="'+confirmCls+'" id="nodeCreateConfirm">create</button>'
+      + '<div class="nch-actions">'
+        + '<button class="nch-btn" id="nodeCreateCancel">cancel</button>'
+        + '<button class="' + confirmCls + '" id="nodeCreateConfirm">create</button>'
       + '</div>'
     + '</div>'
   + '</div>';
@@ -4929,6 +5148,9 @@ function nodeTypeGlyphInner(type) {
   } else if (type === "immersion") {
     return '<circle cx="26" cy="26" r="6" fill="none" stroke="currentColor" stroke-width="1.4" />'
          + '<circle cx="26" cy="26" r="1.8" fill="currentColor" />';
+  } else if (type === "note") {
+    return '<path d="M 14 26 Q 20 19 26 19 Q 32 19 38 26 Q 32 33 26 33 Q 20 33 14 26 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />'
+         + '<circle cx="26" cy="26" r="2.2" fill="currentColor" />';
   } else if (type === "debrief") {
     return '<line x1="19" y1="33" x2="33" y2="19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />'
          + '<line x1="31" y1="19" x2="34" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />';
@@ -6172,34 +6394,58 @@ function bindEvents() {
   });
 
   // ── NODE CREATE MODAL — event wiring ──
-  // Type orbs → select type
-  var nodeTypeWraps = document.querySelectorAll("[data-node-type]");
-  for (var nti = 0; nti < nodeTypeWraps.length; nti++)(function(wrap){
-    wrap.addEventListener("click", function(){
-      if (!state.nodeCreateDraft) state.nodeCreateDraft = {};
-      state.nodeCreateDraft.type = wrap.getAttribute("data-node-type");
-      render();
+  // Shared confirm-enabled toggle (no full render — keeps intention focus + flash-free)
+  function _updateConfirmEnabled() {
+    var d = state.nodeCreateDraft || {};
+    var btn = document.getElementById("nodeCreateConfirm");
+    if (!btn) return;
+    var ok = !!(d.type && d.intended && d.intended.trim().length > 0 && d.goalCount > 0);
+    if (ok) btn.classList.remove("is-disabled");
+    else    btn.classList.add("is-disabled");
+  }
+
+  // Select a node type in place — bloom the hero, recolor atmosphere, update
+  // description + strip selection. No render() so the intention input keeps focus.
+  function _selectNodeType(typeId) {
+    if (!state.nodeCreateDraft) state.nodeCreateDraft = {};
+    state.nodeCreateDraft.type = typeId;
+    var t = nodeTypeById(typeId);
+    var hero = document.getElementById("nchHero");
+    if (hero) {
+      hero.classList.remove("is-empty");
+      hero.innerHTML = buildHeroInner(typeId);
+    }
+    var atmos = document.getElementById("nchAtmos");
+    if (atmos && t) {
+      atmos.style.background = "radial-gradient(ellipse 72% 52% at 50% 32%, rgba(" + t.tint + ",0.10), transparent 62%)";
+    }
+    var desc = document.getElementById("nchDesc");
+    if (desc && t) desc.textContent = t.desc;
+    // Strip selection states
+    var items = document.querySelectorAll(".nch-strip-item");
+    for (var si = 0; si < items.length; si++) {
+      var orb = items[si].querySelector(".nch-strip-orb");
+      var isSel = orb && orb.getAttribute("data-node-type") === typeId;
+      if (isSel) { items[si].classList.add("active"); if (orb) orb.classList.add("active"); }
+      else       { items[si].classList.remove("active"); if (orb) orb.classList.remove("active"); }
+    }
+    _updateConfirmEnabled();
+  }
+
+  var nodeTypeOrbs = document.querySelectorAll("[data-node-type]");
+  for (var nti = 0; nti < nodeTypeOrbs.length; nti++)(function(orb){
+    orb.addEventListener("click", function(){
+      _selectNodeType(orb.getAttribute("data-node-type"));
     });
-  })(nodeTypeWraps[nti]);
+  })(nodeTypeOrbs[nti]);
 
   // Intention input — live update without re-render to preserve focus
   var nodeIntention = document.getElementById("nodeIntentionInput");
   if (nodeIntention) {
-    // Autofocus on open if empty
-    if (state.nodeCreateDraft && !state.nodeCreateDraft.intended) {
-      setTimeout(function(){ nodeIntention.focus(); }, 60);
-    }
     nodeIntention.addEventListener("input", function(){
       if (!state.nodeCreateDraft) state.nodeCreateDraft = {};
       state.nodeCreateDraft.intended = nodeIntention.value;
-      // Toggle confirm enabled state in place
-      var btn = document.getElementById("nodeCreateConfirm");
-      if (btn) {
-        var d = state.nodeCreateDraft;
-        var ok = !!(d.type && d.intended && d.intended.trim().length > 0 && d.goalCount > 0);
-        if (ok) btn.classList.remove("node-create-confirm-disabled");
-        else    btn.classList.add("node-create-confirm-disabled");
-      }
+      _updateConfirmEnabled();
     });
   }
 
@@ -6215,12 +6461,7 @@ function bindEvents() {
     var unitEl = document.getElementById("nodeGoalUnit");
     if (dispEl) dispEl.textContent = goalCount;
     if (unitEl) unitEl.textContent = unit;
-    var confirmBtn = document.getElementById("nodeCreateConfirm");
-    if (confirmBtn) {
-      var ok = !!(d.type && d.intended && d.intended.trim().length > 0 && goalCount > 0);
-      if (ok) confirmBtn.classList.remove("node-create-confirm-disabled");
-      else    confirmBtn.classList.add("node-create-confirm-disabled");
-    }
+    _updateConfirmEnabled();
   }
 
   // Goal kind toggle — in-place class swap, no full render

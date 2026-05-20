@@ -29,8 +29,8 @@ This is the convergent engine of the suite.
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~6,989
-phase: 4.5 in-progress (L3 modal done, intake conversation next)
+lines: ~7,230
+phase: 4.5 in-progress (ceremonial node-create modal built; node-system rework underway)
 ```
 
 ---
@@ -56,6 +56,8 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[may-20] feat | Ceremonial node-create modal (Filigree) — hero orb (triple-ring + heraldic diamonds + arcane pulse + smoke), selector strip, color-immersion, per-type glyphs, in-place type select | touches: NODE-CREATE-MODAL, NODE_TYPES, CSS, EVENTS
+[may-20] data | NODE_TYPES: debrief→note, hybrid Filigree tints (research=violet, session=teal, immersion=jade, note=gold) + one-line descriptions | touches: CONSTANTS
 [may-20] feat | L3 node detail modal — compact progress pop-over (orb, intention, metal bar, begin/complete/+todo/delete), alive-node pulse in L2 | touches: SKILLS, [node-detail], STATE, CSS
 [may-20] fix | +/- goal stepper + sessions/hours toggle in node create modal — in-place DOM updates, no render(), eliminates flash + keyboard retrigger | touches: EVENTS:NODE-CREATE
 [may-15] feat | Nodes rendered as orbs (was shields) — tab-orb glow language at 56px, type-color halo+ring+glyph, metal arc just outside ring | touches: SKILLS-WORKSHOP, [node-progress], [node-orbs]
