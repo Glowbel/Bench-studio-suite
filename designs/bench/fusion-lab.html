@@ -1,0 +1,1413 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bench x Filigree — Fusion Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       TOKENS
+       ============================================================ */
+    :root {
+      --ink-950: #1c1d22;
+      --ink-900: #232531;
+      --ink-800: #2c2f42;
+      --ink-700: #353953;
+      --ink-600: #404663;
+      --ink-500: #4c537a;
+
+      --teal-300: #4acc85;
+      --teal-500: #168258;
+      --teal-700: #094428;
+      --teal-900: #051a10;
+
+      --violet-300: #b083d8;
+      --violet-500: #7c44b8;
+      --violet-700: #4d2580;
+      --violet-900: #260f44;
+
+      --gold-300: #f0d28a;
+      --gold-400: #d9b465;
+      --gold-600: #9a7c3d;
+
+      --mist-100: #f3f6f5;
+      --mist-200: #d8dfdc;
+      --mist-300: #b3bdba;
+      --mist-400: #8a9692;
+      --mist-500: #5e6a66;
+
+      --copper:     #b87333;
+      --silver:     #c0c8cc;
+      --metal-gold: #c9a96e;
+
+      --border:       rgba(61, 72, 88, 0.40);
+      --border-strong: rgba(61, 72, 88, 0.70);
+      --border-faint: rgba(61, 72, 88, 0.20);
+
+      --bezel-teal:         inset 0 0 24px rgba(95, 213, 193, 0.08);
+      --bezel-teal-strong:  inset 0 0 32px rgba(95, 213, 193, 0.16);
+      --bezel-gold:         inset 0 0 28px rgba(217, 180, 101, 0.14);
+      --bezel-gold-strong:  inset 0 0 18px rgba(217, 180, 101, 0.30), inset 0 0 0 1px rgba(217, 180, 101, 0.22);
+      --bezel-violet:       inset 0 0 24px rgba(176, 131, 216, 0.08);
+      --bezel-violet-strong: inset 0 0 32px rgba(176, 131, 216, 0.18);
+
+      --e1: 0 1px 2px rgba(0, 0, 0, 0.45);
+      --e2: 0 8px 24px rgba(0, 0, 0, 0.50), 0 0 32px rgba(95, 213, 193, 0.06);
+
+      --font-display: "Cormorant Garamond", Georgia, serif;
+      --font-mono:    "JetBrains Mono", "Courier New", monospace;
+
+      --ease-settle: cubic-bezier(0.25, 0.8, 0.25, 1);
+      --ease-rise:   cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ============================================================
+       RESET + BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #1c1d22;
+      color: #d8dfdc;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse 80% 60% at 72% 18%, rgba(95, 213, 193, 0.055), transparent 60%),
+        radial-gradient(ellipse 65% 50% at 18% 88%, rgba(124, 68, 184, 0.065), transparent 60%),
+        #1c1d22;
+      padding: 64px 40px 120px;
+    }
+
+    /* ============================================================
+       LAYOUT
+       ============================================================ */
+    .lab-wrap {
+      max-width: 840px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 80px;
+    }
+
+    /* ============================================================
+       TYPOGRAPHY UTILITIES
+       ============================================================ */
+    .t-display   { font-family: "Cormorant Garamond", Georgia, serif; }
+    .t-mono      { font-family: "JetBrains Mono", "Courier New", monospace; }
+    .t-italic    { font-style: italic; }
+    .t-caps      { font-variant: small-caps; letter-spacing: 0.16em; }
+    .t-eyebrow   { font-variant: small-caps; letter-spacing: 0.20em; font-size: 11px; color: #8a9692; }
+
+    /* ============================================================
+       COLOR UTILITIES (no var() — hex only, safe in class context)
+       ============================================================ */
+    .c-teal-300   { color: #4acc85; }
+    .c-teal-500   { color: #168258; }
+    .c-gold-300   { color: #f0d28a; }
+    .c-gold-400   { color: #d9b465; }
+    .c-violet-300 { color: #b083d8; }
+    .c-mist-100   { color: #f3f6f5; }
+    .c-mist-200   { color: #d8dfdc; }
+    .c-mist-300   { color: #b3bdba; }
+    .c-mist-400   { color: #8a9692; }
+    .c-mist-500   { color: #5e6a66; }
+    .c-copper     { color: #b87333; }
+    .c-silver     { color: #c0c8cc; }
+    .c-metal-gold { color: #c9a96e; }
+
+    /* ============================================================
+       HEADER
+       ============================================================ */
+    .lab-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      text-align: center;
+      padding-bottom: 8px;
+    }
+
+    .lab-mark {
+      width: 72px; height: 72px;
+      color: #4acc85;
+      animation: mark-breath 5.5s ease-in-out infinite;
+    }
+    .lab-mark svg { width: 100%; height: 100%; }
+
+    .lab-title {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-weight: 500;
+      font-size: 46px;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      color: #f3f6f5;
+    }
+
+    .lab-sub {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-style: italic;
+      font-size: 17px;
+      color: #5e6a66;
+    }
+
+    /* ============================================================
+       SECTION SHELL
+       ============================================================ */
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+
+    .section-label {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-variant: small-caps;
+      font-weight: 500;
+      letter-spacing: 0.20em;
+      font-size: 11px;
+      color: #5e6a66;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .section-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(61, 72, 88, 0.40), transparent);
+    }
+
+    /* ============================================================
+       CONTEXT GROUP (within a section)
+       ============================================================ */
+    .ctx-group {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .ctx-label {
+      font-family: "JetBrains Mono", "Courier New", monospace;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: #5e6a66;
+      text-transform: uppercase;
+    }
+
+    .ctrl-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .ctrl-caption {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-style: italic;
+      font-size: 14px;
+      color: #5e6a66;
+    }
+
+    /* ============================================================
+       TOGGLE
+       ============================================================ */
+    .toggle {
+      position: relative;
+      width: 50px; height: 26px;
+      border-radius: 9999px;
+      background: #353953;
+      border: 1px solid rgba(61, 72, 88, 0.40);
+      transition: background 600ms cubic-bezier(0.25, 0.8, 0.25, 1),
+                  border-color 600ms cubic-bezier(0.25, 0.8, 0.25, 1),
+                  box-shadow 600ms cubic-bezier(0.25, 0.8, 0.25, 1);
+      overflow: visible;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: inline-block;
+    }
+    .toggle::after {
+      content: "";
+      position: absolute; top: 2px; left: 2px;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: #8a9692;
+      transition: left 600ms cubic-bezier(0.25, 0.8, 0.25, 1),
+                  background 600ms cubic-bezier(0.25, 0.8, 0.25, 1),
+                  box-shadow 600ms cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .toggle.on-teal {
+      background: linear-gradient(90deg, #051a10, #094428);
+      border-color: rgba(95, 213, 193, 0.50);
+      box-shadow: inset 0 0 16px rgba(95, 213, 193, 0.30),
+                  0 0 18px rgba(95, 213, 193, 0.18);
+      animation: toggle-breath-teal 4s ease-in-out infinite;
+    }
+    .toggle.on-teal::after {
+      left: 26px;
+      background: radial-gradient(circle, #d8fff3 0%, #4acc85 60%, #168258 100%);
+      box-shadow: 0 0 14px rgba(95, 213, 193, 0.95),
+                  0 0 28px rgba(95, 213, 193, 0.50);
+      animation: toggle-dot-teal 2.4s ease-in-out infinite;
+    }
+
+    .toggle.on-gold {
+      background: linear-gradient(90deg, #1a0e04, #2e1c08);
+      border-color: rgba(217, 180, 101, 0.55);
+      box-shadow: inset 0 0 16px rgba(217, 180, 101, 0.28),
+                  0 0 18px rgba(217, 180, 101, 0.18);
+      animation: toggle-breath-gold 4s ease-in-out infinite;
+    }
+    .toggle.on-gold::after {
+      left: 26px;
+      background: radial-gradient(circle, #fffae8 0%, #f0d28a 60%, #9a7c3d 100%);
+      box-shadow: 0 0 14px rgba(240, 210, 138, 0.95),
+                  0 0 28px rgba(217, 180, 101, 0.55);
+      animation: toggle-dot-gold 2.4s ease-in-out infinite;
+    }
+
+    .toggle.on-violet {
+      background: linear-gradient(90deg, #260f44, #4d2580);
+      border-color: rgba(176, 131, 216, 0.50);
+      box-shadow: inset 0 0 16px rgba(176, 131, 216, 0.28),
+                  0 0 18px rgba(176, 131, 216, 0.16);
+      animation: toggle-breath-violet 4s ease-in-out infinite;
+    }
+    .toggle.on-violet::after {
+      left: 26px;
+      background: radial-gradient(circle, #f0e8ff 0%, #b083d8 60%, #7c44b8 100%);
+      box-shadow: 0 0 14px rgba(176, 131, 216, 0.90),
+                  0 0 28px rgba(176, 131, 216, 0.45);
+      animation: toggle-dot-violet 2.4s ease-in-out infinite;
+    }
+
+    .trail { display: none; }
+    .toggle.on-teal .trail,
+    .toggle.on-gold .trail,
+    .toggle.on-violet .trail { display: block; }
+
+    .trail {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      mix-blend-mode: screen;
+    }
+    .toggle.on-teal .trail {
+      background: rgba(166, 240, 220, 0.9);
+      box-shadow: 0 0 8px rgba(95, 213, 193, 0.9);
+    }
+    .toggle.on-gold .trail {
+      background: rgba(255, 240, 180, 0.9);
+      box-shadow: 0 0 8px rgba(217, 180, 101, 0.9);
+    }
+    .toggle.on-violet .trail {
+      background: rgba(220, 180, 255, 0.9);
+      box-shadow: 0 0 8px rgba(176, 131, 216, 0.9);
+    }
+    .t1 { left: 18px; animation: trail-fade 2.4s ease-in-out infinite; }
+    .t2 { left: 12px; animation: trail-fade 2.4s ease-in-out infinite 0.4s; opacity: 0; }
+
+    /* ============================================================
+       CHECKBOX
+       ============================================================ */
+    .check {
+      position: relative;
+      width: 22px; height: 22px;
+      border-radius: 5px;
+      border: 1px solid rgba(61, 72, 88, 0.70);
+      background: #2c2f42;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 480ms cubic-bezier(0.25, 0.8, 0.25, 1),
+                  border-color 480ms cubic-bezier(0.25, 0.8, 0.25, 1),
+                  box-shadow 480ms cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .check svg {
+      width: 14px; height: 14px;
+      stroke: #f3f6f5; fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round; stroke-linejoin: round;
+      stroke-dasharray: 24;
+      stroke-dashoffset: 24;
+      transition: stroke-dashoffset 600ms cubic-bezier(0.25, 0.8, 0.25, 1),
+                  stroke 300ms;
+    }
+
+    .check.on-teal {
+      background: linear-gradient(180deg, #094428, #051a10);
+      border-color: rgba(95, 213, 193, 0.55);
+      box-shadow: inset 0 0 14px rgba(95, 213, 193, 0.32),
+                  0 0 16px rgba(95, 213, 193, 0.18);
+      animation: check-breath-teal 4.2s ease-in-out infinite;
+    }
+    .check.on-teal svg { stroke-dashoffset: 0; stroke: #f3f6f5; filter: drop-shadow(0 0 4px rgba(95, 213, 193, 0.8)); }
+    .check.on-teal::after {
+      content: "";
+      position: absolute; top: -3px; right: -3px;
+      width: 3px; height: 3px; border-radius: 50%;
+      background: rgba(166, 240, 220, 0.95);
+      box-shadow: 0 0 8px rgba(95, 213, 193, 0.9);
+      mix-blend-mode: screen;
+      animation: check-mote 3s ease-in-out infinite;
+    }
+
+    .check.on-gold {
+      background: linear-gradient(180deg, #2e1c08, #1a0e04);
+      border-color: rgba(217, 180, 101, 0.55);
+      box-shadow: inset 0 0 14px rgba(217, 180, 101, 0.30),
+                  0 0 16px rgba(217, 180, 101, 0.18);
+      animation: check-breath-gold 4.2s ease-in-out infinite;
+    }
+    .check.on-gold svg { stroke-dashoffset: 0; stroke: #f0d28a; filter: drop-shadow(0 0 4px rgba(217, 180, 101, 0.8)); }
+    .check.on-gold::after {
+      content: "";
+      position: absolute; top: -3px; right: -3px;
+      width: 3px; height: 3px; border-radius: 50%;
+      background: rgba(255, 240, 180, 0.95);
+      box-shadow: 0 0 8px rgba(217, 180, 101, 0.9);
+      mix-blend-mode: screen;
+      animation: check-mote 3s ease-in-out infinite;
+    }
+
+    .check.on-violet {
+      background: linear-gradient(180deg, #4d2580, #260f44);
+      border-color: rgba(176, 131, 216, 0.55);
+      box-shadow: inset 0 0 14px rgba(176, 131, 216, 0.30),
+                  0 0 16px rgba(176, 131, 216, 0.16);
+      animation: check-breath-violet 4.2s ease-in-out infinite;
+    }
+    .check.on-violet svg { stroke-dashoffset: 0; stroke: #c9a9eb; filter: drop-shadow(0 0 4px rgba(176, 131, 216, 0.8)); }
+    .check.on-violet::after {
+      content: "";
+      position: absolute; top: -3px; right: -3px;
+      width: 3px; height: 3px; border-radius: 50%;
+      background: rgba(220, 180, 255, 0.95);
+      box-shadow: 0 0 8px rgba(176, 131, 216, 0.9);
+      mix-blend-mode: screen;
+      animation: check-mote 3s ease-in-out infinite;
+    }
+
+    /* ============================================================
+       PROGRESS
+       ============================================================ */
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex: 1;
+      min-width: 220px;
+      max-width: 360px;
+    }
+    .progress {
+      position: relative;
+      flex: 1;
+      height: 8px;
+      background: #353953;
+      border-radius: 9999px;
+      overflow: hidden;
+      border: 1px solid rgba(61, 72, 88, 0.20);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.50);
+    }
+    .progress-fill {
+      position: relative;
+      height: 100%;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .progress-fill::before {
+      content: "";
+      position: absolute; top: 0; left: 0;
+      width: 60%; height: 100%;
+      animation: shimmer 2.8s linear infinite;
+    }
+    .progress-fill::after {
+      content: "";
+      position: absolute;
+      top: 50%; right: 0;
+      transform: translate(50%, -50%);
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: comet-pulse 2s ease-in-out infinite;
+    }
+
+    .progress-fill.teal {
+      background: linear-gradient(90deg, #094428 0%, #168258 40%, #4acc85 100%);
+      box-shadow: 0 0 10px rgba(95, 213, 193, 0.50);
+    }
+    .progress-fill.teal::before {
+      background: linear-gradient(90deg, transparent 0%, rgba(220, 255, 245, 0.55) 50%, transparent 100%);
+    }
+    .progress-fill.teal::after {
+      background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(166, 240, 220, 0.7) 30%, rgba(95, 213, 193, 0) 70%);
+    }
+
+    .progress-fill.gold {
+      background: linear-gradient(90deg, #3d2a0a 0%, #9a7c3d 40%, #f0d28a 100%);
+      box-shadow: 0 0 10px rgba(217, 180, 101, 0.50);
+    }
+    .progress-fill.gold::before {
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 248, 200, 0.55) 50%, transparent 100%);
+    }
+    .progress-fill.gold::after {
+      background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255, 240, 160, 0.7) 30%, rgba(217, 180, 101, 0) 70%);
+    }
+
+    .progress-fill.violet {
+      background: linear-gradient(90deg, #260f44 0%, #7c44b8 40%, #b083d8 100%);
+      box-shadow: 0 0 10px rgba(176, 131, 216, 0.50);
+    }
+    .progress-fill.violet::before {
+      background: linear-gradient(90deg, transparent 0%, rgba(240, 220, 255, 0.55) 50%, transparent 100%);
+    }
+    .progress-fill.violet::after {
+      background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(210, 170, 255, 0.7) 30%, rgba(176, 131, 216, 0) 70%);
+    }
+
+    .progress-meta {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-style: italic;
+      font-size: 14px;
+      color: #8a9692;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .progress-meta .num {
+      font-style: normal;
+      font-weight: 500;
+      color: #d8dfdc;
+    }
+
+    /* ============================================================
+       DIVIDER WHISPER (between context groups)
+       ============================================================ */
+    .div-whisper {
+      height: 1px;
+      background: rgba(61, 72, 88, 0.20);
+      margin: 4px 0;
+    }
+
+    /* ============================================================
+       DIVIDER SHOWCASE
+       ============================================================ */
+    .div-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .div-row-label {
+      font-family: "JetBrains Mono", "Courier New", monospace;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: #5e6a66;
+      white-space: nowrap;
+      width: 150px;
+      flex-shrink: 0;
+    }
+    .div-row-line { flex: 1; }
+    .div-row-note {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-style: italic;
+      font-size: 13px;
+      color: #5e6a66;
+      white-space: nowrap;
+      text-align: right;
+      width: 180px;
+      flex-shrink: 0;
+    }
+
+    .div-teal {
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(95, 213, 193, 0.10) 10%,
+        rgba(95, 213, 193, 0.48) 50%,
+        rgba(95, 213, 193, 0.10) 90%,
+        transparent 100%);
+      box-shadow: 0 0 10px rgba(95, 213, 193, 0.25),
+                  0 0 24px rgba(95, 213, 193, 0.12);
+    }
+
+    .div-gold {
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(217, 180, 101, 0.10) 10%,
+        rgba(217, 180, 101, 0.48) 50%,
+        rgba(217, 180, 101, 0.10) 90%,
+        transparent 100%);
+      box-shadow: 0 0 10px rgba(217, 180, 101, 0.28),
+                  0 0 24px rgba(217, 180, 101, 0.14);
+    }
+
+    .div-ornament-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .div-ornament-wrap svg {
+      width: 100%;
+      height: 30px;
+      color: #b083d8;
+      animation: ornament-breath 6s ease-in-out infinite;
+    }
+
+    .div-faint-rule {
+      height: 1px;
+      background: rgba(61, 72, 88, 0.22);
+    }
+
+    /* ============================================================
+       SURFACE CARDS
+       ============================================================ */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .surf-card {
+      background: #232531;
+      border: 1px solid rgba(61, 72, 88, 0.40);
+      border-radius: 12px;
+      padding: 22px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: transform 280ms cubic-bezier(0.25, 0.8, 0.25, 1),
+                  box-shadow 280ms cubic-bezier(0.25, 0.8, 0.25, 1),
+                  border-color 280ms cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .surf-card.teal { box-shadow: var(--bezel-teal), var(--e1); }
+    .surf-card.teal:hover {
+      box-shadow: var(--bezel-teal-strong), var(--e2);
+      border-color: rgba(95, 213, 193, 0.25);
+      transform: translateY(-2px);
+    }
+    .surf-card.gold {
+      box-shadow: var(--bezel-gold), var(--e1);
+      border-color: rgba(217, 180, 101, 0.18);
+    }
+    .surf-card.gold:hover {
+      box-shadow: var(--bezel-gold-strong), var(--e2);
+      border-color: rgba(217, 180, 101, 0.36);
+      transform: translateY(-2px);
+    }
+    .surf-card.violet { box-shadow: var(--bezel-violet), var(--e1); }
+    .surf-card.violet:hover {
+      box-shadow: var(--bezel-violet-strong), var(--e2);
+      border-color: rgba(176, 131, 216, 0.26);
+      transform: translateY(-2px);
+    }
+
+    .card-brow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-variant: small-caps;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      font-size: 11px;
+      color: #8a9692;
+    }
+
+    .card-title {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-weight: 500;
+      font-size: 22px;
+      line-height: 1.15;
+      color: #f3f6f5;
+    }
+
+    .card-quote {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-style: italic;
+      font-size: 14px;
+      line-height: 1.55;
+      color: #b3bdba;
+    }
+
+    .card-rule-teal   { height: 1px; background: rgba(95, 213, 193, 0.10); }
+    .card-rule-gold   { height: 1px; background: rgba(217, 180, 101, 0.12); }
+    .card-rule-violet { height: 1px; background: rgba(176, 131, 216, 0.10); }
+
+    .card-foot {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 4px;
+    }
+    .card-kicker {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-variant: small-caps;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: #5e6a66;
+      margin-bottom: 3px;
+    }
+    .card-price {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-weight: 500;
+      font-size: 20px;
+      letter-spacing: -0.01em;
+      color: #f3f6f5;
+    }
+    .card-when {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-style: italic;
+      font-size: 13px;
+      text-align: right;
+    }
+
+    /* Chip */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-variant: small-caps;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      border: 1px solid transparent;
+    }
+    .chip-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+    .chip-teal {
+      color: #4acc85;
+      border-color: rgba(95, 213, 193, 0.35);
+      background: rgba(15, 90, 82, 0.30);
+    }
+    .chip-teal .chip-dot { background: #4acc85; box-shadow: 0 0 5px #4acc85; }
+
+    .chip-gold {
+      color: #f0d28a;
+      border-color: rgba(217, 180, 101, 0.40);
+      background: rgba(40, 28, 12, 0.60);
+    }
+    .chip-gold .chip-dot { background: #f0d28a; box-shadow: 0 0 5px #d9b465; }
+
+    .chip-violet {
+      color: #b083d8;
+      border-color: rgba(176, 131, 216, 0.35);
+      background: rgba(38, 15, 68, 0.50);
+    }
+    .chip-violet .chip-dot { background: #b083d8; box-shadow: 0 0 5px #b083d8; }
+
+    /* Node orb in card */
+    .node-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .node-orb { width: 56px; height: 56px; flex-shrink: 0; }
+    .node-name {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-weight: 500;
+      font-size: 17px;
+      color: #f3f6f5;
+      margin-bottom: 3px;
+    }
+    .node-type {
+      font-family: "JetBrains Mono", "Courier New", monospace;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #4acc85;
+    }
+
+    /* ============================================================
+       HERALDIC MARKS
+       ============================================================ */
+    .marks-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+    .mark-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .mark-state {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-variant: small-caps;
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-align: center;
+    }
+    .mark-note {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-style: italic;
+      font-size: 12px;
+      color: #5e6a66;
+      text-align: center;
+    }
+
+    .mark-copper {
+      color: #b87333;
+      opacity: 0.65;
+      filter: drop-shadow(0 0 3px rgba(184, 115, 51, 0.40))
+              drop-shadow(0 0 8px rgba(184, 115, 51, 0.18));
+    }
+    .mark-silver {
+      color: #c0c8cc;
+      filter: drop-shadow(0 0 4px rgba(95, 213, 193, 0.60))
+              drop-shadow(0 0 14px rgba(95, 213, 193, 0.28));
+      animation: mark-breath 5.5s ease-in-out infinite;
+    }
+    .mark-gold-state {
+      color: #c9a96e;
+      filter: drop-shadow(0 0 5px rgba(217, 180, 101, 0.75))
+              drop-shadow(0 0 18px rgba(217, 180, 101, 0.42))
+              drop-shadow(0 0 36px rgba(217, 180, 101, 0.18));
+      animation: mark-breath-gold 5s ease-in-out infinite;
+    }
+
+    /* ============================================================
+       KEYFRAMES
+       ============================================================ */
+    @keyframes mark-breath {
+      0%, 100% {
+        filter: drop-shadow(0 0 3px rgba(95, 213, 193, 0.55))
+                drop-shadow(0 0 10px rgba(95, 213, 193, 0.22));
+      }
+      50% {
+        filter: drop-shadow(0 0 6px rgba(95, 213, 193, 1.0))
+                drop-shadow(0 0 22px rgba(95, 213, 193, 0.55))
+                drop-shadow(0 0 42px rgba(95, 213, 193, 0.24));
+      }
+    }
+    @keyframes mark-breath-gold {
+      0%, 100% {
+        filter: drop-shadow(0 0 4px rgba(217, 180, 101, 0.65))
+                drop-shadow(0 0 12px rgba(217, 180, 101, 0.32));
+      }
+      50% {
+        filter: drop-shadow(0 0 8px rgba(217, 180, 101, 0.95))
+                drop-shadow(0 0 24px rgba(217, 180, 101, 0.58))
+                drop-shadow(0 0 44px rgba(217, 180, 101, 0.24));
+      }
+    }
+    @keyframes toggle-breath-teal {
+      0%, 100% { box-shadow: inset 0 0 14px rgba(95,213,193,0.28), 0 0 14px rgba(95,213,193,0.14); }
+      50%       { box-shadow: inset 0 0 22px rgba(95,213,193,0.42), 0 0 26px rgba(95,213,193,0.28); }
+    }
+    @keyframes toggle-dot-teal {
+      0%, 100% { box-shadow: 0 0 12px rgba(95,213,193,0.85), 0 0 22px rgba(95,213,193,0.40); }
+      50%       { box-shadow: 0 0 20px rgba(95,213,193,1.0),  0 0 38px rgba(95,213,193,0.62); }
+    }
+    @keyframes toggle-breath-gold {
+      0%, 100% { box-shadow: inset 0 0 14px rgba(217,180,101,0.25), 0 0 14px rgba(217,180,101,0.14); }
+      50%       { box-shadow: inset 0 0 22px rgba(217,180,101,0.40), 0 0 26px rgba(217,180,101,0.26); }
+    }
+    @keyframes toggle-dot-gold {
+      0%, 100% { box-shadow: 0 0 12px rgba(240,210,138,0.90), 0 0 22px rgba(217,180,101,0.45); }
+      50%       { box-shadow: 0 0 20px rgba(240,210,138,1.0),  0 0 38px rgba(217,180,101,0.65); }
+    }
+    @keyframes toggle-breath-violet {
+      0%, 100% { box-shadow: inset 0 0 14px rgba(176,131,216,0.24), 0 0 14px rgba(176,131,216,0.12); }
+      50%       { box-shadow: inset 0 0 22px rgba(176,131,216,0.40), 0 0 26px rgba(176,131,216,0.24); }
+    }
+    @keyframes toggle-dot-violet {
+      0%, 100% { box-shadow: 0 0 12px rgba(176,131,216,0.85), 0 0 22px rgba(176,131,216,0.40); }
+      50%       { box-shadow: 0 0 20px rgba(176,131,216,1.0),  0 0 38px rgba(176,131,216,0.58); }
+    }
+    @keyframes check-breath-teal {
+      0%, 100% { box-shadow: inset 0 0 12px rgba(95,213,193,0.26), 0 0 10px rgba(95,213,193,0.12); }
+      50%       { box-shadow: inset 0 0 20px rgba(95,213,193,0.42), 0 0 24px rgba(95,213,193,0.28); }
+    }
+    @keyframes check-breath-gold {
+      0%, 100% { box-shadow: inset 0 0 12px rgba(217,180,101,0.28), 0 0 10px rgba(217,180,101,0.14); }
+      50%       { box-shadow: inset 0 0 20px rgba(217,180,101,0.44), 0 0 24px rgba(217,180,101,0.28); }
+    }
+    @keyframes check-breath-violet {
+      0%, 100% { box-shadow: inset 0 0 12px rgba(176,131,216,0.24), 0 0 10px rgba(176,131,216,0.10); }
+      50%       { box-shadow: inset 0 0 20px rgba(176,131,216,0.40), 0 0 24px rgba(176,131,216,0.24); }
+    }
+    @keyframes check-mote {
+      0%, 100% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+      50%       { opacity: 1; transform: translate(2px, -3px) scale(1); }
+    }
+    @keyframes trail-fade {
+      0%, 100% { opacity: 0; }
+      50%       { opacity: 0.85; }
+    }
+    @keyframes shimmer {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(400%); }
+    }
+    @keyframes comet-pulse {
+      0%, 100% { transform: translate(50%, -50%) scale(0.9); opacity: 0.85; }
+      50%       { transform: translate(50%, -50%) scale(1.28); opacity: 1; }
+    }
+    @keyframes ornament-breath {
+      0%, 100% {
+        filter: drop-shadow(0 0 3px rgba(176, 131, 216, 0.45))
+                drop-shadow(0 0 10px rgba(176, 131, 216, 0.22));
+      }
+      50% {
+        filter: drop-shadow(0 0 6px rgba(176, 131, 216, 0.80))
+                drop-shadow(0 0 20px rgba(176, 131, 216, 0.44))
+                drop-shadow(0 0 40px rgba(176, 131, 216, 0.20));
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="lab-wrap">
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <div class="lab-header">
+    <div class="lab-mark">
+      <svg viewBox="0 0 220 220" fill="none" stroke="currentColor"
+           stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+           xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(110 110)">
+          <circle r="100" stroke-width="1.4" opacity="0.85"/>
+          <circle r="95"  stroke-width="0.9" opacity="0.50"/>
+          <circle r="90"  stroke-width="0.6" opacity="0.25"/>
+          <g fill="currentColor" stroke="none">
+            <g transform="rotate(-30)"><path d="M 0 -100 L -4 -94 L 0 -88 L 4 -94 Z"/></g>
+            <g transform="rotate(90)"> <path d="M 0 -100 L -4 -94 L 0 -88 L 4 -94 Z"/></g>
+            <g transform="rotate(210)"><path d="M 0 -100 L -4 -94 L 0 -88 L 4 -94 Z"/></g>
+          </g>
+          <g transform="rotate(-90)">
+            <path d="M 0 -8 C 18 -10, 36 -22, 38 -44 C 40 -64, 22 -76, 6 -68 C -10 -60, -10 -42, 0 -38" stroke-width="2.0"/>
+            <path d="M 0 -16 C 14 -18, 28 -26, 30 -42 C 32 -56, 18 -64, 8 -58 C -2 -52, -2 -42, 4 -42" stroke-width="1.1" opacity="0.75"/>
+            <g fill="currentColor" stroke="none">
+              <path d="M 22 -28 L 24 -26 L 22 -24 L 20 -26 Z"/>
+              <path d="M 32 -56 L 34 -54 L 32 -52 L 30 -54 Z"/>
+              <path d="M 16 -44 L 18 -42 L 16 -40 L 14 -42 Z" opacity="0.8"/>
+            </g>
+            <path d="M -3 -14 L 0 -10 L 3 -14" stroke-width="1.1"/>
+            <circle cx="0"  cy="-38" r="2"   fill="currentColor" stroke="none"/>
+            <circle cx="4"  cy="-42" r="1.4" fill="currentColor" stroke="none" opacity="0.85"/>
+            <circle cx="22" cy="-50" r="1.2" fill="currentColor" stroke="none" opacity="0.7"/>
+          </g>
+          <g transform="rotate(30)">
+            <path d="M 0 -8 C 18 -10, 36 -22, 38 -44 C 40 -64, 22 -76, 6 -68 C -10 -60, -10 -42, 0 -38" stroke-width="2.0"/>
+            <path d="M 0 -16 C 14 -18, 28 -26, 30 -42 C 32 -56, 18 -64, 8 -58 C -2 -52, -2 -42, 4 -42" stroke-width="1.1" opacity="0.75"/>
+            <g fill="currentColor" stroke="none">
+              <path d="M 22 -28 L 24 -26 L 22 -24 L 20 -26 Z"/>
+              <path d="M 32 -56 L 34 -54 L 32 -52 L 30 -54 Z"/>
+              <path d="M 16 -44 L 18 -42 L 16 -40 L 14 -42 Z" opacity="0.8"/>
+            </g>
+            <path d="M -3 -14 L 0 -10 L 3 -14" stroke-width="1.1"/>
+            <circle cx="0"  cy="-38" r="2"   fill="currentColor" stroke="none"/>
+            <circle cx="4"  cy="-42" r="1.4" fill="currentColor" stroke="none" opacity="0.85"/>
+            <circle cx="22" cy="-50" r="1.2" fill="currentColor" stroke="none" opacity="0.7"/>
+          </g>
+          <g transform="rotate(150)">
+            <path d="M 0 -8 C 18 -10, 36 -22, 38 -44 C 40 -64, 22 -76, 6 -68 C -10 -60, -10 -42, 0 -38" stroke-width="2.0"/>
+            <path d="M 0 -16 C 14 -18, 28 -26, 30 -42 C 32 -56, 18 -64, 8 -58 C -2 -52, -2 -42, 4 -42" stroke-width="1.1" opacity="0.75"/>
+            <g fill="currentColor" stroke="none">
+              <path d="M 22 -28 L 24 -26 L 22 -24 L 20 -26 Z"/>
+              <path d="M 32 -56 L 34 -54 L 32 -52 L 30 -54 Z"/>
+              <path d="M 16 -44 L 18 -42 L 16 -40 L 14 -42 Z" opacity="0.8"/>
+            </g>
+            <path d="M -3 -14 L 0 -10 L 3 -14" stroke-width="1.1"/>
+            <circle cx="0"  cy="-38" r="2"   fill="currentColor" stroke="none"/>
+            <circle cx="4"  cy="-42" r="1.4" fill="currentColor" stroke="none" opacity="0.85"/>
+            <circle cx="22" cy="-50" r="1.2" fill="currentColor" stroke="none" opacity="0.7"/>
+          </g>
+          <circle r="6"   stroke-width="1.3"/>
+          <circle r="2.4" fill="currentColor" stroke="none"/>
+          <circle r="12"  stroke-width="0.5" opacity="0.45"/>
+        </g>
+      </svg>
+    </div>
+    <div class="t-eyebrow">fusion lab · may 2026</div>
+    <div class="lab-title">Bench × Filigree</div>
+    <div class="lab-sub">Sampling the system. Feeling where the two become one.</div>
+  </div>
+
+  <!-- ============================================================
+       SECTION 1 — CONTROLS
+       ============================================================ -->
+  <div class="section">
+    <div class="section-label">controls · toggle · checkbox · progress</div>
+
+    <!-- WORKSHOP — teal -->
+    <div class="ctx-group">
+      <div class="ctx-label">workshop · bench active</div>
+
+      <div class="ctrl-row">
+        <span class="toggle" data-color="teal">
+          <span class="trail t1"></span>
+          <span class="trail t2"></span>
+        </span>
+        <span class="toggle on-teal" data-color="teal">
+          <span class="trail t1"></span>
+          <span class="trail t2"></span>
+        </span>
+        <span class="ctrl-caption">bench quiet · bench awake</span>
+      </div>
+
+      <div class="ctrl-row">
+        <span class="check" data-color="teal">
+          <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+        </span>
+        <span class="check on-teal" data-color="teal">
+          <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+        </span>
+        <span class="check on-teal" data-color="teal">
+          <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+        </span>
+        <span class="ctrl-caption">three tasks held</span>
+      </div>
+
+      <div class="ctrl-row">
+        <div class="progress-wrap">
+          <div class="progress">
+            <div class="progress-fill teal" style="width: 68%"></div>
+          </div>
+          <span class="progress-meta">setting · <span class="num">18</span> of <span class="num">26</span> prongs</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="div-whisper"></div>
+
+    <!-- COMPLETION — gold -->
+    <div class="ctx-group">
+      <div class="ctx-label">completion · piece finished</div>
+
+      <div class="ctrl-row">
+        <span class="toggle" data-color="gold">
+          <span class="trail t1"></span>
+          <span class="trail t2"></span>
+        </span>
+        <span class="toggle on-gold" data-color="gold">
+          <span class="trail t1"></span>
+          <span class="trail t2"></span>
+        </span>
+        <span class="ctrl-caption">piece resting · piece finished</span>
+      </div>
+
+      <div class="ctrl-row">
+        <span class="check" data-color="gold">
+          <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+        </span>
+        <span class="check on-gold" data-color="gold">
+          <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+        </span>
+        <span class="ctrl-caption">payment received</span>
+      </div>
+
+      <div class="ctrl-row">
+        <div class="progress-wrap">
+          <div class="progress">
+            <div class="progress-fill gold" style="width: 100%"></div>
+          </div>
+          <span class="progress-meta">delivered · <span class="num">anna's pendant</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="div-whisper"></div>
+
+    <!-- DISCOVERY — violet -->
+    <div class="ctx-group">
+      <div class="ctx-label">discovery · constellation open</div>
+
+      <div class="ctrl-row">
+        <span class="toggle" data-color="violet">
+          <span class="trail t1"></span>
+          <span class="trail t2"></span>
+        </span>
+        <span class="toggle on-violet" data-color="violet">
+          <span class="trail t1"></span>
+          <span class="trail t2"></span>
+        </span>
+        <span class="ctrl-caption">adrift · constellation open</span>
+      </div>
+
+      <div class="ctrl-row">
+        <span class="check" data-color="violet">
+          <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+        </span>
+        <span class="check on-violet" data-color="violet">
+          <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+        </span>
+        <span class="ctrl-caption">idea captured</span>
+      </div>
+
+      <div class="ctrl-row">
+        <div class="progress-wrap">
+          <div class="progress">
+            <div class="progress-fill violet" style="width: 42%"></div>
+          </div>
+          <span class="progress-meta">exploring · the idea lives</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SECTION 2 — DIVIDERS
+       ============================================================ -->
+  <div class="section">
+    <div class="section-label">dividers · surface language</div>
+
+    <div style="display: flex; flex-direction: column; gap: 32px;">
+
+      <div class="div-row">
+        <div class="div-row-label">workshop · active</div>
+        <div class="div-row-line"><div class="div-teal"></div></div>
+        <div class="div-row-note">between work zones</div>
+      </div>
+
+      <div class="div-row">
+        <div class="div-row-label">piece · ceremony</div>
+        <div class="div-row-line"><div class="div-gold"></div></div>
+        <div class="div-row-note">milestone · finished · delivered</div>
+      </div>
+
+      <div class="div-row" style="align-items: center;">
+        <div class="div-row-label">reflection · discovery</div>
+        <div class="div-row-line">
+          <div class="div-ornament-wrap">
+            <svg viewBox="0 0 560 30" fill="none" stroke="currentColor"
+                 stroke-linecap="round" stroke-linejoin="round"
+                 xmlns="http://www.w3.org/2000/svg">
+              <line x1="0"   y1="15" x2="188" y2="15" stroke-width="0.4" opacity="0.22"/>
+              <line x1="372" y1="15" x2="560" y2="15" stroke-width="0.4" opacity="0.22"/>
+              <path d="M 188 15 Q 200 9 212 15 Q 200 21 188 15 Z" stroke-width="0.8" opacity="0.55"/>
+              <path d="M 348 15 Q 360 9 372 15 Q 360 21 348 15 Z" stroke-width="0.8" opacity="0.55"/>
+              <line x1="212" y1="15" x2="246" y2="15" stroke-width="0.6" opacity="0.70"/>
+              <line x1="314" y1="15" x2="348" y2="15" stroke-width="0.6" opacity="0.70"/>
+              <circle cx="280" cy="15" r="11" stroke-width="0.9" opacity="0.55"/>
+              <circle cx="280" cy="15" r="7"  stroke-width="0.5" opacity="0.35"/>
+              <circle cx="280" cy="15" r="2.5" fill="currentColor" stroke="none"/>
+              <path d="M 242 15 L 244 13 L 246 15 L 244 17 Z" fill="currentColor" stroke="none" opacity="0.70"/>
+              <path d="M 314 15 L 316 13 L 318 15 L 316 17 Z" fill="currentColor" stroke="none" opacity="0.70"/>
+              <circle cx="200" cy="15" r="1.2" fill="currentColor" stroke="none" opacity="0.45"/>
+              <circle cx="360" cy="15" r="1.2" fill="currentColor" stroke="none" opacity="0.45"/>
+            </svg>
+          </div>
+        </div>
+        <div class="div-row-note">constellation · door · archive</div>
+      </div>
+
+      <div class="div-row">
+        <div class="div-row-label">list · whisper rule</div>
+        <div class="div-row-line"><div class="div-faint-rule"></div></div>
+        <div class="div-row-note">between list items</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SECTION 3 — SURFACES
+       ============================================================ -->
+  <div class="section">
+    <div class="section-label">surfaces · bezel language</div>
+
+    <div class="cards-grid">
+
+      <!-- Workshop card: node orb in teal bezel -->
+      <div class="surf-card teal">
+        <div class="card-brow">
+          <span>Workshop</span>
+          <span class="chip chip-teal"><span class="chip-dot"></span>active</span>
+        </div>
+        <div class="node-row">
+          <svg class="node-orb" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="28" cy="28" r="22" stroke="rgba(74,204,133,0.14)" stroke-width="1.5"/>
+            <circle cx="28" cy="28" r="24" stroke="rgba(74,204,133,0.07)" stroke-width="1.2"/>
+            <circle cx="28" cy="28" r="19" stroke="#4acc85" stroke-width="1.6" fill="rgba(74,204,133,0.06)"/>
+            <path d="M 28 8.5 A 19.5 19.5 0 0 1 47.2 27.5" stroke="#c0c8cc" stroke-width="2.2" stroke-linecap="round"/>
+            <rect x="21" y="23" width="14" height="10" rx="1.5" stroke="#4acc85" stroke-width="1.4"/>
+            <line x1="24" y1="23" x2="24" y2="20" stroke="#4acc85" stroke-width="1.2"/>
+            <line x1="32" y1="23" x2="32" y2="20" stroke="#4acc85" stroke-width="1.2"/>
+            <line x1="24" y1="27" x2="32" y2="27" stroke="#4acc85" stroke-width="1.0" opacity="0.65"/>
+            <line x1="24" y1="30" x2="29" y2="30" stroke="#4acc85" stroke-width="1.0" opacity="0.65"/>
+          </svg>
+          <div>
+            <div class="node-name">Chasing</div>
+            <div class="node-type">session · silver</div>
+          </div>
+        </div>
+        <div class="progress" style="height: 6px;">
+          <div class="progress-fill teal" style="width: 55%"></div>
+        </div>
+        <div class="card-foot">
+          <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 13px; color: #5e6a66;">4.5 h logged</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #4acc85;">55%</span>
+        </div>
+      </div>
+
+      <!-- Piece card: gold bezel, finished commission -->
+      <div class="surf-card gold">
+        <div class="card-brow">
+          <span style="color: #d9b465;">Pieces</span>
+          <span class="chip chip-gold"><span class="chip-dot"></span>finished</span>
+        </div>
+        <div class="card-title">Anna's Pendant</div>
+        <p class="card-quote">"Something that catches light the way the river did the morning we scattered her ashes."</p>
+        <div class="card-rule-gold"></div>
+        <div class="card-foot">
+          <div>
+            <div class="card-kicker">moonstone · sterling</div>
+            <div class="card-price" style="color: #f0d28a;">$1,420</div>
+          </div>
+          <div class="card-when" style="color: #d9b465;">
+            <div class="card-kicker" style="text-align: right;">delivered</div>
+            three weeks ago
+          </div>
+        </div>
+      </div>
+
+      <!-- Client card: violet bezel, correspondence -->
+      <div class="surf-card violet">
+        <div class="card-brow">
+          <span style="color: #b083d8;">Letters</span>
+          <span class="chip chip-violet"><span class="chip-dot"></span>awaiting reply</span>
+        </div>
+        <div class="card-title" style="font-size: 20px;">Mira</div>
+        <p class="card-quote">"Two rings that look like they grew from the same tree."</p>
+        <div class="card-rule-violet"></div>
+        <div class="card-foot">
+          <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 13px; color: #8a9692;">wedding bands · sterling</span>
+          <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 13px; color: #b083d8;">yesterday</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SECTION 4 — HERALDIC MARK · METAL STATES
+       ============================================================ -->
+  <div class="section">
+    <div class="section-label">heraldic mark · three metal states</div>
+
+    <div class="marks-row">
+
+      <!-- Copper: not yet begun -->
+      <div class="mark-item">
+        <div class="mark-copper" style="width: 80px; height: 80px;">
+          <svg viewBox="0 0 220 220" fill="none" stroke="currentColor"
+               stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+               xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(110 110)">
+              <circle r="100" stroke-width="1.4" opacity="0.85"/>
+              <circle r="95"  stroke-width="0.9" opacity="0.50"/>
+              <circle r="90"  stroke-width="0.6" opacity="0.25"/>
+              <g fill="currentColor" stroke="none">
+                <g transform="rotate(-30)"><path d="M 0 -100 L -4 -94 L 0 -88 L 4 -94 Z"/></g>
+                <g transform="rotate(90)"> <path d="M 0 -100 L -4 -94 L 0 -88 L 4 -94 Z"/></g>
+                <g transform="rotate(210)"><path d="M 0 -100 L -4 -94 L 0 -88 L 4 -94 Z"/></g>
+              </g>
+              <g transform="rotate(-90)">
+                <path d="M 0 -8 C 18 -10, 36 -22, 38 -44 C 40 -64, 22 -76, 6 -68 C -10 -60, -10 -42, 0 -38" stroke-width="2.0"/>
+                <path d="M 0 -16 C 14 -18, 28 -26, 30 -42 C 32 -56, 18 -64, 8 -58 C -2 -52, -2 -42, 4 -42" stroke-width="1.1" opacity="0.75"/>
+                <path d="M -3 -14 L 0 -10 L 3 -14" stroke-width="1.1"/>
+                <circle cx="0" cy="-38" r="2" fill="currentColor" stroke="none"/>
+                <circle cx="4" cy="-42" r="1.4" fill="currentColor" stroke="none" opacity="0.85"/>
+              </g>
+              <g transform="rotate(30)">
+                <path d="M 0 -8 C 18 -10, 36 -22, 38 -44 C 40 -64, 22 -76, 6 -68 C -10 -60, -10 -42, 0 -38" stroke-width="2.0"/>
+                <path d="M 0 -16 C 14 -18, 28 -26, 30 -42 C 32 -56, 18 -64, 8 -58 C -2 -52, -2 -42, 4 -42" stroke-width="1.1" opacity="0.75"/>
+                <path d="M -3 -14 L 0 -10 L 3 -14" stroke-width="1.1"/>
+                <circle cx="0" cy="-38" r="2" fill="currentColor" stroke="none"/>
+                <circle cx="4" cy="-42" r="1.4" fill="currentColor" stroke="none" opacity="0.85"/>
+              </g>
+              <g transform="rotate(150)">
+                <path d="M 0 -8 C 18 -10, 36 -22, 38 -44 C 40 -64, 22 -76, 6 -68 C -10 -60, -10 -42, 0 -38" stroke-width="2.0"/>
+                <path d="M 0 -16 C 14 -18, 28 -26, 30 -42 C 32 -56, 18 -64, 8 -58 C -2 -52, -2 -42, 4 -42" stroke-width="1.1" opacity="0.75"/>
+                <path d="M -3 -14 L 0 -10 L 3 -14" stroke-width="1.1"/>
+                <circle cx="0" cy="-38" r="2" fill="currentColor" stroke="none"/>
+                <circle cx="4" cy="-42" r="1.4" fill="currentColor" stroke="none" opacity="0.85"/>
+              </g>
+              <circle r="6"   stroke-width="1.3"/>
+              <circle r="2.4" fill="currentColor" stroke="none"/>
+              <circle r="12"  stroke-width="0.5" opacity="0.45"/>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <div class="mark-state c-copper">copper</div>
+          <div class="mark-note">not yet begun</div>
+        </div>
+      </div>
+
+      <!-- Silver: walking the path -->
+      <div class="mark-item">
+        <div class="mark-silver" style="width: 112px; height: 112px;">
+          <svg viewBox="0 0 220 220" fill="none" stroke="currentColor"
+               stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+               xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(110 110)">
+              <circle r="100" stroke-width="1.4" opacity="0.85"/>
+              <circle r="95"  stroke-width="0.9" opacity="0.50"/>
+              <circle r="90"  stroke-width="0.6" opacity="0.25"/>
+              <g fill="currentColor" stroke="none">
+                <g transform="rotate(-30)"><path d="M 0 -100 L -4 -94 L 0 -88 L 4 -94 Z"/></g>
+                <g transform="rotate(90)"> <path d="M 0 -100 L -4 -94 L 0 -88 L 4 -94 Z"/></g>
+                <g transform="rotate(210)"><path d="M 0 -100 L -4 -94 L 0 -88 L 4 -94 Z"/></g>
+              </g>
+              <g transform="rotate(-90)">
+                <path d="M 0 -8 C 18 -10, 36 -22, 38 -44 C 40 -64, 22 -76, 6 -68 C -10 -60, -10 -42, 0 -38" stroke-width="2.0"/>
+                <path d="M 0 -16 C 14 -18, 28 -26, 30 -42 C 32 -56, 18 -64, 8 -58 C -2 -52, -2 -42, 4 -42" stroke-width="1.1" opacity="0.75"/>
+                <g fill="currentColor" stroke="none">
+                  <path d="M 22 -28 L 24 -26 L 22 -24 L 20 -26 Z"/>
+                  <path d="M 32 -56 L 34 -54 L 32 -52 L 30 -54 Z"/>
+                </g>
+                <path d="M -3 -14 L 0 -10 L 3 -14" stroke-width="1.1"/>
+                <circle cx="0"  cy="-38" r="2"   fill="currentColor" stroke="none"/>
+                <circle cx="4"  cy="-42" r="1.4" fill="currentColor" stroke="none" opacity="0.85"/>
+                <circle cx="22" cy="-50" r="1.2" fill="currentColor" stroke="none" opacity="0.7"/>
+              </g>
+              <g transform="rotate(30)">
+                <path d="M 0 -8 C 18 -10, 36 -22, 38 -44 C 40 -64, 22 -76, 6 -68 C -10 -60, -10 -42, 0 -38" stroke-width="2.0"/>
+                <path d="M 0 -16 C 14 -18, 28 -26, 30 -42 C 32 -56, 18 -64, 8 -58 C -2 -52, -2 -42, 4 -42" stroke-width="1.1" opacity="0.75"/>
+                <g fill="currentColor" stroke="none">
+                  <path d="M 22 -28 L 24 -26 L 22 -24 L 20 -26 Z"/>
+                  <path d="M 32 -56 L 34 -54 L 32 -52 L 30 -54 Z"/>
+                </g>
+                <path d="M -3 -14 L 0 -10 L 3 -14" stroke-width="1.1"/>
+                <circle cx="0"  cy="-38" r="2"   fill="currentColor" stroke="none"/>
+                <circle cx="4"  cy="-42" r="1.4" fill="currentColor" stroke="none" opacity="0.85"/>
+                <circle cx="22" cy="-50" r="1.2" fill="currentColor" stroke="none" opacity="0.7"/>
+              </g>
+              <g transform="rotate(150)">
+                <path d="M 0 -8 C 18 -10, 36 -22, 38 -44 C 40 -64, 22 -76, 6 -68 C -10 -60, -10 -42, 0 -38" stroke-width="2.0"/>
+                <path d="M 0 -16 C 14 -18, 28 -26, 30 -42 C 32 -56, 18 -64, 8 -58 C -2 -52, -2 -42, 4 -42" stroke-width="1.1" opacity="0.75"/>
+                <g fill="currentColor" stroke="none">
+                  <path d="M 22 -28 L 24 -26 L 22 -24 L 20 -26 Z"/>
+                  <path d="M 32 -56 L 34 -54 L 32 -52 L 30 -54 Z"/>
+                </g>
+                <path d="M -3 -14 L 0 -10 L 3 -14" stroke-width="1.1"/>
+                <circle cx="0"  cy="-38" r="2"   fill="currentColor" stroke="none"/>
+                <circle cx="4"  cy="-42" r="1.4" fill="currentColor" stroke="none" opacity="0.85"/>
+                <circle cx="22" cy="-50" r="1.2" fill="currentColor" stroke="none" opacity="0.7"/>
+              </g>
+              <circle r="6"   stroke-width="1.3"/>
+              <circle r="2.4" fill="currentColor" stroke="none"/>
+              <circle r="12"  stroke-width="0.5" opacity="0.45"/>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <div class="mark-state c-teal-300">silver</div>
+          <div class="mark-note">walking the path</div>
+        </div>
+      </div>
+
+      <!-- Gold: mastered -->
+      <div class="mark-item">
+        <div class="mark-gold-state" style="width: 144px; height: 144px;">
+          <svg viewBox="0 0 220 220" fill="none" stroke="currentColor"
+               stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+               xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(110 110)">
+              <circle r="100" stroke-width="1.4" opacity="0.85"/>
+              <circle r="95"  stroke-width="0.9" opacity="0.50"/>
+              <circle r="90"  stroke-width="0.6" opacity="0.25"/>
+              <g fill="currentColor" stroke="none">
+                <g transform="rotate(-30)"><path d="M 0 -100 L -4 -94 L 0 -88 L 4 -94 Z"/></g>
+                <g transform="rotate(90)"> <path d="M 0 -100 L -4 -94 L 0 -88 L 4 -94 Z"/></g>
+                <g transform="rotate(210)"><path d="M 0 -100 L -4 -94 L 0 -88 L 4 -94 Z"/></g>
+              </g>
+              <g transform="rotate(-90)">
+                <path d="M 0 -8 C 18 -10, 36 -22, 38 -44 C 40 -64, 22 -76, 6 -68 C -10 -60, -10 -42, 0 -38" stroke-width="2.0"/>
+                <path d="M 0 -16 C 14 -18, 28 -26, 30 -42 C 32 -56, 18 -64, 8 -58 C -2 -52, -2 -42, 4 -42" stroke-width="1.1" opacity="0.75"/>
+                <g fill="currentColor" stroke="none">
+                  <path d="M 22 -28 L 24 -26 L 22 -24 L 20 -26 Z"/>
+                  <path d="M 32 -56 L 34 -54 L 32 -52 L 30 -54 Z"/>
+                  <path d="M 16 -44 L 18 -42 L 16 -40 L 14 -42 Z" opacity="0.8"/>
+                </g>
+                <path d="M -3 -14 L 0 -10 L 3 -14" stroke-width="1.1"/>
+                <circle cx="0"  cy="-38" r="2"   fill="currentColor" stroke="none"/>
+                <circle cx="4"  cy="-42" r="1.4" fill="currentColor" stroke="none" opacity="0.85"/>
+                <circle cx="22" cy="-50" r="1.2" fill="currentColor" stroke="none" opacity="0.7"/>
+              </g>
+              <g transform="rotate(30)">
+                <path d="M 0 -8 C 18 -10, 36 -22, 38 -44 C 40 -64, 22 -76, 6 -68 C -10 -60, -10 -42, 0 -38" stroke-width="2.0"/>
+                <path d="M 0 -16 C 14 -18, 28 -26, 30 -42 C 32 -56, 18 -64, 8 -58 C -2 -52, -2 -42, 4 -42" stroke-width="1.1" opacity="0.75"/>
+                <g fill="currentColor" stroke="none">
+                  <path d="M 22 -28 L 24 -26 L 22 -24 L 20 -26 Z"/>
+                  <path d="M 32 -56 L 34 -54 L 32 -52 L 30 -54 Z"/>
+                  <path d="M 16 -44 L 18 -42 L 16 -40 L 14 -42 Z" opacity="0.8"/>
+                </g>
+                <path d="M -3 -14 L 0 -10 L 3 -14" stroke-width="1.1"/>
+                <circle cx="0"  cy="-38" r="2"   fill="currentColor" stroke="none"/>
+                <circle cx="4"  cy="-42" r="1.4" fill="currentColor" stroke="none" opacity="0.85"/>
+                <circle cx="22" cy="-50" r="1.2" fill="currentColor" stroke="none" opacity="0.7"/>
+              </g>
+              <g transform="rotate(150)">
+                <path d="M 0 -8 C 18 -10, 36 -22, 38 -44 C 40 -64, 22 -76, 6 -68 C -10 -60, -10 -42, 0 -38" stroke-width="2.0"/>
+                <path d="M 0 -16 C 14 -18, 28 -26, 30 -42 C 32 -56, 18 -64, 8 -58 C -2 -52, -2 -42, 4 -42" stroke-width="1.1" opacity="0.75"/>
+                <g fill="currentColor" stroke="none">
+                  <path d="M 22 -28 L 24 -26 L 22 -24 L 20 -26 Z"/>
+                  <path d="M 32 -56 L 34 -54 L 32 -52 L 30 -54 Z"/>
+                  <path d="M 16 -44 L 18 -42 L 16 -40 L 14 -42 Z" opacity="0.8"/>
+                </g>
+                <path d="M -3 -14 L 0 -10 L 3 -14" stroke-width="1.1"/>
+                <circle cx="0"  cy="-38" r="2"   fill="currentColor" stroke="none"/>
+                <circle cx="4"  cy="-42" r="1.4" fill="currentColor" stroke="none" opacity="0.85"/>
+                <circle cx="22" cy="-50" r="1.2" fill="currentColor" stroke="none" opacity="0.7"/>
+              </g>
+              <circle r="6"   stroke-width="1.3"/>
+              <circle r="2.4" fill="currentColor" stroke="none"/>
+              <circle r="12"  stroke-width="0.5" opacity="0.45"/>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <div class="mark-state c-metal-gold">gold</div>
+          <div class="mark-note">mastered</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var toggleEls = document.querySelectorAll('.toggle');
+  for (var i = 0; i < toggleEls.length; i++) {
+    toggleEls[i].addEventListener('click', function() {
+      var color = this.getAttribute('data-color');
+      if (color === 'teal') { this.classList.toggle('on-teal'); }
+      else if (color === 'gold') { this.classList.toggle('on-gold'); }
+      else if (color === 'violet') { this.classList.toggle('on-violet'); }
+    });
+  }
+
+  var checkEls = document.querySelectorAll('.check');
+  for (var i = 0; i < checkEls.length; i++) {
+    checkEls[i].addEventListener('click', function() {
+      var color = this.getAttribute('data-color');
+      if (!color) { return; }
+      var onClass = 'on-' + color;
+      this.classList.toggle(onClass);
+    });
+  }
+</script>
+</body>
+</html>
