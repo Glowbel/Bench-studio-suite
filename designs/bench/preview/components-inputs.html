@@ -1,0 +1,44 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 26px; display: flex; flex-direction: column; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; max-width: 360px; }
+  .field-label {
+    font-family: var(--font-display); font-variant: small-caps;
+    letter-spacing: 0.16em; font-size: 12px; color: var(--fg-muted);
+  }
+  .input {
+    background: var(--ink-800);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    color: var(--mist-200);
+    font-family: var(--font-body); font-size: 14px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+    transition: border-color 240ms, box-shadow 240ms;
+  }
+  .input.focused {
+    border-color: rgba(95,213,193,0.50);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.4),
+                inset 0 0 16px rgba(95,213,193,0.10),
+                0 0 0 2px rgba(95,213,193,0.18);
+    outline: none;
+  }
+  .row { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+</style></head>
+<body>
+  <div class="row">
+    <div class="field">
+      <div class="field-label">client</div>
+      <div class="input">Anna · spring birthstone</div>
+    </div>
+    <div class="field">
+      <div class="field-label">gemstone</div>
+      <div class="input focused">moonstone, 8 mm</div>
+    </div>
+    <div class="field">
+      <div class="field-label">wire gauge</div>
+      <div class="input" style="font-family: var(--font-mono); color: var(--fg-faint)">enter gauge…</div>
+    </div>
+  </div>
+</body></html>

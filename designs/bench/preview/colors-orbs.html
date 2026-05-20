@@ -1,0 +1,234 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .cell { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .frame {
+    width: 100%;
+    aspect-ratio: 1.4 / 1;
+    background:
+      radial-gradient(ellipse 60% 60% at 50% 60%, rgba(255,255,255,0.015), transparent 70%),
+      var(--bg-sunken);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* ===== Orb system ============================================ */
+  .orb-sys { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+
+  /* Outer halo — very soft, large, slow breath */
+  .halo {
+    position: absolute;
+    width: 130%; height: 130%;
+    border-radius: 50%;
+    filter: blur(8px);
+    animation: halo-breath 5.5s ease-in-out infinite;
+    mix-blend-mode: screen;
+  }
+  /* Mid aura — rotates slowly to add living motion */
+  .aura {
+    position: absolute;
+    width: 80%; height: 80%;
+    border-radius: 50%;
+    filter: blur(4px);
+    animation: aura-spin 14s linear infinite, aura-breath 3.2s ease-in-out infinite;
+    mix-blend-mode: screen;
+  }
+  /* Inner core — bright, tight */
+  .core {
+    position: relative;
+    width: 36%; height: 36%;
+    border-radius: 50%;
+    filter: blur(1px);
+    animation: core-pulse 2.8s ease-in-out infinite;
+    z-index: 2;
+  }
+  /* Crisp hot center */
+  .core::after {
+    content: "";
+    position: absolute; inset: 32%;
+    background: radial-gradient(circle, rgba(255,255,255,0.95), rgba(255,255,255,0.20) 50%, transparent 80%);
+    border-radius: 50%;
+    filter: blur(1px);
+  }
+
+  /* Ring whisper — concentric arc that drifts outward */
+  .ring {
+    position: absolute;
+    width: 55%; height: 55%;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    opacity: 0;
+    animation: ring-out 4s ease-out infinite;
+    mix-blend-mode: screen;
+  }
+  .ring.r2 { animation-delay: 2s; }
+
+  /* ===== Particles =============================================
+     Each particle is a tiny bright dot that drifts along an
+     elliptical orbit with its own fade lifecycle. */
+  .p {
+    position: absolute;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 6px currentColor, 0 0 12px currentColor;
+    top: 50%; left: 50%;
+    margin: -1.5px 0 0 -1.5px;
+    mix-blend-mode: screen;
+    will-change: transform, opacity;
+  }
+  .p.big { width: 4px; height: 4px; margin: -2px 0 0 -2px; }
+
+  /* ===== Color theming =========================================
+     The currentColor of the .frame drives every layer. */
+  .teal   { color: var(--teal-300); }
+  .violet { color: var(--violet-300); }
+  .gold   { color: var(--gold-300); }
+
+  .teal   .halo { background: radial-gradient(circle, rgba(95, 213, 193, 0.55) 0%, rgba(95, 213, 193, 0.16) 35%, transparent 65%); }
+  .teal   .aura { background: radial-gradient(circle, rgba(95, 213, 193, 0.65) 0%, rgba(166, 240, 220, 0.25) 45%, transparent 75%); }
+  .teal   .core { background: radial-gradient(circle, rgba(166, 240, 220, 0.95) 0%, rgba(95, 213, 193, 0.55) 40%, transparent 75%); }
+
+  .violet .halo { background: radial-gradient(circle, rgba(176, 131, 216, 0.55) 0%, rgba(176, 131, 216, 0.16) 35%, transparent 65%); }
+  .violet .aura { background: radial-gradient(circle, rgba(176, 131, 216, 0.65) 0%, rgba(220, 180, 245, 0.25) 45%, transparent 75%); }
+  .violet .core { background: radial-gradient(circle, rgba(220, 180, 245, 0.95) 0%, rgba(176, 131, 216, 0.55) 40%, transparent 75%); }
+
+  .gold   .halo { background: radial-gradient(circle, rgba(240, 210, 138, 0.55) 0%, rgba(240, 210, 138, 0.16) 35%, transparent 65%); }
+  .gold   .aura { background: radial-gradient(circle, rgba(240, 210, 138, 0.70) 0%, rgba(255, 230, 170, 0.30) 45%, transparent 75%); }
+  .gold   .core { background: radial-gradient(circle, rgba(255, 235, 180, 0.95) 0%, rgba(240, 210, 138, 0.55) 40%, transparent 75%); }
+
+  /* ===== Keyframes ============================================ */
+  @keyframes halo-breath {
+    0%, 100% { transform: scale(0.92); opacity: 0.55; }
+    50%      { transform: scale(1.08); opacity: 1; }
+  }
+  @keyframes aura-breath {
+    0%, 100% { transform: scale(0.96); }
+    50%      { transform: scale(1.06); }
+  }
+  @keyframes aura-spin {
+    0%   { rotate: 0deg; }
+    100% { rotate: 360deg; }
+  }
+  @keyframes core-pulse {
+    0%, 100% { transform: scale(1);    opacity: 0.85; }
+    50%      { transform: scale(1.12); opacity: 1; }
+  }
+  @keyframes ring-out {
+    0%   { transform: scale(0.5); opacity: 0; }
+    20%  { opacity: 0.5; }
+    100% { transform: scale(2.0); opacity: 0; }
+  }
+
+  /* Particle drifts — 6 unique orbit/fade paths.
+     We offset start time + duration so they feel unsynchronized. */
+  @keyframes drift-a {
+    0%   { transform: translate(-2px, -38px) scale(0.6); opacity: 0; }
+    20%  { opacity: 1; }
+    100% { transform: translate(-42px, 16px) scale(1);   opacity: 0; }
+  }
+  @keyframes drift-b {
+    0%   { transform: translate(36px, -12px) scale(0.7); opacity: 0; }
+    25%  { opacity: 1; }
+    100% { transform: translate(18px, 44px) scale(0.5);  opacity: 0; }
+  }
+  @keyframes drift-c {
+    0%   { transform: translate(-30px, 8px) scale(0.5);  opacity: 0; }
+    30%  { opacity: 1; }
+    100% { transform: translate(10px, 36px) scale(1.1);  opacity: 0; }
+  }
+  @keyframes drift-d {
+    0%   { transform: translate(18px, 30px) scale(0.5);  opacity: 0; }
+    25%  { opacity: 0.9; }
+    100% { transform: translate(38px, -22px) scale(1);   opacity: 0; }
+  }
+  @keyframes drift-e {
+    0%   { transform: translate(-26px, -22px) scale(0.4); opacity: 0; }
+    35%  { opacity: 1; }
+    100% { transform: translate(-44px, 30px) scale(0.7);  opacity: 0; }
+  }
+  @keyframes drift-f {
+    0%   { transform: translate(8px, 36px) scale(0.7);   opacity: 0; }
+    20%  { opacity: 0.8; }
+    100% { transform: translate(-12px, -38px) scale(1.1); opacity: 0; }
+  }
+
+  .p1 { animation: drift-a 5.4s ease-in-out infinite; }
+  .p2 { animation: drift-b 6.2s ease-in-out infinite .8s; }
+  .p3 { animation: drift-c 7.0s ease-in-out infinite 1.6s; }
+  .p4 { animation: drift-d 5.8s ease-in-out infinite 2.4s; }
+  .p5 { animation: drift-e 6.6s ease-in-out infinite 3.2s; }
+  .p6 { animation: drift-f 7.4s ease-in-out infinite 4.0s; }
+
+  /* ===== Labels =============================================== */
+  .lbl { font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); text-align: center; }
+  .lbl .v { display: block; font-size: 10px; color: var(--fg-faint); margin-top: 2px;
+            font-family: var(--font-display); font-style: italic; letter-spacing: 0.02em; }
+</style></head>
+<body>
+  <div class="grid">
+
+    <div class="cell">
+      <div class="frame teal">
+        <div class="orb-sys">
+          <div class="halo"></div>
+          <div class="aura"></div>
+          <div class="ring"></div>
+          <div class="ring r2"></div>
+          <div class="core"></div>
+          <div class="p p1"></div>
+          <div class="p p2 big"></div>
+          <div class="p p3"></div>
+          <div class="p p4"></div>
+          <div class="p p5"></div>
+          <div class="p p6 big"></div>
+        </div>
+      </div>
+      <div class="lbl">--orb-teal<span class="v">verdigris · the alive</span></div>
+    </div>
+
+    <div class="cell">
+      <div class="frame violet">
+        <div class="orb-sys">
+          <div class="halo"></div>
+          <div class="aura"></div>
+          <div class="ring"></div>
+          <div class="ring r2"></div>
+          <div class="core"></div>
+          <div class="p p1 big"></div>
+          <div class="p p2"></div>
+          <div class="p p3"></div>
+          <div class="p p4 big"></div>
+          <div class="p p5"></div>
+          <div class="p p6"></div>
+        </div>
+      </div>
+      <div class="lbl">--orb-violet<span class="v">amethyst · the deep</span></div>
+    </div>
+
+    <div class="cell">
+      <div class="frame gold">
+        <div class="orb-sys">
+          <div class="halo"></div>
+          <div class="aura"></div>
+          <div class="ring"></div>
+          <div class="ring r2"></div>
+          <div class="core"></div>
+          <div class="p p1"></div>
+          <div class="p p2"></div>
+          <div class="p p3 big"></div>
+          <div class="p p4"></div>
+          <div class="p p5 big"></div>
+          <div class="p p6"></div>
+        </div>
+      </div>
+      <div class="lbl">--orb-gold<span class="v">aurum · the finished</span></div>
+    </div>
+
+  </div>
+</body></html>

@@ -1,0 +1,118 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body {
+    padding: 22px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 22px 28px;
+    align-items: center;
+  }
+  .cell { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .stage { display: flex; align-items: center; justify-content: center;
+           height: 90px; }
+  .stage object { display: block; pointer-events: none; }
+
+  /* Sizes per ornament */
+  .flourish object { width: 92px;  height: 92px;  }
+  .corner object   { width: 80px;  height: 80px;  }
+  .divider object  { width: 220px; height: 32px;  }
+  .endcap object   { width: 200px; height: 56px;  }
+  .bracket object  { width: 28px;  height: 80px;  }
+  .section object  { width: 180px; height: 26px;  }
+  .bullet object   { width: 20px;  height: 20px;  }
+
+  /* Colorways with subtle glows */
+  .flourish { color: var(--teal-300);   filter: drop-shadow(0 0 6px rgba(74, 204, 133, 0.35)); }
+  .corner   { color: var(--mist-200);   filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.20)); }
+  .divider  { color: var(--violet-300); filter: drop-shadow(0 0 6px rgba(176, 131, 216, 0.30)); }
+  .endcap   { color: var(--gold-300);   filter: drop-shadow(0 0 7px rgba(217, 180, 101, 0.42)); }
+  .bracket  { color: var(--violet-300); filter: drop-shadow(0 0 4px rgba(176, 131, 216, 0.30)); }
+  .section  { color: var(--mist-300);   filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.18)); }
+
+  /* Bracket pair display */
+  .bracket-pair { display: flex; align-items: center; gap: 14px; height: 80px; }
+  .bracket-pair .quote {
+    font-family: var(--font-display); font-style: italic;
+    font-size: 13px; color: var(--fg-muted);
+    text-align: center; max-width: 90px; line-height: 1.4;
+  }
+  .bracket-pair .right { transform: scaleX(-1); }
+
+  /* Bullet usage demo — small inline */
+  .bullet-row {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-display); font-size: 14px;
+    color: var(--fg-muted);
+  }
+
+  .name {
+    font-family: var(--font-display); font-variant: small-caps;
+    letter-spacing: 0.16em; font-size: 11px; color: var(--fg-muted);
+    text-align: center;
+  }
+  .name .v {
+    display: block;
+    font-family: var(--font-mono); font-style: normal;
+    font-variant: normal; letter-spacing: 0.02em;
+    font-size: 9px; color: var(--fg-faint);
+    margin-top: 3px;
+  }
+</style></head>
+<body>
+
+  <!-- Row 1 -->
+  <div class="cell">
+    <div class="stage flourish">
+      <object data="../assets/ornament-spiral-single.svg" type="image/svg+xml"></object>
+    </div>
+    <div class="name">flourish<span class="v">single scroll</span></div>
+  </div>
+
+  <div class="cell">
+    <div class="stage corner">
+      <object data="../assets/ornament-corner.svg" type="image/svg+xml"></object>
+    </div>
+    <div class="name">corner<span class="v">page anchor</span></div>
+  </div>
+
+  <div class="cell">
+    <div class="stage divider">
+      <object data="../assets/ornament-divider-horizontal.svg" type="image/svg+xml"></object>
+    </div>
+    <div class="name">divider<span class="v">between sections</span></div>
+  </div>
+
+  <!-- Row 2 -->
+  <div class="cell">
+    <div class="stage bracket-pair">
+      <span class="bracket"><object data="../assets/ornament-bracket.svg" type="image/svg+xml"></object></span>
+      <span class="quote">held in setting</span>
+      <span class="bracket right"><object data="../assets/ornament-bracket.svg" type="image/svg+xml"></object></span>
+    </div>
+    <div class="name">bracket pair<span class="v">framing a quote or label</span></div>
+  </div>
+
+  <div class="cell">
+    <div class="stage endcap">
+      <object data="../assets/ornament-endcap.svg" type="image/svg+xml"></object>
+    </div>
+    <div class="name">end-cap<span class="v">closes a section</span></div>
+  </div>
+
+  <div class="cell">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+      <div class="stage section" style="height: auto;">
+        <object data="../assets/ornament-section-rule.svg" type="image/svg+xml"></object>
+      </div>
+      <div class="bullet-row">
+        <span class="bullet" style="color: var(--teal-300); filter: drop-shadow(0 0 3px rgba(74,204,133,0.4));">
+          <object data="../assets/ornament-bullet.svg" type="image/svg+xml" style="width: 14px; height: 14px;"></object>
+        </span>
+        <span>the ledger holds</span>
+      </div>
+    </div>
+    <div class="name">section rule &amp; bullet<span class="v">in-line accents</span></div>
+  </div>
+
+</body></html>

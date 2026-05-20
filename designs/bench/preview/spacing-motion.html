@@ -1,0 +1,27 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 24px 28px; display: flex; flex-direction: column; gap: 14px; }
+  .row { display: grid; grid-template-columns: 110px 1fr 1fr; gap: 18px; align-items: center; }
+  .name { font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); }
+  .val  { font-family: var(--font-mono); font-size: 10px; color: var(--fg-faint); }
+  .track { position: relative; height: 18px; background: var(--ink-800); border-radius: 9999px;
+           border: 1px solid var(--border); overflow: hidden; }
+  .dot { position: absolute; top: 50%; left: 6%; width: 12px; height: 12px; border-radius: 50%;
+         background: var(--teal-300); box-shadow: 0 0 12px rgba(95,213,193,0.7);
+         transform: translate(-50%, -50%); }
+  @keyframes dur-quick { from { left: 6% } to { left: 94% } }
+  @keyframes dur-base  { from { left: 6% } to { left: 94% } }
+  @keyframes dur-slow  { from { left: 6% } to { left: 94% } }
+  @keyframes dur-breath{ 0%,100%{left: 6%} 50%{left: 94%} }
+  .d1 .dot { animation: dur-quick 1600ms infinite alternate cubic-bezier(0.25, 0.8, 0.25, 1); }
+  .d2 .dot { animation: dur-base  1800ms infinite alternate cubic-bezier(0.25, 0.8, 0.25, 1); }
+  .d3 .dot { animation: dur-slow  2200ms infinite alternate cubic-bezier(0.25, 0.8, 0.25, 1); }
+  .d4 .dot { animation: dur-breath 2400ms ease-in-out infinite; }
+</style></head>
+<body>
+  <div class="row d1"><span class="name">--dur-quick</span><div class="track"><span class="dot"></span></div><span class="val">160ms · ease-settle</span></div>
+  <div class="row d2"><span class="name">--dur-base</span> <div class="track"><span class="dot"></span></div><span class="val">280ms · ease-settle</span></div>
+  <div class="row d3"><span class="name">--dur-slow</span> <div class="track"><span class="dot"></span></div><span class="val">480ms · ease-settle</span></div>
+  <div class="row d4"><span class="name">--dur-breath</span><div class="track"><span class="dot"></span></div><span class="val">2400ms · breath / orbs</span></div>
+</body></html>

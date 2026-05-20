@@ -1,0 +1,287 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body {
+    padding: 18px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+    align-items: center;
+  }
+  .cell { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .glyph {
+    width: 100%; aspect-ratio: 1.4 / 1;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--bg-sunken);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .glyph svg { width: 64%; height: 64%; display: block; }
+  .name {
+    font-family: var(--font-display); font-variant: small-caps;
+    font-weight: 500; letter-spacing: 0.16em;
+    font-size: 11px; color: var(--fg-muted);
+  }
+  .glyph::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  }
+  .gold::before   { background: radial-gradient(circle at 50% 55%, rgba(217, 180, 101, 0.22), transparent 65%); }
+  .mist::before   { background: radial-gradient(circle at 50% 55%, rgba(255, 255, 255, 0.08), transparent 65%); }
+  .teal::before   { background: radial-gradient(circle at 50% 55%, rgba(74, 204, 133, 0.18), transparent 65%); }
+  .violet::before { background: radial-gradient(circle at 50% 55%, rgba(176, 131, 216, 0.18), transparent 65%); }
+
+  .glyph svg line, .glyph svg path:not(.node-glow) {
+    stroke-width: 0.6;
+  }
+  .glyph svg .filament {
+    stroke-width: 0.4;
+    opacity: 0.55;
+  }
+  .glyph svg .node { fill: currentColor; stroke: none; }
+  .glyph svg .node-glow {
+    fill: none; stroke: currentColor;
+    stroke-width: 0.3; opacity: 0.35;
+  }
+  .glyph svg .node-major { animation: node-pulse 3s ease-in-out infinite; }
+  @keyframes node-pulse {
+    0%, 100% { opacity: 0.85; }
+    50%      { opacity: 1; }
+  }
+
+  .gold svg   { color: #fff2c8; animation: pulse-gold   3.6s ease-in-out infinite; }
+  .mist svg   { color: #ffffff; animation: pulse-mist   4.4s ease-in-out infinite; }
+  .teal svg   { color: #d0f5dc; animation: pulse-teal   3.6s ease-in-out infinite; }
+  .violet svg { color: #ecd6ff; animation: pulse-violet 4.0s ease-in-out infinite; }
+
+  @keyframes pulse-gold {
+    0%,100% { filter: drop-shadow(0 0 1px #fff2c8) drop-shadow(0 0 3px #f0d28a)
+              drop-shadow(0 0 10px rgba(217,180,101,0.55)) drop-shadow(0 0 22px rgba(217,180,101,0.30)); }
+    50%     { filter: drop-shadow(0 0 1px #fff2c8) drop-shadow(0 0 5px #f0d28a)
+              drop-shadow(0 0 16px rgba(217,180,101,0.85)) drop-shadow(0 0 32px rgba(217,180,101,0.50)); }
+  }
+  @keyframes pulse-mist {
+    0%,100% { filter: drop-shadow(0 0 1px #ffffff) drop-shadow(0 0 3px #e0e8e5)
+              drop-shadow(0 0 9px rgba(255,255,255,0.55)) drop-shadow(0 0 18px rgba(255,255,255,0.25)); }
+    50%     { filter: drop-shadow(0 0 1px #ffffff) drop-shadow(0 0 5px #e0e8e5)
+              drop-shadow(0 0 13px rgba(255,255,255,0.85)) drop-shadow(0 0 26px rgba(255,255,255,0.45)); }
+  }
+  @keyframes pulse-teal {
+    0%,100% { filter: drop-shadow(0 0 1px #d0f5dc) drop-shadow(0 0 3px #4acc85)
+              drop-shadow(0 0 9px rgba(74,204,133,0.55)) drop-shadow(0 0 22px rgba(74,204,133,0.28)); }
+    50%     { filter: drop-shadow(0 0 1px #d0f5dc) drop-shadow(0 0 5px #4acc85)
+              drop-shadow(0 0 15px rgba(74,204,133,0.85)) drop-shadow(0 0 32px rgba(74,204,133,0.50)); }
+  }
+  @keyframes pulse-violet {
+    0%,100% { filter: drop-shadow(0 0 1px #ecd6ff) drop-shadow(0 0 3px #c9a9eb)
+              drop-shadow(0 0 9px rgba(176,131,216,0.55)) drop-shadow(0 0 22px rgba(176,131,216,0.28)); }
+    50%     { filter: drop-shadow(0 0 1px #ecd6ff) drop-shadow(0 0 5px #c9a9eb)
+              drop-shadow(0 0 15px rgba(176,131,216,0.85)) drop-shadow(0 0 32px rgba(176,131,216,0.50)); }
+  }
+</style></head>
+<body>
+
+  <!-- ============================================================
+       ANVIL — side profile.
+       Pointed horn at left, flat strike face, square heel at right,
+       narrow waist, broad base. (Classic blacksmith profile.)
+       ============================================================ -->
+  <div class="cell">
+    <div class="glyph mist">
+      <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <g transform="translate(40 40)">
+          <!-- Top profile: horn tip → curving up to face → flat strike face → step → heel face -->
+          <path d="M -30 -10 L -22 -16 L 16 -16 L 22 -10"/>
+          <!-- Underside of face — small lip and step down -->
+          <path d="M -22 -16 L -22 -10" class="filament"/>
+          <path d="M 22 -16 L 22 -10" class="filament"/>
+          <line x1="-30" y1="-10" x2="22" y2="-10"/>
+          <!-- Waist: narrows down to base -->
+          <line x1="-14" y1="-10" x2="-18" y2="6"/>
+          <line x1="14"  y1="-10" x2="18"  y2="6"/>
+          <!-- Base — wide trapezoidal foot -->
+          <path d="M -22 6 L -18 6 L 18 6 L 22 6"/>
+          <line x1="-22" y1="6" x2="-26" y2="16"/>
+          <line x1="22"  y1="6" x2="26"  y2="16"/>
+          <line x1="-26" y1="16" x2="26" y2="16"/>
+
+          <!-- Nodes at vertices -->
+          <circle class="node" cx="-30" cy="-10" r="1.2"/>
+          <circle class="node" cx="-22" cy="-16" r="1.0"/>
+          <circle class="node" cx="16"  cy="-16" r="1.0"/>
+          <circle class="node" cx="22"  cy="-10" r="1.0"/>
+          <circle class="node" cx="-22" cy="-10" r="0.7"/>
+          <circle class="node" cx="-14" cy="-10" r="0.7"/>
+          <circle class="node" cx="14"  cy="-10" r="0.7"/>
+          <circle class="node" cx="-18" cy="6"   r="0.9"/>
+          <circle class="node" cx="18"  cy="6"   r="0.9"/>
+          <circle class="node" cx="-22" cy="6"   r="0.9"/>
+          <circle class="node" cx="22"  cy="6"   r="0.9"/>
+          <circle class="node" cx="-26" cy="16"  r="1.1"/>
+          <circle class="node" cx="26"  cy="16"  r="1.1"/>
+
+          <!-- Centerpoint pulse (on the strike face) -->
+          <circle class="node node-major" cx="0" cy="-13" r="1.3"/>
+          <circle class="node-glow" cx="0" cy="-13" r="4"/>
+        </g>
+      </svg>
+    </div>
+    <div class="name">anvil · side profile</div>
+  </div>
+
+  <!-- ============================================================
+       GEM — round brilliant, top view.
+       Outer girdle circle, table (octagon) at center, eight kite
+       facets between table and girdle, with smaller star/half-moon
+       facet lines.
+       ============================================================ -->
+  <div class="cell">
+    <div class="glyph violet">
+      <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <g transform="translate(40 40)">
+          <!-- Outer girdle -->
+          <circle r="26" class="filament"/>
+
+          <!-- Octagonal table at center -->
+          <path d="M -5.2 -12.5 L 5.2 -12.5 L 12.5 -5.2 L 12.5 5.2 L 5.2 12.5 L -5.2 12.5 L -12.5 5.2 L -12.5 -5.2 Z"/>
+
+          <!-- Eight points on girdle (octagonal positions) -->
+          <!-- Cardinal -->
+          <line x1="0"  y1="-26" x2="0"  y2="-12.5"/>
+          <line x1="26" y1="0"   x2="12.5" y2="0"/>
+          <line x1="0"  y1="26"  x2="0"  y2="12.5"/>
+          <line x1="-26" y1="0"  x2="-12.5" y2="0"/>
+          <!-- Diagonals (table corners to girdle) -->
+          <line x1="-5.2" y1="-12.5" x2="-18.4" y2="-18.4" class="filament"/>
+          <line x1="5.2"  y1="-12.5" x2="18.4"  y2="-18.4" class="filament"/>
+          <line x1="12.5" y1="-5.2"  x2="18.4"  y2="-18.4"/>
+          <line x1="12.5" y1="5.2"   x2="18.4"  y2="18.4"/>
+          <line x1="5.2"  y1="12.5"  x2="18.4"  y2="18.4" class="filament"/>
+          <line x1="-5.2" y1="12.5"  x2="-18.4" y2="18.4" class="filament"/>
+          <line x1="-12.5" y1="5.2"  x2="-18.4" y2="18.4"/>
+          <line x1="-12.5" y1="-5.2" x2="-18.4" y2="-18.4"/>
+
+          <!-- Nodes on girdle -->
+          <circle class="node" cx="0"     cy="-26"  r="1.0"/>
+          <circle class="node" cx="18.4"  cy="-18.4" r="1.0"/>
+          <circle class="node" cx="26"    cy="0"    r="1.0"/>
+          <circle class="node" cx="18.4"  cy="18.4" r="1.0"/>
+          <circle class="node" cx="0"     cy="26"   r="1.0"/>
+          <circle class="node" cx="-18.4" cy="18.4" r="1.0"/>
+          <circle class="node" cx="-26"   cy="0"    r="1.0"/>
+          <circle class="node" cx="-18.4" cy="-18.4" r="1.0"/>
+
+          <!-- Nodes at table corners -->
+          <circle class="node" cx="-5.2"  cy="-12.5" r="0.8"/>
+          <circle class="node" cx="5.2"   cy="-12.5" r="0.8"/>
+          <circle class="node" cx="12.5"  cy="-5.2"  r="0.8"/>
+          <circle class="node" cx="12.5"  cy="5.2"   r="0.8"/>
+          <circle class="node" cx="5.2"   cy="12.5"  r="0.8"/>
+          <circle class="node" cx="-5.2"  cy="12.5"  r="0.8"/>
+          <circle class="node" cx="-12.5" cy="5.2"   r="0.8"/>
+          <circle class="node" cx="-12.5" cy="-5.2"  r="0.8"/>
+
+          <!-- Centerpoint — the caught light -->
+          <circle class="node node-major" cx="0" cy="0" r="1.6"/>
+          <circle class="node-glow" cx="0" cy="0" r="5"/>
+        </g>
+      </svg>
+    </div>
+    <div class="name">gem · round brilliant</div>
+  </div>
+
+  <!-- ============================================================
+       SCROLL — vertical, two spindles (top + bottom).
+       Each spindle: thin rod + small finial caps.
+       Parchment between with horizontal writing lines.
+       ============================================================ -->
+  <div class="cell">
+    <div class="glyph gold">
+      <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <g transform="translate(40 40)">
+
+          <!-- TOP SPINDLE -->
+          <!-- Finial cap (left disc) -->
+          <line x1="-22" y1="-26" x2="-22" y2="-22"/>
+          <!-- Spindle rod -->
+          <line x1="-22" y1="-24" x2="22" y2="-24"/>
+          <!-- Finial cap (right disc) -->
+          <line x1="22" y1="-26" x2="22" y2="-22"/>
+          <!-- Spindle widening (rolled paper) — short angled lines from spindle -->
+          <line x1="-18" y1="-22" x2="-18" y2="-18"/>
+          <line x1="18"  y1="-22" x2="18"  y2="-18"/>
+
+          <!-- PARCHMENT BODY — rectangular -->
+          <path d="M -18 -18 L 18 -18 L 18 18 L -18 18 Z"/>
+
+          <!-- Writing lines (filaments) -->
+          <line x1="-12" y1="-10" x2="12" y2="-10" class="filament"/>
+          <line x1="-12" y1="-4"  x2="10" y2="-4"  class="filament"/>
+          <line x1="-12" y1="2"   x2="12" y2="2"   class="filament"/>
+          <line x1="-12" y1="8"   x2="6"  y2="8"   class="filament"/>
+
+          <!-- BOTTOM SPINDLE -->
+          <line x1="-18" y1="18" x2="-18" y2="22"/>
+          <line x1="18"  y1="18" x2="18"  y2="22"/>
+          <line x1="-22" y1="22" x2="22" y2="22"/>
+          <line x1="-22" y1="22" x2="-22" y2="26"/>
+          <line x1="22"  y1="22" x2="22"  y2="26"/>
+
+          <!-- Nodes -->
+          <!-- Top spindle endpoints -->
+          <circle class="node" cx="-22" cy="-26" r="1.0"/>
+          <circle class="node" cx="22"  cy="-26" r="1.0"/>
+          <circle class="node" cx="-22" cy="-24" r="0.7"/>
+          <circle class="node" cx="22"  cy="-24" r="0.7"/>
+          <circle class="node" cx="-22" cy="-22" r="1.0"/>
+          <circle class="node" cx="22"  cy="-22" r="1.0"/>
+          <circle class="node" cx="-18" cy="-22" r="0.8"/>
+          <circle class="node" cx="18"  cy="-22" r="0.8"/>
+          <!-- Parchment corners -->
+          <circle class="node" cx="-18" cy="-18" r="1.0"/>
+          <circle class="node" cx="18"  cy="-18" r="1.0"/>
+          <circle class="node" cx="18"  cy="18"  r="1.0"/>
+          <circle class="node" cx="-18" cy="18"  r="1.0"/>
+          <!-- Bottom spindle endpoints -->
+          <circle class="node" cx="-22" cy="22" r="1.0"/>
+          <circle class="node" cx="22"  cy="22" r="1.0"/>
+          <circle class="node" cx="-22" cy="26" r="1.0"/>
+          <circle class="node" cx="22"  cy="26" r="1.0"/>
+
+          <!-- Centerpoint — the seal -->
+          <circle class="node node-major" cx="0" cy="0" r="1.4"/>
+          <circle class="node-glow" cx="0" cy="0" r="4.5"/>
+        </g>
+      </svg>
+    </div>
+    <div class="name">scroll · twin spindles</div>
+  </div>
+
+  <!-- ============================================================
+       QUERY — question mark, kept in the constellation style
+       ============================================================ -->
+  <div class="cell">
+    <div class="glyph teal">
+      <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <g transform="translate(32 32)">
+          <line x1="-10" y1="-14" x2="-6" y2="-22"/>
+          <line x1="-6"  y1="-22" x2="6"  y2="-22"/>
+          <line x1="6"   y1="-22" x2="10" y2="-14"/>
+          <line x1="10"  y1="-14" x2="2"  y2="-2"/>
+          <line x1="2"   y1="-2"  x2="0"  y2="6"/>
+
+          <circle class="node" cx="-10" cy="-14" r="1.0"/>
+          <circle class="node" cx="-6"  cy="-22" r="1.0"/>
+          <circle class="node" cx="6"   cy="-22" r="1.0"/>
+          <circle class="node" cx="10"  cy="-14" r="1.0"/>
+          <circle class="node" cx="2"   cy="-2"  r="0.9"/>
+          <circle class="node" cx="0"   cy="6"   r="0.9"/>
+
+          <circle class="node node-major" cx="0" cy="16" r="2.0"/>
+          <circle class="node-glow" cx="0" cy="16" r="5"/>
+        </g>
+      </svg>
+    </div>
+    <div class="name">query · the asking</div>
+  </div>
+
+</body></html>

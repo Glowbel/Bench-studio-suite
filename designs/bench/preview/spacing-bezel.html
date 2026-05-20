@@ -1,0 +1,75 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; align-items: end; }
+  .cell { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+
+  .swatch {
+    width: 100%;
+    height: 76px;
+    background: var(--ink-900);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-style: italic;
+    color: var(--mist-100);
+    font-size: 14px;
+    letter-spacing: 0.02em;
+  }
+  .s1 { box-shadow: var(--bezel-1); }
+  .s2 { box-shadow: var(--bezel-2); }
+  .s3 { box-shadow: var(--bezel-3); }
+  .s4 { box-shadow: var(--bezel-4); }
+  .s5 { box-shadow: var(--bezel-5); border-color: rgba(95, 213, 193, 0.25); }
+
+  .name {
+    font-family: var(--font-display); font-variant: small-caps; font-weight: 500;
+    letter-spacing: 0.16em; font-size: 10px; color: var(--fg-muted); text-align: center;
+  }
+  .token {
+    font-family: var(--font-mono); font-size: 9px; color: var(--fg-faint);
+    text-align: center;
+  }
+
+  .caption {
+    font-family: var(--font-display); font-style: italic; font-size: 13px;
+    color: var(--fg-subtle); text-align: center;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+  }
+  .caption .arrow { color: var(--fg-faint); letter-spacing: 0.6em; font-style: normal; }
+</style></head>
+<body>
+  <div class="row">
+    <div class="cell">
+      <div class="swatch s1">whisper</div>
+      <div class="name">whisper</div>
+      <div class="token">--bezel-1</div>
+    </div>
+    <div class="cell">
+      <div class="swatch s2">soft</div>
+      <div class="name">soft</div>
+      <div class="token">--bezel-2</div>
+    </div>
+    <div class="cell">
+      <div class="swatch s3">present</div>
+      <div class="name">present</div>
+      <div class="token">--bezel-3</div>
+    </div>
+    <div class="cell">
+      <div class="swatch s4">strong</div>
+      <div class="name">strong</div>
+      <div class="token">--bezel-4</div>
+    </div>
+    <div class="cell">
+      <div class="swatch s5">sharp</div>
+      <div class="name">sharp · rim</div>
+      <div class="token">--bezel-5</div>
+    </div>
+  </div>
+  <div class="caption">
+    barely there
+    <span class="arrow">·  ·  ·  ·  ·</span>
+    a setting catches the light
+  </div>
+</body></html>

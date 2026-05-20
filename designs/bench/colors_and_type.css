@@ -1,0 +1,323 @@
+/* ============================================================
+   Filigree — Colors & Type
+   Load on any artifact:  <link rel="stylesheet" href="colors_and_type.css">
+   ============================================================ */
+
+/* ---- Fonts (Google Fonts CDN — substitutions, see README) ---- */
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+/* ============================================================
+   COLOR TOKENS
+   ============================================================ */
+
+:root {
+
+  /* -- OBSIDIAN -- the dark ground.
+     Graphite at the floor, climbing into dusk at the top.
+     ink-950 is the page; never use pure #000. */
+  --ink-950: #1c1d22;   /* graphite · page */
+  --ink-900: #232531;   /* graphite settling toward dusk · card / panel */
+  --ink-800: #2c2f42;   /* rising · raised card / hover */
+  --ink-700: #353953;   /* dusk · divider, subtle fill */
+  --ink-600: #404663;   /* deeper dusk · border-strong, input fill */
+  --ink-500: #4c537a;   /* twilight dusk · border at 100% */
+
+  /* -- VERDIGRIS / TEAL -- the "alive" primary spiritual color.
+     Leans verdant — oxidized copper, deep forest, moss. */
+  --teal-100: #ccf2d5;
+  --teal-200: #95e5b0;
+  --teal-300: #4acc85;  /* glow accent, focus rings */
+  --teal-500: #168258;  /* primary action */
+  --teal-700: #094428;  /* deep verdant, pressed states */
+  --teal-900: #051a10;  /* near-black verdant, bezel fill */
+
+  /* -- AMETHYST / VIOLET -- the "deep" secondary spiritual color */
+  --violet-100: #e6d2f5;
+  --violet-200: #c9a9eb;
+  --violet-300: #b083d8;  /* highlight, ceremony glow */
+  --violet-500: #7c44b8;  /* secondary action */
+  --violet-700: #4d2580;  /* deep violet, ceremony pressed */
+  --violet-900: #260f44;  /* near-black violet, bezel fill */
+
+  /* -- AURUM / GOLD -- rare warm accent. Use SPARINGLY. */
+  --gold-300: #f0d28a;
+  --gold-400: #d9b465;   /* the only gold most surfaces will see */
+  --gold-600: #9a7c3d;
+
+  /* -- MIST -- text and parchment. Never pure #fff. */
+  --mist-100: #f3f6f5;   /* true emphasis only */
+  --mist-200: #d8dfdc;   /* primary text on dark */
+  --mist-300: #b3bdba;   /* body text */
+  --mist-400: #8a9692;   /* helper / secondary */
+  --mist-500: #5e6a66;   /* muted / disabled */
+
+  /* -- SEMANTIC -- map roles to scale tokens.
+     Compose UI against these, not the raw scales. */
+  --bg:               var(--ink-950);
+  --bg-raised:        var(--ink-900);
+  --bg-hover:         var(--ink-800);
+  --bg-sunken:        #14151a;
+
+  --fg:               var(--mist-200);   /* default body */
+  --fg-strong:        var(--mist-100);   /* headings, emphasis */
+  --fg-muted:         var(--mist-300);
+  --fg-subtle:        var(--mist-400);
+  --fg-faint:         var(--mist-500);
+
+  --border:           rgba(61, 72, 88, 0.40);   /* ink-500 @ 40% */
+  --border-strong:    rgba(61, 72, 88, 0.70);
+  --border-faint:     rgba(61, 72, 88, 0.20);
+
+  --accent:           var(--teal-500);
+  --accent-hover:     #29b29d;
+  --accent-pressed:   var(--teal-700);
+  --accent-fg:        var(--mist-100);
+
+  --accent-2:         var(--violet-500);
+  --accent-2-hover:   #8e54cd;
+  --accent-2-pressed: var(--violet-700);
+
+  --ceremony:         var(--gold-400);
+
+  --success:          var(--teal-300);
+  --warning:          var(--gold-400);
+  --danger:           #c46b6b;     /* desaturated rose, never bright red */
+  --info:             var(--violet-300);
+
+  /* -- BEZEL GLOWS -- the inner shadows that make surfaces feel "set".
+     A wonder range from whisper (barely there) to sharp (rim of light). */
+  --bezel-1: inset 0 0 36px rgba(95, 213, 193, 0.05);                                                /* whisper */
+  --bezel-2: inset 0 0 28px rgba(95, 213, 193, 0.10);                                                /* soft */
+  --bezel-3: inset 0 0 22px rgba(95, 213, 193, 0.18);                                                /* present */
+  --bezel-4: inset 0 0 16px rgba(95, 213, 193, 0.30);                                                /* strong */
+  --bezel-5: inset 0 0 8px rgba(95, 213, 193, 0.45), inset 0 0 0 1px rgba(95, 213, 193, 0.45);       /* sharp · rim of light */
+
+  /* Color-specific shortcuts — used by component CSS */
+  --bezel-teal:       inset 0 0 24px rgba(95, 213, 193, 0.08);
+  --bezel-teal-strong:inset 0 0 32px rgba(95, 213, 193, 0.16);
+  --bezel-violet:     inset 0 0 24px rgba(176, 131, 216, 0.08);
+  --bezel-violet-strong: inset 0 0 32px rgba(176, 131, 216, 0.18);
+  --bezel-gold:       inset 0 0 28px rgba(217, 180, 101, 0.14);
+  --bezel-gold-sharp: inset 0 0 8px rgba(217, 180, 101, 0.40), inset 0 0 0 1px rgba(217, 180, 101, 0.50);
+
+  /* -- ELEVATION -- outer shadows. Always low + soft on dark. */
+  --e1: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --e2: 0 8px 24px rgba(0, 0, 0, 0.50), 0 0 32px rgba(95, 213, 193, 0.06);
+  --e3: 0 24px 64px rgba(0, 0, 0, 0.60), 0 0 80px rgba(124, 68, 184, 0.10);
+
+  /* -- ORB GLOWS -- the live "alive" element. Drop on a transparent BG. */
+  --orb-teal:   radial-gradient(circle, rgba(74,204,133,0.55) 0%, rgba(74,204,133,0.15) 40%, transparent 70%);
+  --orb-violet: radial-gradient(circle, rgba(176,131,216,0.50) 0%, rgba(176,131,216,0.12) 40%, transparent 70%);
+  --orb-gold:   radial-gradient(circle, rgba(240,210,138,0.55) 0%, rgba(240,210,138,0.12) 40%, transparent 70%);
+
+  /* -- PAGE VIGNETTE -- the off-center glow on the body background.
+     Apply as a single background layer; do not stack multiple. */
+  --vignette:
+    radial-gradient(ellipse 80% 60% at 75% 20%, rgba(95, 213, 193, 0.05), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 15% 85%, rgba(124, 68, 184, 0.06), transparent 60%);
+}
+
+/* ============================================================
+   TYPE TOKENS
+   ============================================================ */
+
+:root {
+  --font-display: "Cormorant Garamond", "EB Garamond", "Iowan Old Style", Georgia, serif;
+  --font-body:    "Outfit", "Public Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Scale — 1.25× ratio, base 16 px. */
+  --fs-xs:   12px;
+  --fs-sm:   14px;
+  --fs-base: 16px;
+  --fs-md:   18px;
+  --fs-lg:   22px;
+  --fs-xl:   28px;
+  --fs-2xl:  36px;
+  --fs-3xl:  48px;
+  --fs-4xl:  64px;
+  --fs-5xl:  84px;
+
+  --lh-tight: 1.1;
+  --lh-snug:  1.3;
+  --lh-base:  1.55;
+  --lh-loose: 1.7;
+
+  --ls-tight: -0.02em;
+  --ls-snug:  -0.01em;
+  --ls-base:  0;
+  --ls-wide:  0.04em;
+  --ls-wider: 0.12em;   /* small caps / labels */
+
+  /* -- SPACING -- 4px base, 10 steps */
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+  --space-9:  96px;
+  --space-10: 128px;
+
+  /* -- RADIUS -- */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:  12px;
+  --radius-xl:  20px;
+  --radius-full: 9999px;
+
+  /* -- MOTION -- breath-like, settling */
+  --ease-settle: cubic-bezier(0.25, 0.8, 0.25, 1);
+  --ease-rise:   cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-quick:  160ms;
+  --dur-base:   280ms;
+  --dur-slow:   480ms;
+  --dur-breath: 2400ms;
+}
+
+/* ============================================================
+   BASE + SEMANTIC ELEMENT STYLES
+   ============================================================ */
+
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Display serif headings */
+h1, .h1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--fs-4xl);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  color: var(--fg-strong);
+  text-wrap: balance;
+}
+
+h2, .h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--fs-2xl);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-snug);
+  color: var(--fg-strong);
+  text-wrap: balance;
+}
+
+h3, .h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--fs-xl);
+  line-height: var(--lh-snug);
+  color: var(--fg-strong);
+}
+
+h4, .h4 {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--fs-md);
+  line-height: var(--lh-snug);
+  color: var(--fg-strong);
+}
+
+/* Ceremonial small-caps label (use sparingly) */
+.label-caps {
+  font-family: var(--font-display);
+  font-variant: small-caps;
+  font-weight: 500;
+  letter-spacing: var(--ls-wider);
+  font-size: var(--fs-sm);
+  color: var(--fg-muted);
+}
+
+/* Body */
+p, .p {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  color: var(--fg);
+  text-wrap: pretty;
+}
+
+.p-lead {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--fs-lg);
+  line-height: var(--lh-snug);
+  color: var(--fg-muted);
+  text-wrap: pretty;
+}
+
+small, .text-sm {
+  font-size: var(--fs-sm);
+  color: var(--fg-muted);
+}
+
+.text-xs {
+  font-size: var(--fs-xs);
+  color: var(--fg-subtle);
+}
+
+/* Numeric */
+.num, .mono, code, kbd, pre {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1, "ss01" 1;
+}
+
+.num-price {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: var(--ls-snug);
+  color: var(--fg-strong);
+  font-feature-settings: "onum" 1, "kern" 1;   /* old-style figures — more organic */
+}
+
+/* Craft measurements — wire gauges, stone sizes, weights.
+   Hand-set serif feel with old-style figures and ligatures. */
+.num-spec {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--fg);
+  letter-spacing: 0.01em;
+  font-feature-settings: "onum" 1, "kern" 1, "liga" 1;
+}
+
+a {
+  color: var(--teal-300);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(95, 213, 193, 0.30);
+  transition: color var(--dur-quick) var(--ease-settle),
+              border-color var(--dur-quick) var(--ease-settle);
+}
+
+a:hover {
+  color: var(--teal-200);
+  border-bottom-color: rgba(95, 213, 193, 0.70);
+}
+
+::selection {
+  background: rgba(124, 68, 184, 0.40);
+  color: var(--mist-100);
+}
+
+/* The "breath" keyframe — for orbs and ceremony elements */
+@keyframes breathe {
+  0%, 100% { opacity: 0.65; }
+  50%      { opacity: 1.00; }
+}
+
+@keyframes shimmer {
+  0%, 100% { transform: scale(1); filter: blur(0px); }
+  50%      { transform: scale(1.04); filter: blur(0.5px); }
+}

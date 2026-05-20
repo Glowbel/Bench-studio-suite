@@ -1,0 +1,28 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  .rows { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 32px; }
+  .row-item { display: flex; align-items: center; gap: 12px; }
+  .chip { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--border); flex-shrink: 0; }
+  .lbl { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .lbl .k { font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); }
+  .lbl .v { font-family: var(--font-mono); font-size: 10px; color: var(--fg-faint); }
+</style></head>
+<body>
+  <div class="rows">
+    <div class="row-item"><div class="chip" style="background: var(--bg)"></div><div class="lbl"><span class="k">--bg</span><span class="v">ink-950 / page</span></div></div>
+    <div class="row-item"><div class="chip" style="background: var(--fg-strong)"></div><div class="lbl"><span class="k">--fg-strong</span><span class="v">mist-100 / emphasis</span></div></div>
+
+    <div class="row-item"><div class="chip" style="background: var(--bg-raised)"></div><div class="lbl"><span class="k">--bg-raised</span><span class="v">ink-900 / card</span></div></div>
+    <div class="row-item"><div class="chip" style="background: var(--fg)"></div><div class="lbl"><span class="k">--fg</span><span class="v">mist-200 / body</span></div></div>
+
+    <div class="row-item"><div class="chip" style="background: var(--accent)"></div><div class="lbl"><span class="k">--accent</span><span class="v">teal-500 / primary</span></div></div>
+    <div class="row-item"><div class="chip" style="background: var(--accent-2)"></div><div class="lbl"><span class="k">--accent-2</span><span class="v">violet-500 / secondary</span></div></div>
+
+    <div class="row-item"><div class="chip" style="background: var(--ceremony)"></div><div class="lbl"><span class="k">--ceremony</span><span class="v">gold-400 / rare</span></div></div>
+    <div class="row-item"><div class="chip" style="background: var(--danger)"></div><div class="lbl"><span class="k">--danger</span><span class="v">desat rose</span></div></div>
+
+    <div class="row-item"><div class="chip" style="background: var(--success)"></div><div class="lbl"><span class="k">--success</span><span class="v">teal-300 / glow</span></div></div>
+    <div class="row-item"><div class="chip" style="background: var(--info)"></div><div class="lbl"><span class="k">--info</span><span class="v">violet-300</span></div></div>
+  </div>
+</body></html>
