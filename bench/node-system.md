@@ -130,17 +130,43 @@ Blank canvas with a floating **+ Add section** button. Each tap opens a type pic
 | Text | Free-form notes, any length |
 | Photo board | Pin-board style image collection (external file paths only — no base64) |
 | Checklist | Bullet list with checkboxes |
-| Big picture | Structured questions → plan of action (design session pending — see OPEN QUESTIONS) |
+| Big picture | Five steering questions → plan of action (see BIG PICTURE WIDGET below) |
 
 Widgets are reorderable, deletable. Order persists to node data.
 
-### Data shape additions
+### Big picture widget — locked design
+
+**Five questions (locked):**
+```
+1. "Where does the work stand?"
+2. "What does progress look like from here?"
+3. "What's standing in the way?"
+4. "What's already in reach to work with?"
+5. "What's the next step?"
+```
+
+Register: grounded, peer-voiced, broadly applicable across any craft skill. Slight emotional resonance without being feeling-heavy.
+
+**A/B mode picker:**
+- Persistent left-edge panel inside the big picture widget
+- Two compact options: `A · one at a time` | `B · all together`
+- **A (sequential):** one question visible at a time, tap next to advance. Feels like a conversation.
+- **B (all together):** all five textareas visible, fill in any order. Faster for someone already oriented.
+- Persists to localStorage key `bench-bigpicture-mode` — remembers across sessions
+- No confirmation needed to switch — tap and it shifts immediately
+
+**Data shape additions:**
 ```
 node.widgets: []  // ordered array of { id, type, content }
 // text:     { type:"text", body:"" }
 // photo:    { type:"photo", items:[] }  // items = external file paths only
 // checklist:{ type:"checklist", items:[{ id, text, done }] }
-// bigpicture:{ type:"bigpicture", answers:{} }  // questions TBD — design session pending
+// bigpicture:{ type:"bigpicture", mode:"A"|"B", answers:{ q1:"", q2:"", q3:"", q4:"", q5:"" } }
+//   q1: "Where does the work stand?"
+//   q2: "What does progress look like from here?"
+//   q3: "What's standing in the way?"
+//   q4: "What's already in reach to work with?"
+//   q5: "What's the next step?"
 ```
 
 ---
@@ -279,9 +305,7 @@ Existing "debrief" type nodes in localStorage (pre-spec):
 *(Next design session — before coding these areas)*
 
 ```
-research.bigpicture    3-5 steering questions not yet written
-                       → design session: what are the questions?
-                       → how do answers shape next steps?
+research.bigpicture    ✓ LOCKED — five questions + A/B picker designed (see above)
 
 session.submenus       modular picker submenus not fully defined
 
@@ -304,8 +328,8 @@ Phase 4.5 items affected:
 - **#13 (capsule on-deck wiring)** — now also includes timerNodeId link
 
 New sessions implied (in rough sequence):
-1. Node creation modal — ceremonial visual system (hero orb, selector strip, color immersion)
-2. Research widget system
+1. Node creation modal — ceremonial visual system (hero orb, selector strip, color immersion) ← NEXT
+2. Research widget system (big picture questions locked, ready to build)
 3. Note node multi-tab
 4. Debrief mini-node auto-insertion + voice capture
 5. Session/immersion timer wiring (with #13)
