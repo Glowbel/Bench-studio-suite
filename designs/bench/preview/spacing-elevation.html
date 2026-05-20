@@ -1,0 +1,24 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 30px 26px; display: flex; align-items: center; justify-content: space-around; gap: 16px; }
+  .cell { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .box {
+    width: 130px; height: 80px;
+    background: var(--ink-900);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted);
+  }
+  .e1 { box-shadow: var(--e1); }
+  .e2 { box-shadow: var(--e2); }
+  .e3 { box-shadow: var(--e3); }
+  .name { font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); }
+  .val  { font-family: var(--font-mono); font-size: 9px; color: var(--fg-faint); text-align: center; max-width: 130px; }
+</style></head>
+<body>
+  <div class="cell"><div class="box e1">e1</div><div class="name">--e1 · resting</div><div class="val">cards at rest</div></div>
+  <div class="cell"><div class="box e2">e2</div><div class="name">--e2 · floating</div><div class="val">hover, with teal halo</div></div>
+  <div class="cell"><div class="box e3">e3</div><div class="name">--e3 · focus</div><div class="val">modals, violet halo</div></div>
+</body></html>

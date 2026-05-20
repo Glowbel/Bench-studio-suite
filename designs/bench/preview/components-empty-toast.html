@@ -1,0 +1,235 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+
+  /* ======= Wide empty-state card =================================== */
+  .empty {
+    position: relative; overflow: hidden; isolation: isolate;
+    width: 100%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.025), transparent 30%), var(--ink-900);
+    border: 1px solid;
+    border-color: rgba(255,255,255,0.08) rgba(255,255,255,0.04) rgba(0,0,0,0.4) rgba(255,255,255,0.04);
+    border-radius: 14px 12px 13px 12px;
+    padding: 40px 64px 40px 48px;
+    display: grid;
+    grid-template-columns: 1fr 168px;
+    gap: 56px;
+    align-items: center;
+    min-height: 220px;
+  }
+
+  /* Soft breathing bezel ring */
+  .empty::after {
+    content: "";
+    position: absolute; inset: 0; border-radius: inherit;
+    box-shadow: inset 0 0 36px rgba(95, 213, 193, 0.08);
+    animation: bezel-breath 8s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  /* ======= Text column ============================================= */
+  .text { display: flex; flex-direction: column; gap: 10px; max-width: 440px; position: relative; z-index: 2; }
+  .eyebrow {
+    font-family: var(--font-display); font-variant: small-caps; font-weight: 500;
+    letter-spacing: 0.20em; font-size: 11px; color: var(--fg-subtle);
+  }
+  .title {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 32px; line-height: 1.1; color: var(--fg-strong);
+    letter-spacing: -0.005em;
+    text-wrap: balance;
+    margin: 0;
+  }
+  .body {
+    font-family: var(--font-display); font-style: italic; font-weight: 400;
+    font-size: 15px; line-height: 1.6; color: var(--fg-muted);
+    text-wrap: pretty;
+    margin: 0;
+  }
+  .cta {
+    margin-top: 6px;
+    align-self: flex-start;
+    font-family: var(--font-body); font-weight: 500; font-size: 13px;
+    color: var(--teal-300);
+    border-bottom: 1px solid rgba(95, 213, 193, 0.40);
+    padding: 2px 0;
+    letter-spacing: 0.02em;
+  }
+
+  /* ======= Layered orb stage =======================================
+     The stage has NO overflow clipping — light spills wide across
+     the card. The halo is the room being lit; the orb is the source. */
+  .stage {
+    position: relative;
+    width: 140px; height: 140px;
+    margin: 0 auto;
+    align-self: center;
+    color: var(--teal-300);
+    overflow: visible;
+  }
+  .stage > * {
+    position: absolute; inset: 0;
+    margin: auto;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* Far diffusion — washes across half the card */
+  .diffusion {
+    width: 560px; height: 560px;
+    background: radial-gradient(circle,
+      rgba(95, 213, 193, 0.28) 0%,
+      rgba(95, 213, 193, 0.12) 18%,
+      rgba(95, 213, 193, 0.04) 38%,
+      transparent 65%);
+    filter: blur(36px);
+    animation: diffusion-breath 11s ease-in-out infinite;
+    mix-blend-mode: screen;
+    z-index: 0;
+  }
+
+  /* Outer halo — large, very slow */
+  .halo {
+    width: 280%; height: 280%;
+    background: radial-gradient(circle,
+      rgba(95, 213, 193, 0.45) 0%,
+      rgba(95, 213, 193, 0.18) 22%,
+      rgba(95, 213, 193, 0.06) 42%,
+      transparent 65%);
+    filter: blur(16px);
+    animation: halo-breath 9s ease-in-out infinite;
+    mix-blend-mode: screen;
+    z-index: 1;
+  }
+  /* Mid aura — slow spin + slow breath */
+  .aura {
+    width: 78%; height: 78%;
+    background: radial-gradient(circle,
+      rgba(95, 213, 193, 0.55) 0%,
+      rgba(166, 240, 220, 0.22) 45%,
+      transparent 75%);
+    filter: blur(5px);
+    animation: aura-spin 22s linear infinite, aura-breath 6s ease-in-out infinite;
+    mix-blend-mode: screen;
+  }
+  /* Bright core */
+  .core {
+    width: 36%; height: 36%;
+    background: radial-gradient(circle,
+      rgba(220, 255, 245, 0.95) 0%,
+      rgba(95, 213, 193, 0.55) 40%,
+      transparent 75%);
+    filter: blur(1px);
+    animation: core-pulse 5s ease-in-out infinite;
+  }
+  .core::after {
+    content: "";
+    position: absolute; inset: 30%;
+    background: radial-gradient(circle, rgba(255,255,255,0.95), rgba(255,255,255,0.2) 50%, transparent 80%);
+    border-radius: 50%;
+    filter: blur(1px);
+  }
+
+  /* Two drifting motes */
+  .mote {
+    position: absolute;
+    width: 3px; height: 3px; border-radius: 50%;
+    background: rgba(166, 240, 220, 0.95);
+    box-shadow: 0 0 8px rgba(95, 213, 193, 0.9), 0 0 16px rgba(95, 213, 193, 0.45);
+    top: 50%; left: 50%; margin: -1.5px 0 0 -1.5px;
+    mix-blend-mode: screen;
+  }
+  .m1 { animation: mote-1 10s ease-in-out infinite; }
+  .m2 { animation: mote-2 12s ease-in-out infinite 3s; }
+
+  /* ======= Toast =================================================== */
+  .toast-row { display: flex; justify-content: center; align-items: center; }
+  .toast {
+    background: var(--ink-800);
+    border: 1px solid rgba(95, 213, 193, 0.30);
+    border-radius: 9999px;
+    padding: 8px 20px;
+    color: var(--mist-100);
+    font-family: var(--font-display); font-style: italic; font-size: 15px;
+    box-shadow:
+      inset 0 0 22px rgba(95, 213, 193, 0.16),
+      0 0 24px rgba(95, 213, 193, 0.20),
+      0 4px 16px rgba(0, 0, 0, 0.5);
+    animation: toast-breath 7s ease-in-out infinite;
+    letter-spacing: 0.01em;
+  }
+
+  /* ======= Slow keyframes ========================================= */
+  @keyframes diffusion-breath {
+    0%, 100% { transform: scale(0.92); opacity: 0.60; }
+    50%      { transform: scale(1.08); opacity: 1; }
+  }
+  @keyframes bezel-breath {
+    0%, 100% { opacity: 0.6; }
+    50%      { opacity: 1; }
+  }
+  @keyframes halo-breath {
+    0%, 100% { transform: scale(0.92); opacity: 0.55; }
+    50%      { transform: scale(1.10); opacity: 1; }
+  }
+  @keyframes aura-breath {
+    0%, 100% { transform: scale(0.97); }
+    50%      { transform: scale(1.06); }
+  }
+  @keyframes aura-spin {
+    0% { rotate: 0deg; } 100% { rotate: 360deg; }
+  }
+  @keyframes core-pulse {
+    0%, 100% { transform: scale(1);    opacity: 0.85; }
+    50%      { transform: scale(1.12); opacity: 1; }
+  }
+  @keyframes mote-1 {
+    0%   { transform: translate(0, -28px) scale(0.5); opacity: 0; }
+    25%  { opacity: 1; }
+    100% { transform: translate(34px, 30px) scale(0.9); opacity: 0; }
+  }
+  @keyframes mote-2 {
+    0%   { transform: translate(22px, 26px) scale(0.4); opacity: 0; }
+    30%  { opacity: 0.9; }
+    100% { transform: translate(-30px, -36px) scale(0.9); opacity: 0; }
+  }
+  @keyframes toast-breath {
+    0%, 100% {
+      box-shadow:
+        inset 0 0 22px rgba(95, 213, 193, 0.16),
+        0 0 16px rgba(95, 213, 193, 0.14),
+        0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+    50% {
+      box-shadow:
+        inset 0 0 30px rgba(95, 213, 193, 0.30),
+        0 0 32px rgba(95, 213, 193, 0.30),
+        0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+  }
+</style></head>
+<body>
+
+  <div class="empty">
+    <div class="text">
+      <span class="eyebrow">nothing here yet</span>
+      <h2 class="title">The ledger is quiet.</h2>
+      <p class="body">No pieces in process. When you begin, the room will fill softly.</p>
+      <span class="cta">Begin a piece</span>
+    </div>
+    <div class="stage">
+      <div class="diffusion"></div>
+      <div class="halo"></div>
+      <div class="aura"></div>
+      <div class="core"></div>
+      <span class="mote m1"></span>
+      <span class="mote m2"></span>
+    </div>
+  </div>
+
+  <div class="toast-row">
+    <div class="toast">Held.</div>
+  </div>
+
+</body></html>

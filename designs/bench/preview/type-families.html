@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 22px 26px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .cell { display: flex; flex-direction: column; gap: 6px; }
+  .name { font-family: var(--font-mono); font-size: 10px; color: var(--fg-faint); letter-spacing: 0.04em; text-transform: uppercase; }
+  .face { font-size: 28px; color: var(--fg-strong); line-height: 1.05; }
+  .face.display { font-family: var(--font-display); font-weight: 500; font-size: 36px; }
+  .face.body    { font-family: var(--font-body); font-weight: 400; }
+  .face.mono    { font-family: var(--font-mono); font-weight: 500; font-size: 24px; }
+  .meta { font-family: var(--font-mono); font-size: 10px; color: var(--fg-muted); }
+</style></head>
+<body>
+  <div class="grid">
+    <div class="cell">
+      <div class="name">display</div>
+      <div class="face display">Aa Gg</div>
+      <div class="meta">Cormorant Garamond<br/>400, 500, italic</div>
+    </div>
+    <div class="cell">
+      <div class="name">body</div>
+      <div class="face body">Aa Gg</div>
+      <div class="meta">Outfit<br/>300, 400, 500, 600</div>
+    </div>
+    <div class="cell">
+      <div class="name">numeric</div>
+      <div class="face mono">Aa 0,2</div>
+      <div class="meta">JetBrains Mono<br/>400, 500</div>
+    </div>
+  </div>
+</body></html>

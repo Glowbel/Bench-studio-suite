@@ -1,0 +1,30 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 24px 28px; display: flex; flex-direction: column; gap: 20px; }
+  .row { display: flex; align-items: baseline; gap: 24px; }
+  .meta { font-family: var(--font-mono); font-size: 10px; color: var(--fg-faint); width: 130px; flex-shrink: 0; }
+  .caps {
+    font-family: var(--font-display);
+    font-variant: small-caps;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    font-size: 14px;
+    color: var(--fg-muted);
+  }
+  .caps.bright { color: var(--teal-300); }
+  .caps.gold { color: var(--ceremony); }
+</style></head>
+<body>
+  <div class="row">
+    <span class="meta">.label-caps · default</span>
+    <span class="caps">the ledger</span>
+    <span class="caps">stones held</span>
+    <span class="caps">in process</span>
+  </div>
+  <div class="row">
+    <span class="meta">.label-caps · accent</span>
+    <span class="caps bright">awaiting reply</span>
+    <span class="caps gold">finished work</span>
+  </div>
+</body></html>

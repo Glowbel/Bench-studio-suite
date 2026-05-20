@@ -1,0 +1,222 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 26px 30px; display: flex; flex-direction: column; gap: 22px; }
+  .row { display: flex; align-items: center; gap: 22px; }
+  .lbl {
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--fg-faint); width: 110px; flex-shrink: 0;
+    letter-spacing: 0.02em;
+  }
+
+  /* ============================================================
+     TOGGLE — on state breathes; off is calm
+     ============================================================ */
+  .toggle {
+    position: relative;
+    width: 50px; height: 26px; border-radius: 9999px;
+    background: var(--ink-700);
+    border: 1px solid var(--border);
+    transition: all 600ms var(--ease-settle);
+    overflow: visible;
+  }
+  .toggle::after {
+    content: "";
+    position: absolute; top: 2px; left: 2px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--mist-400);
+    transition: all 600ms var(--ease-settle);
+  }
+  .toggle.on {
+    background: linear-gradient(90deg, var(--teal-900), var(--teal-700));
+    border-color: rgba(95, 213, 193, 0.50);
+    box-shadow:
+      inset 0 0 16px rgba(95, 213, 193, 0.30),
+      0 0 18px rgba(95, 213, 193, 0.18);
+    animation: toggle-breath 4s ease-in-out infinite;
+  }
+  .toggle.on::after {
+    left: 26px;
+    background: radial-gradient(circle, #d8fff3 0%, var(--teal-300) 60%, var(--teal-500) 100%);
+    box-shadow:
+      0 0 14px rgba(95, 213, 193, 0.95),
+      0 0 28px rgba(95, 213, 193, 0.50);
+    animation: toggle-dot-pulse 2.4s ease-in-out infinite;
+  }
+  /* Trailing motes behind the moved dot */
+  .toggle.on .trail {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 4px; height: 4px; border-radius: 50%;
+    background: rgba(166, 240, 220, 0.9);
+    box-shadow: 0 0 8px rgba(95, 213, 193, 0.9);
+    mix-blend-mode: screen;
+  }
+  .toggle.on .t1 { left: 18px; animation: trail-fade 2.4s ease-in-out infinite; }
+  .toggle.on .t2 { left: 12px; animation: trail-fade 2.4s ease-in-out infinite 0.4s; opacity: 0; }
+  .toggle .trail { display: none; }
+  .toggle.on .trail { display: block; }
+
+  /* ============================================================
+     CHECKBOX — checked state has subtle glow halo
+     ============================================================ */
+  .check {
+    position: relative;
+    width: 22px; height: 22px; border-radius: 5px;
+    border: 1px solid var(--border-strong); background: var(--ink-800);
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: all 480ms var(--ease-settle);
+  }
+  .check svg {
+    width: 14px; height: 14px;
+    stroke: var(--mist-100); fill: none; stroke-width: 2.2;
+    stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    transition: stroke-dashoffset 600ms var(--ease-settle);
+    filter: drop-shadow(0 0 4px rgba(95, 213, 193, 0.8));
+  }
+  .check.on {
+    background: linear-gradient(180deg, var(--teal-700), var(--teal-900));
+    border-color: rgba(95, 213, 193, 0.55);
+    box-shadow:
+      inset 0 0 14px rgba(95, 213, 193, 0.32),
+      0 0 16px rgba(95, 213, 193, 0.18);
+    animation: check-breath 4.2s ease-in-out infinite;
+  }
+  .check.on svg { stroke-dashoffset: 0; }
+  .check.on::after {
+    content: "";
+    position: absolute; top: -3px; right: -3px;
+    width: 3px; height: 3px; border-radius: 50%;
+    background: rgba(166, 240, 220, 0.95);
+    box-shadow: 0 0 8px rgba(95, 213, 193, 0.9);
+    mix-blend-mode: screen;
+    animation: check-mote 3s ease-in-out infinite;
+  }
+
+  /* ============================================================
+     PROGRESS — flowing shimmer + comet head + tiny motes
+     ============================================================ */
+  .progress {
+    position: relative;
+    flex: 1; max-width: 280px;
+    height: 8px; background: var(--ink-700);
+    border-radius: 9999px;
+    overflow: hidden;
+    border: 1px solid var(--border-faint);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+  }
+  .progress-fill {
+    position: relative; height: 100%;
+    background:
+      linear-gradient(90deg,
+        var(--teal-700) 0%,
+        var(--teal-500) 40%,
+        var(--teal-300) 100%);
+    border-radius: 9999px;
+    box-shadow: 0 0 10px rgba(95, 213, 193, 0.50);
+    overflow: hidden;
+  }
+  /* Flowing shimmer inside the fill */
+  .progress-fill::before {
+    content: "";
+    position: absolute; top: 0; left: 0;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(220, 255, 245, 0.55) 50%,
+      transparent 100%);
+    animation: shimmer 2.8s linear infinite;
+  }
+  /* Comet head — bright glow at the leading edge */
+  .progress-fill::after {
+    content: "";
+    position: absolute; top: 50%; right: 0; transform: translate(50%, -50%);
+    width: 14px; height: 14px; border-radius: 50%;
+    background: radial-gradient(circle,
+      rgba(255,255,255,0.95) 0%,
+      rgba(166, 240, 220, 0.7) 30%,
+      rgba(95, 213, 193, 0) 70%);
+    animation: comet-pulse 2s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .progress-meta {
+    font-family: var(--font-display); font-style: italic; font-size: 13px;
+    color: var(--fg-muted); letter-spacing: 0.02em;
+    font-feature-settings: "onum" 1;
+  }
+  .progress-meta .num { color: var(--mist-200); font-style: normal;
+                       font-family: var(--font-display); font-weight: 500; }
+
+  /* ============================================================
+     Keyframes
+     ============================================================ */
+  @keyframes toggle-breath {
+    0%, 100% { box-shadow: inset 0 0 14px rgba(95,213,193,0.28), 0 0 14px rgba(95,213,193,0.14); }
+    50%      { box-shadow: inset 0 0 20px rgba(95,213,193,0.40), 0 0 24px rgba(95,213,193,0.26); }
+  }
+  @keyframes toggle-dot-pulse {
+    0%, 100% { box-shadow: 0 0 12px rgba(95,213,193,0.85), 0 0 22px rgba(95,213,193,0.40); }
+    50%      { box-shadow: 0 0 18px rgba(95,213,193,1.0),  0 0 36px rgba(95,213,193,0.60); }
+  }
+  @keyframes trail-fade {
+    0%, 100% { opacity: 0; }
+    50%      { opacity: 0.85; }
+  }
+  @keyframes check-breath {
+    0%, 100% { box-shadow: inset 0 0 12px rgba(95,213,193,0.26), 0 0 10px rgba(95,213,193,0.12); }
+    50%      { box-shadow: inset 0 0 18px rgba(95,213,193,0.40), 0 0 22px rgba(95,213,193,0.28); }
+  }
+  @keyframes check-mote {
+    0%, 100% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+    50%      { opacity: 1; transform: translate(2px, -3px) scale(1); }
+  }
+  @keyframes shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(400%); }
+  }
+  @keyframes comet-pulse {
+    0%, 100% { transform: translate(50%, -50%) scale(0.9); opacity: 0.85; }
+    50%      { transform: translate(50%, -50%) scale(1.25); opacity: 1; }
+  }
+</style></head>
+<body>
+
+  <div class="row">
+    <span class="lbl">toggle</span>
+    <span class="toggle"></span>
+    <span class="toggle on">
+      <span class="trail t1"></span>
+      <span class="trail t2"></span>
+    </span>
+    <span style="font-family: var(--font-display); font-style: italic; font-size: 13px; color: var(--fg-subtle);">
+      off · awake
+    </span>
+  </div>
+
+  <div class="row">
+    <span class="lbl">checkbox</span>
+    <span class="check">
+      <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+    </span>
+    <span class="check on">
+      <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+    </span>
+    <span class="check on">
+      <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+    </span>
+    <span style="font-family: var(--font-display); font-style: italic; font-size: 13px; color: var(--fg-subtle); margin-left: 6px;">
+      three details held
+    </span>
+  </div>
+
+  <div class="row">
+    <span class="lbl">progress · 68%</span>
+    <div class="progress">
+      <div class="progress-fill" style="width: 68%"></div>
+    </div>
+    <span class="progress-meta">setting · <span class="num">18</span> of <span class="num">26</span> prongs</span>
+  </div>
+
+</body></html>

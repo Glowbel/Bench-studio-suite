@@ -1,0 +1,80 @@
+/* Shared base for design-system preview cards.
+   Each card is a self-contained HTML doc, ~700×150 (max ~400) tall.
+   The card content fills the viewport — no titles, just specimens. */
+
+@import url("../colors_and_type.css");
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  overflow: hidden;
+  font-family: var(--font-body);
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px 24px;
+  box-sizing: border-box;
+  position: relative;
+  background:
+    radial-gradient(ellipse 70% 60% at 80% 15%, rgba(95, 213, 193, 0.04), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 10% 90%, rgba(124, 68, 184, 0.05), transparent 60%),
+    var(--bg);
+}
+
+/* Common layout helpers used by many cards */
+.row { display: flex; align-items: center; gap: 12px; }
+.col { display: flex; flex-direction: column; gap: 8px; }
+.grow { flex: 1; }
+.between { justify-content: space-between; }
+.center { justify-content: center; align-items: center; }
+
+.swatch {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.swatch-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+}
+.swatch-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-muted);
+  letter-spacing: 0.02em;
+}
+.swatch-hex {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-faint);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.token-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-muted);
+}
+.token-value {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-faint);
+}
+
+.spec-label {
+  font-family: var(--font-display);
+  font-variant: small-caps;
+  font-weight: 500;
+  letter-spacing: var(--ls-wider);
+  font-size: 11px;
+  color: var(--fg-subtle);
+}

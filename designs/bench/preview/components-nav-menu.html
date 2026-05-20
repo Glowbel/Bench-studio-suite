@@ -1,0 +1,213 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 24px; display: grid;
+         grid-template-columns: 1.1fr 1fr; gap: 28px; align-items: start; }
+
+  /* =================================================================
+     LEFT: nav hierarchy
+     primary pill  →  secondary pill  →  contextual tags
+     ================================================================= */
+  .nav-stack { display: flex; flex-direction: column; gap: 12px; }
+
+  .pill-nav {
+    display: flex; gap: 4px; padding: 5px;
+    background: var(--ink-900); border: 1px solid var(--border);
+    border-radius: 9999px;
+    box-shadow: inset 0 0 18px rgba(95,213,193,0.10), 0 1px 2px rgba(0,0,0,0.4);
+    width: fit-content;
+  }
+  .pill-item {
+    padding: 7px 15px; border-radius: 9999px;
+    background: transparent; border: 0;
+    font-family: var(--font-body); font-size: 13px; font-weight: 500;
+    color: var(--fg-muted); cursor: pointer;
+  }
+  .pill-item.active {
+    background: var(--ink-700); color: var(--mist-100);
+    box-shadow: inset 0 0 14px rgba(95,213,193,0.20);
+  }
+
+  /* Secondary — sits "below" primary, smaller, slightly inset */
+  .pill-nav.secondary {
+    margin-left: 14px;
+    background: transparent;
+    border: 1px solid var(--border-faint);
+    box-shadow: inset 0 0 14px rgba(176,131,216,0.06);
+    padding: 4px;
+    position: relative;
+  }
+  .pill-nav.secondary::before {
+    content: "";
+    position: absolute; top: -12px; left: 18px;
+    width: 1px; height: 12px;
+    background: linear-gradient(to bottom, transparent, var(--border));
+  }
+  .pill-nav.secondary .pill-item {
+    font-size: 12px; padding: 5px 12px;
+    color: var(--fg-subtle);
+  }
+  .pill-nav.secondary .pill-item.active {
+    background: rgba(176,131,216,0.10);
+    color: var(--violet-300);
+    box-shadow: inset 0 0 12px rgba(176,131,216,0.14);
+  }
+  .pill-item .count {
+    margin-left: 6px;
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--fg-faint);
+    background: rgba(255,255,255,0.04);
+    padding: 1px 6px; border-radius: 9999px;
+  }
+  .pill-item.active .count { color: currentColor; background: rgba(255,255,255,0.08); }
+
+  /* Contextual tag row — third layer, even quieter */
+  .tag-row {
+    display: flex; gap: 6px; margin-left: 30px;
+    align-items: center;
+  }
+  .tag-row::before {
+    content: ""; width: 12px; height: 1px; background: var(--border);
+  }
+  .tag {
+    font-family: var(--font-display); font-variant: small-caps;
+    letter-spacing: 0.14em; font-size: 11px;
+    padding: 2px 9px; border-radius: 4px;
+    background: transparent; border: 1px solid var(--border-faint);
+    color: var(--fg-subtle);
+  }
+
+  /* =================================================================
+     RIGHT: cascading menu stack
+     Three z-layers — back panel hint, primary menu, sub-menu
+     ================================================================= */
+  .menu-stage {
+    position: relative;
+    height: 280px;
+  }
+
+  /* Layer 0 — hint of a deeper panel behind (settings card) */
+  .panel-back {
+    position: absolute; top: 20px; left: 26px;
+    width: 220px; height: 180px;
+    background: var(--ink-900);
+    border: 1px solid var(--border-faint);
+    border-radius: 14px;
+    opacity: 0.55;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  }
+  .panel-back::before {
+    content: ""; position: absolute; inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 22px rgba(176,131,216,0.06);
+  }
+
+  /* Layer 1 — main dropdown menu (active focus) */
+  .menu {
+    position: absolute; top: 0; left: 0;
+    width: 220px;
+    background: rgba(28, 30, 38, 0.85);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 8px;
+    box-shadow:
+      inset 0 0 26px rgba(176,131,216,0.10),
+      0 12px 28px rgba(0,0,0,0.6),
+      0 0 40px rgba(124, 68, 184, 0.08);
+    z-index: 2;
+  }
+  .menu-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 12px; border-radius: 8px;
+    font-family: var(--font-body); font-size: 13px; color: var(--mist-200);
+    cursor: pointer; gap: 10px;
+  }
+  .menu-item:hover { background: var(--ink-800); color: var(--mist-100); }
+  .menu-item.active {
+    background: var(--ink-800);
+    color: var(--mist-100);
+    box-shadow: inset 0 0 16px rgba(176,131,216,0.20);
+  }
+  .menu-item .kbd {
+    font-family: var(--font-mono); font-size: 10px; color: var(--fg-faint);
+  }
+  .menu-item .chev {
+    color: var(--fg-faint); margin-left: auto; padding-left: 4px; font-size: 12px;
+  }
+  .menu-item.has-sub.active .chev { color: var(--violet-300); }
+  .menu-sep { height: 1px; background: var(--border); margin: 6px 8px; }
+
+  /* Layer 2 — sub-menu, cascading from an active "has-sub" item */
+  .submenu {
+    position: absolute; top: 70px; left: 232px;
+    width: 200px;
+    background: rgba(28, 30, 38, 0.92);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 8px;
+    box-shadow:
+      inset 0 0 22px rgba(95, 213, 193, 0.10),
+      0 16px 32px rgba(0,0,0,0.6),
+      0 0 40px rgba(95, 213, 193, 0.10);
+    z-index: 3;
+  }
+  .submenu::before {
+    content: "";
+    position: absolute; top: 14px; left: -6px;
+    width: 6px; height: 14px;
+    background: linear-gradient(to right, transparent, rgba(95, 213, 193, 0.35));
+  }
+  .submenu .menu-item:hover { box-shadow: inset 0 0 16px rgba(95, 213, 193, 0.16); color: var(--mist-100); }
+  .submenu .menu-eyebrow {
+    font-family: var(--font-display); font-variant: small-caps;
+    letter-spacing: 0.16em; font-size: 10px; color: var(--fg-subtle);
+    padding: 4px 12px 6px;
+  }
+</style></head>
+<body>
+
+  <!-- LEFT: layered nav hierarchy -->
+  <div class="nav-stack">
+    <div class="pill-nav">
+      <button class="pill-item active">Ledger</button>
+      <button class="pill-item">Letters <span class="count">3</span></button>
+      <button class="pill-item">Materials</button>
+      <button class="pill-item">Clients</button>
+    </div>
+    <div class="pill-nav secondary">
+      <button class="pill-item active">In process <span class="count">3</span></button>
+      <button class="pill-item">Awaiting <span class="count">1</span></button>
+      <button class="pill-item">Finished</button>
+      <button class="pill-item">Laid aside</button>
+    </div>
+    <div class="tag-row">
+      <span class="tag">moonstone</span>
+      <span class="tag">spiral set</span>
+    </div>
+  </div>
+
+  <!-- RIGHT: cascading menu with depth -->
+  <div class="menu-stage">
+    <div class="panel-back"></div>
+
+    <div class="menu">
+      <div class="menu-item">Begin a piece <span class="kbd">⌘ N</span></div>
+      <div class="menu-item has-sub active">Move to <span class="chev">›</span></div>
+      <div class="menu-item">Duplicate</div>
+      <div class="menu-sep"></div>
+      <div class="menu-item">Hold for later <span class="kbd">⌘ H</span></div>
+      <div class="menu-item" style="color: var(--danger)">Lay aside</div>
+    </div>
+
+    <div class="submenu">
+      <div class="menu-eyebrow">move to</div>
+      <div class="menu-item">In process</div>
+      <div class="menu-item">Awaiting reply</div>
+      <div class="menu-item">Finished work</div>
+      <div class="menu-item">Laid aside</div>
+    </div>
+  </div>
+
+</body></html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 28px; display: flex; flex-direction: column; gap: 18px; }
+  .row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .lbl { font-family: var(--font-mono); font-size: 10px; color: var(--fg-faint); width: 78px; }
+
+  .btn {
+    font-family: var(--font-body); font-weight: 500; font-size: 14px;
+    padding: 10px 20px; border-radius: 8px;
+    cursor: pointer; transition: all 240ms cubic-bezier(0.25,0.8,0.25,1);
+    letter-spacing: 0.01em;
+  }
+
+  .btn-secondary {
+    background: var(--ink-800); color: var(--mist-200);
+    border: 1px solid var(--border);
+    box-shadow: inset 0 0 18px rgba(176,131,216,0.06);
+  }
+  .btn-secondary.hover {
+    background: var(--ink-700);
+    box-shadow: inset 0 0 22px rgba(176,131,216,0.14);
+  }
+
+  .btn-ghost {
+    background: transparent; color: var(--mist-300);
+    border: 1px solid transparent;
+  }
+  .btn-ghost.hover { color: var(--mist-100); background: rgba(255,255,255,0.04); }
+
+  .btn-text {
+    background: transparent; color: var(--teal-300);
+    border: 0; padding: 8px 4px;
+    border-bottom: 1px solid rgba(95,213,193,0.30);
+    border-radius: 0;
+  }
+  .btn-text.hover { color: var(--teal-200); border-bottom-color: rgba(95,213,193,0.70); }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid rgba(196,107,107,0.40);
+  }
+  .btn-danger.hover { background: rgba(196,107,107,0.10); color: #d88585; }
+</style></head>
+<body>
+  <div class="row"><span class="lbl">secondary</span>
+    <button class="btn btn-secondary">Hold this</button>
+    <button class="btn btn-secondary hover">Hold this</button>
+  </div>
+  <div class="row"><span class="lbl">ghost</span>
+    <button class="btn btn-ghost">Cancel</button>
+    <button class="btn btn-ghost hover">Cancel</button>
+    <span class="lbl" style="width:auto; margin-left: 12px">text link</span>
+    <button class="btn btn-text">View full ledger</button>
+  </div>
+  <div class="row"><span class="lbl">danger</span>
+    <button class="btn btn-danger">Lay aside</button>
+    <button class="btn btn-danger hover">Lay aside</button>
+    <span class="text-xs" style="color: var(--fg-faint)">desaturated, never alarming</span>
+  </div>
+</body></html>

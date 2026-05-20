@@ -1,0 +1,59 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 22px 28px; display: flex; flex-direction: column; gap: 20px; }
+  .row { display: flex; align-items: baseline; gap: 28px; flex-wrap: wrap; }
+  .meta {
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--fg-faint); width: 150px; flex-shrink: 0;
+    letter-spacing: 0.02em;
+  }
+
+  /* Prices — hand-set Cormorant with old-style figures */
+  .price {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 50px; letter-spacing: -0.005em;
+    color: var(--fg-strong); line-height: 1;
+    font-feature-settings: "onum" 1, "kern" 1;
+  }
+  .price.gold { color: var(--gold-300); }
+  .price .cur {
+    font-style: italic; font-weight: 400;
+    font-size: 0.55em; color: var(--fg-subtle);
+    margin-right: 4px; vertical-align: 0.32em;
+  }
+
+  /* Craft specs — italic serif with old-style numerals */
+  .spec {
+    font-family: var(--font-display); font-style: italic; font-weight: 400;
+    font-size: 22px; color: var(--fg);
+    letter-spacing: 0.01em;
+    font-feature-settings: "onum" 1, "kern" 1, "liga" 1;
+  }
+  .spec .unit { color: var(--fg-muted); font-size: 0.78em; margin-left: 1px; }
+  .spec .sep { color: var(--fg-faint); font-style: normal; margin: 0 12px;
+               font-family: var(--font-display); }
+
+  /* System code — only place mono survives */
+  .code {
+    font-family: var(--font-mono); font-size: 12px;
+    color: var(--fg-muted); letter-spacing: 0.02em;
+  }
+</style></head>
+<body>
+  <div class="row">
+    <span class="meta">.num-price · display<br/>+ oldstyle figures</span>
+    <span class="price"><span class="cur">$</span>3,240</span>
+    <span class="price gold"><span class="cur">$</span>8,750</span>
+  </div>
+
+  <div class="row">
+    <span class="meta">.num-spec · serif italic<br/>craft measurements</span>
+    <span class="spec">18<span class="unit">ga</span><span class="sep">·</span>2.40<span class="unit">g</span><span class="sep">·</span>6×4<span class="unit">mm</span></span>
+  </div>
+
+  <div class="row">
+    <span class="meta">.mono · system code only</span>
+    <span class="code">ledger/2026-05/piece-0042</span>
+  </div>
+</body></html>

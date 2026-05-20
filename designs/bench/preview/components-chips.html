@@ -1,0 +1,41 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="_card.css">
+<style>
+  body { padding: 26px; display: flex; flex-direction: column; gap: 14px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-body); font-size: 12px; font-weight: 500;
+    padding: 5px 12px; border-radius: 9999px;
+    border: 1px solid var(--border);
+    background: var(--ink-800); color: var(--mist-300);
+  }
+  .chip .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .chip.teal   { color: var(--teal-300); border-color: rgba(95,213,193,0.35); background: rgba(15,90,82,0.30); box-shadow: inset 0 0 12px rgba(95,213,193,0.10); }
+  .chip.violet { color: var(--violet-300); border-color: rgba(176,131,216,0.35); background: rgba(38,15,68,0.50); box-shadow: inset 0 0 12px rgba(176,131,216,0.10); }
+  .chip.gold   { color: var(--gold-300); border-color: rgba(217,180,101,0.40); background: rgba(40,28,12,0.60); box-shadow: inset 0 0 14px rgba(217,180,101,0.14); }
+  .chip.danger { color: var(--danger); border-color: rgba(196,107,107,0.35); background: rgba(60,24,24,0.40); }
+  .chip.muted  { color: var(--fg-muted); }
+
+  .tag {
+    font-family: var(--font-display); font-variant: small-caps; letter-spacing: 0.14em;
+    font-size: 12px; padding: 4px 10px; border-radius: 4px;
+    background: transparent; border: 1px solid var(--border-faint); color: var(--fg-muted);
+  }
+</style></head>
+<body>
+  <div class="row">
+    <span class="chip teal"><span class="dot"></span>in process</span>
+    <span class="chip violet"><span class="dot"></span>awaiting reply</span>
+    <span class="chip gold"><span class="dot"></span>finished</span>
+    <span class="chip danger"><span class="dot"></span>laid aside</span>
+    <span class="chip muted">draft</span>
+  </div>
+  <div class="row">
+    <span class="tag">moonstone</span>
+    <span class="tag">sterling</span>
+    <span class="tag">18 ga</span>
+    <span class="tag">spiral set</span>
+    <span class="tag">bezel</span>
+  </div>
+</body></html>
