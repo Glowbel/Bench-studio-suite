@@ -1768,6 +1768,20 @@ body { font-family:'DM Mono',monospace; color:var(--c-text); -webkit-font-smooth
 }
 @keyframes nchAuraSpin { to { transform:rotate(360deg); } }
 
+/* Arcane pulse — a bright point orbiting the outer ring */
+.nch-orbit {
+  position:absolute; width:158px; height:158px;
+  animation:nchOrbit 4.6s linear infinite;
+  pointer-events:none;
+}
+.nch-pulse {
+  position:absolute; top:-3px; left:50%; margin-left:-3px;
+  width:6px; height:6px; border-radius:50%;
+  background:currentColor;
+  box-shadow:0 0 8px currentColor, 0 0 16px currentColor;
+}
+@keyframes nchOrbit { to { transform:rotate(360deg); } }
+
 /* Orb rings — expand outward, breathing life signal */
 .nch-orb-ring {
   position:absolute;
@@ -5035,6 +5049,7 @@ function buildHeroInner(typeId) {
   var tintLight = t ? t.tintLight : "166,240,220";
   return '<div class="nch-smoke-a" style="background:radial-gradient(circle, rgba(' + tint + ',0.5) 0%, rgba(' + tint + ',0.14) 38%, transparent 68%)"></div>'
     + '<div class="nch-smoke-b" style="background:radial-gradient(circle, rgba(' + tint + ',0.6) 0%, rgba(' + tint + ',0.2) 45%, transparent 72%)"></div>'
+    + '<div class="nch-orbit" style="color:' + color + '"><div class="nch-pulse"></div></div>'
     + '<div class="nch-orb-ring" style="color:' + color + '"></div>'
     + '<div class="nch-orb-ring r2" style="color:' + color + '"></div>'
     + '<div class="nch-orb-core" style="background:radial-gradient(circle, rgba(' + tintLight + ',0.95) 0%, rgba(' + tint + ',0.55) 40%, transparent 75%)"></div>'
