@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+
+    <!-- All elements are translated (32,32) — group origin at viewport center -->
+    <group
+        android:translateX="32"
+        android:translateY="32">
+
+        <!-- outer circle, stroke only, opacity 0.30 -->
+        <path
+            android:pathData="M 0 -26 A 26 26 0 0 1 0 26 A 26 26 0 0 1 0 -26 Z"
+            android:fillColor="#00000000"
+            android:strokeColor="#4acc85"
+            android:strokeWidth="0.6"
+            android:strokeAlpha="0.3"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+
+        <!-- diamond lens, stroke only -->
+        <path
+            android:pathData="M -15 0 Q -8 -7.5 0 -7.5 Q 8 -7.5 15 0 Q 8 7.5 0 7.5 Q -8 7.5 -15 0 Z"
+            android:fillColor="#00000000"
+            android:strokeColor="#4acc85"
+            android:strokeWidth="1.5"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+
+        <!-- spoke up -->
+        <path
+            android:pathData="M 0 -7.5 L 0 -19"
+            android:fillColor="#00000000"
+            android:strokeColor="#4acc85"
+            android:strokeWidth="1.5"
+            android:strokeLineCap="round" />
+
+        <!-- spoke upper-left -->
+        <path
+            android:pathData="M -7 -5.5 L -13 -16"
+            android:fillColor="#00000000"
+            android:strokeColor="#4acc85"
+            android:strokeWidth="1.5"
+            android:strokeLineCap="round" />
+
+        <!-- spoke upper-right -->
+        <path
+            android:pathData="M 7 -5.5 L 13 -16"
+            android:fillColor="#00000000"
+            android:strokeColor="#4acc85"
+            android:strokeWidth="1.5"
+            android:strokeLineCap="round" />
+
+        <!-- center orb, fill only -->
+        <path
+            android:pathData="M 0 -3 A 3 3 0 0 1 0 3 A 3 3 0 0 1 0 -3 Z"
+            android:fillColor="#4acc85" />
+
+        <!-- teardrop, fill only -->
+        <path
+            android:pathData="M 0 9 Q -2.4 12 -2.4 15.5 Q -2.4 18.2 0 18.2 Q 2.4 18.2 2.4 15.5 Q 2.4 12 0 9 Z"
+            android:fillColor="#4acc85" />
+
+    </group>
+
+</vector>

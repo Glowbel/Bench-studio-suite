@@ -170,4 +170,15 @@
     <color name="ContainerDark">#1c1d22</color>
     <color name="ContainerSuperDark">#0a0b0e</color>
 
+    <color name="chip_teal_text">#4acc85</color>
+    <color name="chip_teal_stroke">#595FD5C1</color>
+    <color name="chip_teal_bg">#4D0F5A52</color>
+    <color name="chip_violet_text">#b083d8</color>
+    <color name="chip_violet_stroke">#59B083D8</color>
+    <color name="chip_violet_bg">#80260F44</color>
+    <color name="chip_muted_text">#b3bdba</color>
+    <color name="chip_muted_stroke">#40404663</color>
+    <color name="chip_muted_bg">#26232531</color>
+    <color name="card_stroke">#663D4858</color>
+
 </resources>

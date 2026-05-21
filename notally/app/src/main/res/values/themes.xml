@@ -53,6 +53,7 @@
 
         <item name="navigationViewStyle">@style/NavigationView</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
+        <item name="materialCardViewStyle">@style/FiligreeCard</item>
 
         <item name="android:textColorLink">?attr/colorOnSurface</item>
         <item name="android:textColorHighlight">?attr/colorOnSurface</item>
@@ -64,7 +65,7 @@
     </style>
 
     <style name="NavigationView" parent="Widget.Material3.NavigationView">
-        <item name="android:background">?attr/colorSurface</item>
+        <item name="android:background">?attr/colorSurfaceContainer</item>
     </style>
 
     <style name="FileChip" parent="Widget.Material3.Chip.Assist">
@@ -73,10 +74,12 @@
         <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
-        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textColor">@color/chip_teal_text</item>
         <item name="chipIconSize">10pt</item>
-        <item name="chipIconTint">?attr/colorOnSurface</item>
-        <item name="chipStrokeColor">?attr/colorOnSurface</item>
+        <item name="chipIconTint">@color/chip_teal_text</item>
+        <item name="chipStrokeColor">@color/chip_teal_stroke</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipBackgroundColor">@color/chip_teal_bg</item>
         <item name="chipStartPadding">4dp</item>
         <item name="textStartPadding">2dp</item>
         <item name="android:clickable">false</item>
@@ -95,6 +98,10 @@
 
     <style name="FilterChip" parent="Widget.Material3.Chip.Filter">
         <item name="checkedIcon">@null</item>
+        <item name="android:textColor">@color/chip_muted_text</item>
+        <item name="chipStrokeColor">@color/chip_muted_stroke</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipBackgroundColor">@color/chip_muted_bg</item>
     </style>
 
     <style name="Preference" parent="TextView.Clickable">
@@ -161,9 +168,14 @@
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
         <item name="android:textAppearance">?attr/textAppearanceLabelSmall</item>
+        <item name="android:textColor">@color/chip_violet_text</item>
         <item name="chipMinTouchTargetSize">20dp</item>
         <item name="chipIcon">@drawable/notifications</item>
         <item name="chipIconSize">20dp</item>
+        <item name="chipIconTint">@color/chip_violet_text</item>
+        <item name="chipStrokeColor">@color/chip_violet_stroke</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipBackgroundColor">@color/chip_violet_bg</item>
         <item name="textStartPadding">4dp</item>
         <item name="textEndPadding">4dp</item>
         <item name="closeIconVisible">false</item>
@@ -195,6 +207,14 @@
 
     <style name="ShapeAppearance.Filigree.Dialog" parent="ShapeAppearance.Material3.LargeComponent">
         <item name="cornerSize">12dp</item>
+    </style>
+
+    <style name="FiligreeCard" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">?attr/colorSurfaceContainer</item>
+        <item name="strokeColor">@color/card_stroke</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Filigree.Card</item>
     </style>
 
 </resources>

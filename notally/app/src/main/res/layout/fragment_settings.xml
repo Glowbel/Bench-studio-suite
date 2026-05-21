@@ -42,10 +42,13 @@
             android:id="@+id/ShowSearchInTopBar"
             layout="@layout/preference" />
 
-        <View
-          android:layout_width="match_parent"
-          android:layout_height="1dp"
-          android:background="?android:attr/listDivider" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ornament_section_rule"
+            android:adjustViewBounds="true"
+            android:layout_marginVertical="8dp"
+            android:contentDescription="@null" />
 
         <TextView
           style="@style/PreferenceHeader"
@@ -77,10 +80,13 @@
             android:id="@+id/AutoEmptyBin"
             layout="@layout/preference_stepper" />
 
-        <View
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
+            android:layout_height="wrap_content"
+            android:src="@drawable/ornament_section_rule"
+            android:adjustViewBounds="true"
+            android:layout_marginVertical="8dp"
+            android:contentDescription="@null" />
 
         <TextView
             style="@style/PreferenceHeader"
@@ -112,10 +118,13 @@
           android:id="@+id/ImagesHiddenInOverview"
           layout="@layout/preference" />
 
-        <View
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
+            android:layout_height="wrap_content"
+            android:src="@drawable/ornament_section_rule"
+            android:adjustViewBounds="true"
+            android:layout_marginVertical="8dp"
+            android:contentDescription="@null" />
 
         <TextView
             style="@style/PreferenceHeader"
@@ -178,10 +187,13 @@
           android:id="@+id/PeriodicBackupsMax"
           layout="@layout/preference_stepper" />
 
-        <View
-          android:layout_width="match_parent"
-          android:layout_height="1dp"
-          android:background="?android:attr/listDivider" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ornament_section_rule"
+            android:adjustViewBounds="true"
+            android:layout_marginVertical="8dp"
+            android:contentDescription="@null" />
 
         <TextView
             style="@style/PreferenceHeader"
@@ -201,10 +213,13 @@
           android:id="@+id/SecureFlag"
           layout="@layout/preference" />
 
-        <View
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
+            android:layout_height="wrap_content"
+            android:src="@drawable/ornament_section_rule"
+            android:adjustViewBounds="true"
+            android:layout_marginVertical="8dp"
+            android:contentDescription="@null" />
 
         <TextView
           style="@style/PreferenceHeader"
@@ -244,10 +259,13 @@
           android:layout_height="wrap_content"
           android:text="@string/clear_data" />
 
-        <View
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
+            android:layout_height="wrap_content"
+            android:src="@drawable/ornament_section_rule"
+            android:adjustViewBounds="true"
+            android:layout_marginVertical="8dp"
+            android:contentDescription="@null" />
 
         <TextView
             style="@style/PreferenceHeader"
