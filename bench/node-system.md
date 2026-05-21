@@ -11,8 +11,8 @@ Four user-creatable node types in the picker. Each has a distinct modal, distinc
 ```
 research    knowledge & planning          widget-based modal, manual or study-based progression
 session     execution, direction-focused  lightweight picker, timer-linked
-immersion   deep flow, reps               minimal friction, immediate timer launch
-note        accumulation & synthesis      multi-tab, one primary per skill
+immersion   deep flow, reps               minimal friction, session picker, timer linked
+note        accumulation & synthesis      multi-tab, one primary per skill. manuel completion progression
 ```
 
 **Debrief** is NOT a picker type. Auto-inserted only — appears after any session with progress. Not user-created.
