@@ -27,30 +27,25 @@ main/
   CLAUDE.md              this file — suite orientation + hard rules
   vision.md              the why | read for grounding
   product-strategy.md    release strategy + cross-app open questions
-  netlify.toml           root Netlify config
 
   bench/
     CLAUDE.md                 The Bench living doc — current state, architecture, phase
     index.html                The Bench HTML app
-    netlify.toml              Netlify config (Netlify base dir: bench/)
     pricing-philosophy.md     pricing system design spec — read before building pricing feature
 
   constellation/
     CLAUDE.md                 Constellation living doc
     index.html                Constellation HTML app
-    netlify.toml              Netlify config (Netlify base dir: constellation/)
     constellation-bubble-tools.md  bubble interaction design spec — read before building bubble tools
 
   wizard/
     CLAUDE.md                 Decision Wizard living doc
     index.html                Decision Wizard HTML app
-    netlify.toml              Netlify config (Netlify base dir: wizard/)
     wizard-suite-architecture.md   three-tool suite design spec — read before building any wizard tool
 
   spatial/
     CLAUDE.md                 Spatial Calendar living doc
     index.html                Spatial Calendar HTML app
-    netlify.toml              Netlify config (Netlify base dir: spatial/)
 ```
 
 That's it. Nothing else should exist. If you find another file, ask Jordan whether to absorb or retire it.
@@ -109,7 +104,7 @@ wizard/wizard-suite-architecture.md
 
 ```
 HTML ([app]/index.html)
-  versioning: git handles it — push main, Netlify auto-deploys
+  versioning: git handles it — push main, Cloudflare Pages auto-deploys
   no filename versioning — git log is the history
 
 CLAUDE.md files
@@ -136,7 +131,7 @@ SESSION MID
   → design outputs → commit to [app]/ as named spec files
 
 SESSION CLOSE
-  → if code changed: commit and push to main → Netlify auto-deploys
+  → if code changed: commit and push to main → Cloudflare Pages auto-deploys
   → if architecture changed: update [app]/CLAUDE.md ARCHITECTURE section
   → if recent entry needed: add one-liner to [recent.entries]
   → if trigger fired: update relevant section
