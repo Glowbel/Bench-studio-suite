@@ -29,17 +29,17 @@ enum class Color {
 fun Color.toColorString() =
     when (this) {
         Color.DEFAULT -> BaseNote.COLOR_DEFAULT
-        Color.CORAL -> "#FAAFA9"
-        Color.ORANGE -> "#FFCC80"
-        Color.SAND -> "#FFF8B9"
-        Color.STORM -> "#AFCCDC"
-        Color.FOG -> "#D3E4EC"
-        Color.SAGE -> "#B4DED4"
-        Color.MINT -> "#E2F6D3"
-        Color.DUSK -> "#D3BFDB"
-        Color.FLOWER -> "#F8BBD0"
-        Color.BLOSSOM -> "#F5E2DC"
-        Color.CLAY -> "#E9E3D3"
+        Color.CORAL -> "#3d1e28"
+        Color.ORANGE -> "#3d2a14"
+        Color.SAND -> "#302a14"
+        Color.STORM -> "#142240"
+        Color.FOG -> "#1a2a36"
+        Color.SAGE -> "#14302a"
+        Color.MINT -> "#1e3628"
+        Color.DUSK -> "#221440"
+        Color.FLOWER -> "#3a142c"
+        Color.BLOSSOM -> "#3a2430"
+        Color.CLAY -> "#302818"
     }
 
 fun String.parseToColorString() =
