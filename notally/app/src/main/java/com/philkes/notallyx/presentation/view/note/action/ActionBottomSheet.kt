@@ -65,7 +65,7 @@ open class ActionBottomSheet(
                                 .apply { setMargins(8.dp, 0, 8.dp, 8.dp) }
                         setBackgroundColor(
                             context.getColorFromAttr(
-                                com.google.android.material.R.attr.colorOnSurfaceVariant
+                                com.google.android.material.R.attr.colorOutlineVariant
                             )
                         )
                     }
