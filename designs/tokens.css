@@ -1,0 +1,268 @@
+/* ============================================================
+   BENCH STUDIO SUITE — Design Tokens
+   Filigree × Bench fusion system · May 2026
+
+   Usage: copy this :root block into any HTML <style> tag.
+   Reference: designs/SYSTEM.md for usage rules + context map.
+   ============================================================ */
+
+:root {
+
+  /* ----------------------------------------------------------
+     OBSIDIAN — the dark ground
+     ---------------------------------------------------------- */
+  --ink-950: #1c1d22;   /* page bg */
+  --ink-900: #232531;   /* card / panel */
+  --ink-800: #2c2f42;   /* raised / hover */
+  --ink-700: #353953;   /* divider / track */
+  --ink-600: #404663;   /* border-strong / input */
+  --ink-500: #4c537a;   /* twilight / muted border */
+
+  /* ----------------------------------------------------------
+     VERDIGRIS — the alive primary ("teal")
+     context: workshop · active · tasks · nodes · skill progress
+     ---------------------------------------------------------- */
+  --teal-100: #ccf2d5;
+  --teal-200: #95e5b0;
+  --teal-300: #4acc85;  /* glow accent · focus · alive state */
+  --teal-500: #168258;  /* primary action */
+  --teal-700: #094428;  /* pressed · gradient start */
+  --teal-900: #051a10;  /* near-black · toggle track */
+
+  /* ----------------------------------------------------------
+     AMETHYST — deep secondary ("violet")
+     context: constellation · discovery · reflection · letters
+     ---------------------------------------------------------- */
+  --violet-100: #e6d2f5;
+  --violet-200: #c9a9eb;
+  --violet-300: #b083d8;  /* highlight · glow */
+  --violet-500: #7c44b8;  /* secondary action */
+  --violet-700: #4d2580;  /* pressed · gradient start */
+  --violet-900: #260f44;  /* near-black · toggle track */
+
+  /* ----------------------------------------------------------
+     AURUM — ceremony accent, use sparingly ("gold")
+     context: completion · milestone · delivered · mastery
+     ---------------------------------------------------------- */
+  --gold-300: #f0d28a;
+  --gold-400: #d9b465;   /* the only gold most surfaces see */
+  --gold-600: #9a7c3d;   /* deep · gradient start */
+
+  /* ----------------------------------------------------------
+     MIST — text and parchment
+     ---------------------------------------------------------- */
+  --mist-100: #f3f6f5;   /* strong emphasis · headings */
+  --mist-200: #d8dfdc;   /* primary text (default fg) */
+  --mist-300: #b3bdba;   /* body text · secondary */
+  --mist-400: #8a9692;   /* helper · labels */
+  --mist-500: #5e6a66;   /* muted · disabled · faint */
+
+  /* ----------------------------------------------------------
+     BENCH — three metal states (progress system)
+     copper = not started  silver = in progress  gold = complete
+     drives arc + connector only — never type-color elements
+     ---------------------------------------------------------- */
+  --copper:     #b87333;
+  --silver:     #c0c8cc;
+  --metal-gold: #c9a96e;   /* distinct from --gold-* (aurum) */
+
+  /* ----------------------------------------------------------
+     SEMANTIC ROLES — compose UI against these
+     ---------------------------------------------------------- */
+  --bg:          var(--ink-950);
+  --bg-raised:   var(--ink-900);
+  --bg-hover:    var(--ink-800);
+  --bg-sunken:   #14151a;
+
+  --fg:          var(--mist-200);
+  --fg-strong:   var(--mist-100);
+  --fg-muted:    var(--mist-300);
+  --fg-subtle:   var(--mist-400);
+  --fg-faint:    var(--mist-500);
+
+  --border:        rgba(61, 72, 88, 0.40);
+  --border-strong: rgba(61, 72, 88, 0.70);
+  --border-faint:  rgba(61, 72, 88, 0.20);
+
+  --accent:          var(--teal-500);
+  --accent-hover:    #29b29d;
+  --accent-pressed:  var(--teal-700);
+  --accent-2:        var(--violet-500);
+  --ceremony:        var(--gold-400);
+
+  --success: var(--teal-300);
+  --warning: var(--gold-400);
+  --danger:  #c46b6b;
+  --info:    var(--violet-300);
+
+  /* ----------------------------------------------------------
+     BEZEL GLOWS — surfaces feel "set like a stone"
+     ---------------------------------------------------------- */
+  --bezel-1: inset 0 0 36px rgba(95, 213, 193, 0.05);
+  --bezel-2: inset 0 0 28px rgba(95, 213, 193, 0.10);
+  --bezel-3: inset 0 0 22px rgba(95, 213, 193, 0.18);
+  --bezel-4: inset 0 0 16px rgba(95, 213, 193, 0.30);
+  --bezel-5: inset 0 0 8px rgba(95, 213, 193, 0.45), inset 0 0 0 1px rgba(95, 213, 193, 0.45);
+
+  --bezel-teal:          inset 0 0 24px rgba(95, 213, 193, 0.08);
+  --bezel-teal-strong:   inset 0 0 32px rgba(95, 213, 193, 0.16);
+  --bezel-gold:          inset 0 0 28px rgba(217, 180, 101, 0.14);
+  --bezel-gold-strong:   inset 0 0 18px rgba(217, 180, 101, 0.30), inset 0 0 0 1px rgba(217, 180, 101, 0.22);
+  --bezel-violet:        inset 0 0 24px rgba(176, 131, 216, 0.08);
+  --bezel-violet-strong: inset 0 0 32px rgba(176, 131, 216, 0.18);
+
+  /* ----------------------------------------------------------
+     ELEVATION — outer shadows
+     ---------------------------------------------------------- */
+  --e1: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --e2: 0 8px 24px rgba(0, 0, 0, 0.50), 0 0 32px rgba(95, 213, 193, 0.06);
+  --e3: 0 24px 64px rgba(0, 0, 0, 0.60), 0 0 80px rgba(124, 68, 184, 0.10);
+
+  /* ----------------------------------------------------------
+     ORB GLOWS — the ambient alive element
+     ---------------------------------------------------------- */
+  --orb-teal:   radial-gradient(circle, rgba(74,204,133,0.55) 0%, rgba(74,204,133,0.15) 40%, transparent 70%);
+  --orb-violet: radial-gradient(circle, rgba(176,131,216,0.50) 0%, rgba(176,131,216,0.12) 40%, transparent 70%);
+  --orb-gold:   radial-gradient(circle, rgba(240,210,138,0.55) 0%, rgba(240,210,138,0.12) 40%, transparent 70%);
+
+  /* ----------------------------------------------------------
+     PAGE VIGNETTE — apply as body background layer, never stack
+     ---------------------------------------------------------- */
+  --vignette:
+    radial-gradient(ellipse 80% 60% at 75% 20%, rgba(95, 213, 193, 0.05), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 15% 85%, rgba(124, 68, 184, 0.06), transparent 60%);
+
+  /* ----------------------------------------------------------
+     TYPOGRAPHY
+     ---------------------------------------------------------- */
+  --font-display: "Cormorant Garamond", "EB Garamond", Georgia, serif;
+  --font-mono:    "JetBrains Mono", "DM Mono", ui-monospace, monospace;
+
+  --fs-xs:   12px;
+  --fs-sm:   14px;
+  --fs-base: 16px;
+  --fs-md:   18px;
+  --fs-lg:   22px;
+  --fs-xl:   28px;
+  --fs-2xl:  36px;
+  --fs-3xl:  48px;
+  --fs-4xl:  64px;
+
+  --lh-tight: 1.1;
+  --lh-snug:  1.3;
+  --lh-base:  1.55;
+  --lh-loose: 1.7;
+
+  --ls-tight:  -0.02em;
+  --ls-snug:   -0.01em;
+  --ls-base:    0;
+  --ls-wide:    0.04em;
+  --ls-wider:   0.12em;
+  --ls-widest:  0.20em;
+
+  /* ----------------------------------------------------------
+     SPACING — 4px base, 10 steps
+     ---------------------------------------------------------- */
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+  --space-9:  96px;
+  --space-10: 128px;
+
+  /* ----------------------------------------------------------
+     RADIUS
+     ---------------------------------------------------------- */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:  12px;
+  --radius-xl:  20px;
+  --radius-full: 9999px;
+
+  /* ----------------------------------------------------------
+     MOTION — breath-like, settling
+     ---------------------------------------------------------- */
+  --ease-settle: cubic-bezier(0.25, 0.8, 0.25, 1);
+  --ease-rise:   cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-quick:   160ms;
+  --dur-base:    280ms;
+  --dur-slow:    480ms;
+  --dur-breath:  2400ms;
+
+  /* ----------------------------------------------------------
+     DESKTOP LAYOUT (shell dimensions — in progress)
+     ---------------------------------------------------------- */
+  --sidebar-width: 260px;
+  --content-padding-x: 40px;
+  --content-padding-y: 24px;
+  --capsule-max-width: 480px;
+}
+
+/* ----------------------------------------------------------
+   BASE STYLES — apply to any page using this token set
+   ---------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Page vignette — add class .vignette-bg to body */
+.vignette-bg {
+  background:
+    radial-gradient(ellipse 80% 60% at 75% 20%, rgba(95, 213, 193, 0.05), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 15% 85%, rgba(124, 68, 184, 0.06), transparent 60%),
+    var(--ink-950);
+}
+
+/* ----------------------------------------------------------
+   AMBIENT KEYFRAMES — available globally
+   ---------------------------------------------------------- */
+@keyframes breathe {
+  0%, 100% { opacity: 0.65; }
+  50%       { opacity: 1.00; }
+}
+
+@keyframes mark-breath {
+  0%, 100% {
+    filter: drop-shadow(0 0 3px rgba(95, 213, 193, 0.55))
+            drop-shadow(0 0 10px rgba(95, 213, 193, 0.22));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(95, 213, 193, 1.0))
+            drop-shadow(0 0 22px rgba(95, 213, 193, 0.55))
+            drop-shadow(0 0 42px rgba(95, 213, 193, 0.24));
+  }
+}
+
+@keyframes mark-breath-gold {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px rgba(217, 180, 101, 0.65))
+            drop-shadow(0 0 12px rgba(217, 180, 101, 0.32));
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(217, 180, 101, 0.95))
+            drop-shadow(0 0 24px rgba(217, 180, 101, 0.58))
+            drop-shadow(0 0 44px rgba(217, 180, 101, 0.24));
+  }
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
+@keyframes comet-pulse {
+  0%, 100% { transform: translate(50%, -50%) scale(0.9); opacity: 0.85; }
+  50%       { transform: translate(50%, -50%) scale(1.28); opacity: 1; }
+}
