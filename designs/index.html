@@ -22,20 +22,16 @@
     }
 
     .wrap {
-      max-width: 680px;
+      max-width: 720px;
       margin: 0 auto;
-      padding: 80px 40px 120px;
+      padding: 72px 40px 120px;
       display: flex;
       flex-direction: column;
-      gap: 56px;
+      gap: 48px;
     }
 
-    /* Header */
-    .header {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    /* ---- Header ---- */
+    .header { display: flex; flex-direction: column; gap: 10px; }
 
     .eyebrow {
       font-family: "JetBrains Mono", monospace;
@@ -44,60 +40,111 @@
       text-transform: uppercase;
       color: #5e6a66;
     }
-
     .title {
       font-family: "Cormorant Garamond", Georgia, serif;
       font-weight: 500;
-      font-size: 42px;
+      font-size: 40px;
       line-height: 1.1;
       letter-spacing: -0.01em;
       color: #f3f6f5;
     }
-
     .sub {
       font-family: "Cormorant Garamond", Georgia, serif;
       font-style: italic;
-      font-size: 17px;
+      font-size: 16px;
       color: #5e6a66;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
-    /* Divider */
+    /* ---- Tab bar ---- */
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      padding: 5px;
+      background: #232531;
+      border: 1px solid rgba(61, 72, 88, 0.40);
+      border-radius: 9999px;
+      width: fit-content;
+      box-shadow: inset 0 0 20px rgba(95, 213, 193, 0.05);
+    }
+
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      border-radius: 9999px;
+      background: transparent;
+      border: 0;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: #8a9692;
+      cursor: pointer;
+      transition: all 240ms cubic-bezier(0.25, 0.8, 0.25, 1);
+      letter-spacing: 0.01em;
+    }
+    .tab-btn:hover { color: #d8dfdc; }
+    .tab-btn.active {
+      background: #2c2f42;
+      color: #f3f6f5;
+      box-shadow: inset 0 0 14px rgba(95, 213, 193, 0.14);
+    }
+    .tab-btn.active .tab-dot {
+      background: #4acc85;
+      box-shadow: 0 0 6px #4acc85;
+    }
+    .tab-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #4c537a;
+      transition: background 240ms, box-shadow 240ms;
+      flex-shrink: 0;
+    }
+
+    /* ---- Panels ---- */
+    .panel { display: none; flex-direction: column; gap: 32px; }
+    .panel.active { display: flex; }
+
+    /* ---- Divider ---- */
     .rule {
       height: 1px;
       background: linear-gradient(90deg,
-        rgba(95, 213, 193, 0.48) 0%,
-        rgba(95, 213, 193, 0.10) 60%,
+        rgba(95, 213, 193, 0.45) 0%,
+        rgba(95, 213, 193, 0.10) 55%,
         transparent 100%);
-      box-shadow: 0 0 10px rgba(95, 213, 193, 0.20);
+      box-shadow: 0 0 10px rgba(95, 213, 193, 0.18);
     }
 
-    /* Demo list */
-    .demos {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .demos-label {
+    /* ---- Panel label ---- */
+    .panel-label {
       font-family: "Cormorant Garamond", Georgia, serif;
       font-variant: small-caps;
       font-weight: 500;
       letter-spacing: 0.18em;
       font-size: 11px;
       color: #5e6a66;
-      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .panel-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(61, 72, 88, 0.40), transparent);
     }
 
+    /* ---- Demo cards (Fusion panel) ---- */
     .demo-link {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 20px;
-      padding: 18px 22px;
+      padding: 20px 24px;
       background: #232531;
       border: 1px solid rgba(61, 72, 88, 0.40);
-      border-radius: 10px;
+      border-radius: 12px;
       text-decoration: none;
       color: inherit;
       transition: background 240ms cubic-bezier(0.25, 0.8, 0.25, 1),
@@ -113,23 +160,20 @@
                   0 4px 16px rgba(0, 0, 0, 0.35);
       transform: translateY(-1px);
     }
-
     .demo-left { display: flex; flex-direction: column; gap: 5px; }
-
     .demo-name {
       font-family: "Cormorant Garamond", Georgia, serif;
       font-weight: 500;
       font-size: 20px;
       color: #f3f6f5;
     }
-
     .demo-desc {
       font-family: "Cormorant Garamond", Georgia, serif;
       font-style: italic;
       font-size: 14px;
       color: #8a9692;
     }
-
+    .demo-right { display: flex; align-items: center; gap: 12px; }
     .demo-tag {
       font-family: "JetBrains Mono", monospace;
       font-size: 10px;
@@ -141,21 +185,114 @@
       border-radius: 9999px;
       background: rgba(15, 90, 82, 0.25);
       white-space: nowrap;
-      flex-shrink: 0;
     }
-
     .demo-arrow {
       font-size: 18px;
       color: #4c537a;
       flex-shrink: 0;
       transition: color 240ms, transform 240ms cubic-bezier(0.25, 0.8, 0.25, 1);
     }
-    .demo-link:hover .demo-arrow {
-      color: #4acc85;
-      transform: translateX(3px);
+    .demo-link:hover .demo-arrow { color: #4acc85; transform: translateX(3px); }
+
+    /* ---- System panel: color palette ---- */
+    .swatch-groups { display: flex; flex-direction: column; gap: 24px; }
+
+    .swatch-group { display: flex; flex-direction: column; gap: 8px; }
+    .swatch-group-name {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #5e6a66;
+    }
+    .swatch-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .swatch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .swatch-chip {
+      width: 44px; height: 44px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .swatch-hex {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 9px;
+      letter-spacing: 0.02em;
+      color: #5e6a66;
     }
 
-    /* Footer */
+    /* ---- System panel: type scale ---- */
+    .type-rows { display: flex; flex-direction: column; gap: 14px; }
+    .type-row { display: flex; align-items: baseline; gap: 18px; }
+    .type-row-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      color: #5e6a66;
+      width: 52px;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+    .type-sample-display {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-weight: 500;
+      color: #f3f6f5;
+      line-height: 1.1;
+    }
+    .type-sample-body {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-style: italic;
+      color: #b3bdba;
+      line-height: 1.4;
+    }
+    .type-sample-mono {
+      font-family: "JetBrains Mono", monospace;
+      color: #4acc85;
+    }
+    .type-sample-caps {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-variant: small-caps;
+      letter-spacing: 0.18em;
+      color: #8a9692;
+    }
+
+    /* ---- System panel: component links ---- */
+    .component-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+    }
+    .comp-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #232531;
+      border: 1px solid rgba(61, 72, 88, 0.40);
+      border-radius: 8px;
+      text-decoration: none;
+      color: #b3bdba;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 15px;
+      transition: background 200ms, border-color 200ms, color 200ms;
+    }
+    .comp-link:hover {
+      background: #2c2f42;
+      border-color: rgba(95, 213, 193, 0.22);
+      color: #f3f6f5;
+    }
+    .comp-link-arrow {
+      font-size: 13px;
+      color: #4c537a;
+      transition: color 200ms, transform 200ms;
+    }
+    .comp-link:hover .comp-link-arrow { color: #4acc85; transform: translateX(2px); }
+
+    /* ---- Footer ---- */
     .foot {
       font-family: "Cormorant Garamond", Georgia, serif;
       font-style: italic;
@@ -165,33 +302,318 @@
   </style>
 </head>
 <body>
-  <div class="wrap">
+<div class="wrap">
 
-    <div class="header">
-      <div class="eyebrow">bench studio suite · design lab</div>
-      <div class="title">Design Explorations</div>
-      <div class="sub">Live samples. Elements before they ship.</div>
+  <div class="header">
+    <div class="eyebrow">bench studio suite · design lab</div>
+    <div class="title">Design Explorations</div>
+    <div class="sub">Live samples. Elements before they ship.</div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" data-panel="fusion">
+      <span class="tab-dot"></span>Fusion
+    </button>
+    <button class="tab-btn" data-panel="system">
+      <span class="tab-dot"></span>Design System
+    </button>
+  </div>
+
+  <!-- ============================================================
+       PANEL: FUSION
+       ============================================================ -->
+  <div class="panel active" id="panel-fusion">
+
+    <div class="panel-label">active explorations</div>
+
+    <a class="demo-link" href="./bench/">
+      <div class="demo-left">
+        <div class="demo-name">Bench × Filigree — Fusion Lab</div>
+        <div class="demo-desc">Controls, dividers, bezel surfaces, heraldic mark in three metal states.</div>
+      </div>
+      <div class="demo-right">
+        <span class="demo-tag">bench</span>
+        <span class="demo-arrow">&#8594;</span>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- ============================================================
+       PANEL: DESIGN SYSTEM
+       ============================================================ -->
+  <div class="panel" id="panel-system">
+
+    <!-- COLOR PALETTE -->
+    <div class="panel-label">color palette</div>
+
+    <div class="swatch-groups">
+
+      <div class="swatch-group">
+        <div class="swatch-group-name">Obsidian — the dark ground</div>
+        <div class="swatch-row">
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #1c1d22;"></div>
+            <div class="swatch-hex">950</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #232531;"></div>
+            <div class="swatch-hex">900</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #2c2f42;"></div>
+            <div class="swatch-hex">800</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #353953;"></div>
+            <div class="swatch-hex">700</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #404663;"></div>
+            <div class="swatch-hex">600</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #4c537a;"></div>
+            <div class="swatch-hex">500</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatch-group">
+        <div class="swatch-group-name">Verdigris — the alive primary</div>
+        <div class="swatch-row">
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #051a10; box-shadow: inset 0 0 0 1px rgba(74,204,133,0.15);"></div>
+            <div class="swatch-hex">900</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #094428;"></div>
+            <div class="swatch-hex">700</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #168258;"></div>
+            <div class="swatch-hex">500</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #4acc85; box-shadow: 0 0 12px rgba(74,204,133,0.45);"></div>
+            <div class="swatch-hex">300</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #95e5b0;"></div>
+            <div class="swatch-hex">200</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #ccf2d5;"></div>
+            <div class="swatch-hex">100</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatch-group">
+        <div class="swatch-group-name">Amethyst — deep secondary</div>
+        <div class="swatch-row">
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #260f44; box-shadow: inset 0 0 0 1px rgba(176,131,216,0.15);"></div>
+            <div class="swatch-hex">900</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #4d2580;"></div>
+            <div class="swatch-hex">700</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #7c44b8;"></div>
+            <div class="swatch-hex">500</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #b083d8; box-shadow: 0 0 12px rgba(176,131,216,0.45);"></div>
+            <div class="swatch-hex">300</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #c9a9eb;"></div>
+            <div class="swatch-hex">200</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #e6d2f5;"></div>
+            <div class="swatch-hex">100</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatch-group">
+        <div class="swatch-group-name">Aurum — ceremony accent (use sparingly)</div>
+        <div class="swatch-row">
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #9a7c3d;"></div>
+            <div class="swatch-hex">600</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #d9b465; box-shadow: 0 0 12px rgba(217,180,101,0.40);"></div>
+            <div class="swatch-hex">400</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #f0d28a;"></div>
+            <div class="swatch-hex">300</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatch-group">
+        <div class="swatch-group-name">Mist — text and parchment</div>
+        <div class="swatch-row">
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #5e6a66;"></div>
+            <div class="swatch-hex">500</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #8a9692;"></div>
+            <div class="swatch-hex">400</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #b3bdba;"></div>
+            <div class="swatch-hex">300</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #d8dfdc;"></div>
+            <div class="swatch-hex">200</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #f3f6f5;"></div>
+            <div class="swatch-hex">100</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatch-group">
+        <div class="swatch-group-name">Bench — three metal states</div>
+        <div class="swatch-row">
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #b87333; box-shadow: 0 0 8px rgba(184,115,51,0.35);"></div>
+            <div class="swatch-hex">copper</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #c0c8cc; box-shadow: 0 0 8px rgba(95,213,193,0.30);"></div>
+            <div class="swatch-hex">silver</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background: #c9a96e; box-shadow: 0 0 8px rgba(217,180,101,0.40);"></div>
+            <div class="swatch-hex">gold</div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <div class="rule"></div>
+    <!-- TYPOGRAPHY -->
+    <div class="panel-label">typography</div>
 
-    <div class="demos">
-      <div class="demos-label">active explorations</div>
+    <div class="type-rows">
+      <div class="type-row">
+        <div class="type-row-label">display</div>
+        <div class="type-sample-display" style="font-size: 38px;">The Bench</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row-label">heading</div>
+        <div class="type-sample-display" style="font-size: 26px;">Anna's Pendant</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row-label">body</div>
+        <div class="type-sample-body" style="font-size: 16px;">"Something that catches light the way the river did."</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row-label">caps</div>
+        <div class="type-sample-caps" style="font-size: 13px;">moonstone · sterling · commission</div>
+      </div>
+      <div class="type-row">
+        <div class="type-row-label">mono</div>
+        <div class="type-sample-mono" style="font-size: 13px;">18 of 26 prongs · 68%</div>
+      </div>
+    </div>
 
-      <a class="demo-link" href="./bench/">
-        <div class="demo-left">
-          <div class="demo-name">Bench × Filigree — Fusion Lab</div>
-          <div class="demo-desc">Controls, dividers, bezel surfaces, heraldic mark in three metal states.</div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <span class="demo-tag">bench</span>
-          <span class="demo-arrow">&#8594;</span>
-        </div>
+    <!-- COMPONENT PREVIEWS -->
+    <div class="panel-label">component previews</div>
+
+    <div class="component-grid">
+      <a class="comp-link" href="./bench/preview/colors-obsidian.html" target="_blank">
+        Colors · Obsidian <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/colors-verdigris.html" target="_blank">
+        Colors · Verdigris <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/colors-amethyst.html" target="_blank">
+        Colors · Amethyst <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/colors-aurum.html" target="_blank">
+        Colors · Aurum <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/colors-orbs.html" target="_blank">
+        Colors · Orbs <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/components-controls.html" target="_blank">
+        Components · Controls <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/components-cards.html" target="_blank">
+        Components · Cards <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/components-buttons-primary.html" target="_blank">
+        Components · Buttons <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/components-chips.html" target="_blank">
+        Components · Chips <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/components-inputs.html" target="_blank">
+        Components · Inputs <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/components-nav-menu.html" target="_blank">
+        Components · Nav <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/spacing-scale.html" target="_blank">
+        Spacing · Scale <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/spacing-elevation.html" target="_blank">
+        Spacing · Elevation <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/spacing-motion.html" target="_blank">
+        Spacing · Motion <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/type-display.html" target="_blank">
+        Type · Display <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/type-body.html" target="_blank">
+        Type · Body <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/brand-triskelion.html" target="_blank">
+        Brand · Triskelion <span class="comp-link-arrow">&#8599;</span>
+      </a>
+      <a class="comp-link" href="./bench/preview/brand-ornaments.html" target="_blank">
+        Brand · Ornaments <span class="comp-link-arrow">&#8599;</span>
       </a>
     </div>
 
-    <div class="foot">More explorations added as the suite grows.</div>
-
   </div>
+
+  <div class="foot">Elements before they ship. Nothing deleted — everything available.</div>
+
+</div>
+<script>
+  var tabs = document.querySelectorAll('.tab-btn');
+  var panels = document.querySelectorAll('.panel');
+
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].addEventListener('click', function() {
+      var target = this.getAttribute('data-panel');
+
+      for (var j = 0; j < tabs.length; j++) {
+        tabs[j].classList.remove('active');
+      }
+      for (var k = 0; k < panels.length; k++) {
+        panels[k].classList.remove('active');
+      }
+
+      this.classList.add('active');
+      var targetPanel = document.getElementById('panel-' + target);
+      if (targetPanel) { targetPanel.classList.add('active'); }
+    });
+  }
+</script>
 </body>
 </html>
