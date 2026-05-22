@@ -44,7 +44,6 @@ jobs:
             -PDEEPL_API_KEY=dummy \
             -x installLocalGitHooks \
             -x exportTranslationsToExcel \
-            -x generateTranslations \
             --no-daemon \
             --stacktrace
 
