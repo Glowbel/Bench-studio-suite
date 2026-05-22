@@ -24,15 +24,16 @@ no behavior.
 
 ## 1. Plan first, always — no exceptions
 
-**No extraction code is written until `docs/extraction-<app>.md` exists and has
-been approved by the app owner / reviewer.** This is a hard gate. If that file
-does not exist or has not been approved, the only valid next step is to write
-it (or stop and ask). Do not scaffold `src/apps/<name>/`, do not add the
-`<app>.html` entry, do not touch `apps.config.mjs`, do not write a single
+**No extraction code is written until `docs/plans/extraction-<app>.md` exists
+and has been approved by the app owner / reviewer.** This is a hard gate. If
+that file does not exist or has not been approved, the only valid next step is
+to write it (or stop and ask). Do not scaffold `src/apps/<name>/`, do not add
+the `<app>.html` entry, do not touch `apps.config.mjs`, do not write a single
 component before the PLAN is approved.
 
-`docs/extraction-<app>.md` is the per-app extraction PLAN. Its template is
-**§11.2 of the migration spec** — follow it exactly. The PLAN must contain:
+`docs/plans/extraction-<app>.md` is the per-app extraction PLAN — it lives in
+`docs/plans/` alongside the migration spec. Its template is **§11.2 of the
+migration spec** — follow it exactly. The PLAN must contain:
 
 - **Context** — what the app is, current line count, why it is being extracted
   now, and (hot apps only — The Bench, Constellation) the freeze cut-line
@@ -56,23 +57,38 @@ component before the PLAN is approved.
 - **Out of Scope** — no new features, no shared-code extraction, no bridges
   wired.
 
-The review gate is real: the PLAN is reviewed and approved as its own step
-before any extraction commit. Treat an unapproved PLAN as a hard stop.
+The review gate is real and auditable. The PLAN file itself records its
+approval: it carries a **status line** near the top —
+
+```
+Status: draft — awaiting review
+Status: approved — <reviewer name>, <date>
+```
+
+The PLAN starts as `draft`. No extraction code is written until that line
+reads `approved`. A PLAN with no status line, or one still marked `draft`, is
+a hard stop. (The §11.2 template's Context section is where this line lives.)
 
 ---
 
-## 2. Zones are the decomposition scaffold
+## 2. Zones are the first-pass decomposition scaffold
 
 Each app's `index.html` is internally segmented into numbered **zones** with
 `BEGIN`/`END` markers and an in-file registry/rebuilder (Wizard: ~21 zones;
-Spatial: ~23 zones; Bench: zone-marked). This existing structure is the natural
-decomposition scaffold.
+Spatial: ~23 zones; Bench: zone-marked). Use this structure as the **default
+first-pass split** when drafting the PLAN's component breakdown — it is the
+starting point, not a straitjacket.
 
-- Map **zones → feature folders / components.** Each `features/<group>/` folder
-  corresponds roughly to one in-file zone.
-- **Do not invent structure the zones do not support.** The split should be
-  legible against the original — a reviewer holding the zone map and the new
-  tree side by side should see the correspondence.
+- Map **zones → feature folders / components** as the first pass. Each
+  `features/<group>/` folder corresponds roughly to one in-file zone.
+- **Then refine.** The logical zone boundaries are not always the boundaries
+  the code wants — a zone may split cleanly into two components, or two zones
+  may genuinely belong together. After the first-pass split is drafted, do a
+  refinement pass: adjust boundaries where the actual code structure makes a
+  different split clearer or more maintainable.
+- **Keep it traceable.** Wherever the refined split deviates from the zone map,
+  note the deviation (and why) in the PLAN, so a reviewer holding the zone map
+  and the new tree side by side can still follow the correspondence.
 - The zone registry plus the app's `CLAUDE.md` architecture section together
   form the golden-path checklist used for verification (§6).
 
@@ -201,8 +217,10 @@ Every extracted Preact app builds to `dist/beta/<app>/` and is served at
 ```
 1. Invoke this skill.
 2. Read the app's index.html zone registry + its CLAUDE.md architecture.
-3. Write docs/extraction-<app>.md (the PLAN — spec §11.2).
-   ── REVIEW GATE: app owner approves the PLAN. No code before this. ──
+3. Draft docs/plans/extraction-<app>.md (the PLAN — spec §11.2): zone-map
+   first-pass split, then a refinement pass. Status line starts as `draft`.
+   ── REVIEW GATE: app owner approves; the PLAN's Status line flips to
+      `approved`. No extraction code before that. ──
 4. Scaffold PR: src/apps/<name>/ skeleton, <app>.html entry,
    { name, entry } in apps.config.mjs, runtime deps in package.json.
    Behavior: an empty /beta/<app>/ page. Add the app's status-table row.
