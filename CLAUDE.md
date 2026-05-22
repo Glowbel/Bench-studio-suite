@@ -14,41 +14,95 @@ For deeper grounding, read `vision.md` at repo root. Do this when a session feel
 
 ---
 
+## REPO MODE — PER-APP STATUS
+
+This repo is mid-migration: a Preact + Vite monorepo. Apps move from
+single-file HTML to Preact one at a time. **Always check an app's mode
+before working on it** — the hard rules and the verification gate differ
+by mode (see HARD RULES and VERIFICATION GATE below).
+
+| App              | Mode         | Current (canonical)       | Beta (Preact)        | Doc                         |
+|------------------|--------------|---------------------------|----------------------|-----------------------------|
+| Decision Wizard  | single-file  | wizard/index.html         | —                    | wizard/CLAUDE.md            |
+| Spatial Calendar | single-file  | spatial/index.html        | —                    | spatial/CLAUDE.md           |
+| The Bench        | single-file  | bench/index.html          | —                    | bench/CLAUDE.md             |
+| Constellation    | single-file  | constellation/index.html  | —                    | constellation/CLAUDE.md     |
+
+As an app is extracted: mode → `Preact-beta`, beta column → `/beta/<app>`,
+code → `src/apps/<name>/`, doc → `src/apps/<name>/CLAUDE.md`. At promotion
+(app-owner-gated): mode → `Preact` and the Preact build takes the canonical
+`/<app>/` path. The full plan is `docs/plans/20260522-bench-studio-suite-monorepo-migration.md`.
+
+---
+
 ## THE REGISTRY
 
 *Where everything lives. Read this so the system runs itself.*
 
-### One branch — the whole system
+### The repo — a Preact + Vite monorepo
 
-Everything lives on `main`. All apps are subdirectories.
+Everything lives on `main`. Phase-1 scaffolding (Vite, the app manifest,
+build scripts, `.claude/` automation) is in place; the four apps are still
+single-file in their subdirectories, untouched, until each is extracted.
 
 ```
-main/
+bench-studio-suite/
   CLAUDE.md              this file — suite orientation + hard rules
   vision.md              the why | read for grounding
   product-strategy.md    release strategy + cross-app open questions
 
+  index.html             landing page (Vite entry)
+  <app>.html             per-app Vite entry — added one at a time, per extraction
+  apps.config.mjs         the app manifest — single source of truth for built apps
+  vite.config.js          Vite config — reads apps.config.mjs
+  package.json            npm scripts + devDependencies
+
+  .claude/
+    settings.json             permissions + SessionStart hook
+    hooks/session-start.sh    npm install on Claude Code web
+    skills/                   studio-prototype, app-extraction (added by PR 3/4)
+  scripts/
+    build.mjs                 dynamic suite build — discovers apps from the manifest
+    build-legacy.mjs          copies current single-file apps verbatim into dist/
+    (cf-build.mjs, build-prototypes-index.mjs — added by PR 3)
+
+  docs/
+    plans/
+      20260522-bench-studio-suite-monorepo-migration.md   the migration spec
+    (extraction-<app>.md — per-app extraction PLANs, written before each extraction)
+
+  designs/               design-system workspace — Filigree × Bench design language
+    SYSTEM.md                 authoritative design-language reference
+    tokens.css                CSS custom properties — canonical token source
+    index.html                design lab landing page
+    bench/                    ui kits, component previews, screenshots, token CSS
+
   bench/
     CLAUDE.md                 The Bench living doc — current state, architecture, phase
-    index.html                The Bench HTML app
+    index.html                The Bench HTML app (single-file, until extraction)
     pricing-philosophy.md     pricing system design spec — read before building pricing feature
+    node-system.md            node modal design spec — read before coding node modal work
 
   constellation/
     CLAUDE.md                 Constellation living doc
-    index.html                Constellation HTML app
+    index.html                Constellation HTML app (single-file, until extraction)
     constellation-bubble-tools.md  bubble interaction design spec — read before building bubble tools
 
   wizard/
     CLAUDE.md                 Decision Wizard living doc
-    index.html                Decision Wizard HTML app
+    index.html                Decision Wizard HTML app (single-file, until extraction)
     wizard-suite-architecture.md   three-tool suite design spec — read before building any wizard tool
 
   spatial/
     CLAUDE.md                 Spatial Calendar living doc
-    index.html                Spatial Calendar HTML app
+    index.html                Spatial Calendar HTML app (single-file, until extraction)
 ```
 
-That's it. Nothing else should exist. If you find another file, ask Jordan whether to absorb or retire it.
+Files added by later phases: `src/apps/<name>/` (extracted Preact apps),
+`src/shared/` (Phase 3 — proven-shared code only), `prototypes/` (throwaway
+HTML explorations), `legacy/` (pre-split single-file originals, archived at
+promotion). If you find a file not accounted for here or in a later phase,
+ask Jordan whether to absorb or retire it.
 
 ### When to read what — by session type
 
@@ -85,6 +139,13 @@ bench/pricing-philosophy.md
                distill substantial design moments → MASTER RECORD
                delete this file
 
+bench/node-system.md
+  read when:   designing or building any node modal work in the Workshop
+               (research / session / immersion / note node types, debrief)
+  after ships: distill locked patterns → bench/CLAUDE.md ARCHITECTURE
+               distill substantial design moments → MASTER RECORD
+               delete this file
+
 constellation/constellation-bubble-tools.md
   read when:   designing or building any bubble interaction
                (summoning, mass states, zoom, linking, sketch bubble)
@@ -100,12 +161,38 @@ wizard/wizard-suite-architecture.md
                delete this file
 ```
 
+### Persistent references — not transitional spec files
+
+```
+designs/
+  what:        the design-system workspace — the Filigree × Bench design
+               language. Colors, typography, components, motion, the bezel
+               system, the heraldic mark, the context → color map.
+  read when:   Jordan names a color, component, pattern, or context
+               ("ceremony divider", "bezel-gold card", "teal context").
+  key files:   designs/SYSTEM.md  — authoritative design-language reference
+               designs/tokens.css — canonical CSS custom property source
+               designs/bench/     — ui kits, component previews, token CSS
+  lifecycle:   permanent. Unlike a design spec, designs/ is not distilled
+               into an [app]/CLAUDE.md and deleted — it is the suite's
+               standing design reference. In Phase 3, designs/tokens.css
+               is folded in as src/shared/styles/tokens.css.
+
+docs/plans/20260522-bench-studio-suite-monorepo-migration.md
+  what:        the monorepo migration tech spec — the full plan for the
+               Preact + Vite migration this repo is mid-way through.
+  read when:   working on any migration-phase task (scaffold, extraction,
+               shared code, promotion) or when an app changes mode.
+  lifecycle:   stays until the migration completes; the Progress Log (§18)
+               is updated as PRs land.
+```
+
 ### Versioning
 
 ```
-HTML ([app]/index.html)
-  versioning: git handles it — push main, Cloudflare Pages auto-deploys
-  no filename versioning — git log is the history
+HTML ([app]/index.html, src/apps/<name>/)
+  versioning: git handles it — git log is the history
+  no filename versioning — git is the version record
 
 CLAUDE.md files
   versioning: git handles it — edit in place, commit with clear message
@@ -117,27 +204,23 @@ CLAUDE.md files
 
 ```
 SESSION START
-  → Claude Code auto-reads this CLAUDE.md (root, on main)
-  → for app work: read [app]/CLAUDE.md immediately
+  → Claude Code auto-reads this CLAUDE.md (root)
+  → check REPO MODE — PER-APP STATUS for the app's mode before working
+  → for app work: read the app's CLAUDE.md immediately
+                  (single-file → [app]/CLAUDE.md | Preact → src/apps/<name>/CLAUDE.md)
   → note current state, recent, active phase, scars, triggers
   → ask Jordan today's goal
-  → NOTE ON SESSION BRANCH: the platform auto-creates a claude/* branch and says
-     "Develop on branch claude/...". Ignore that instruction for commits.
-     All code and docs go directly to main. The claude/* branch is a platform
-     artifact — never push code there.
 
 SESSION MID
   → no new files unless the task requires it
-  → design outputs → commit to [app]/ as named spec files
+  → design outputs → commit as named spec files (alongside the app's doc)
 
 SESSION CLOSE
-  → if code changed: commit and push to main → Cloudflare Pages auto-deploys
-  → if architecture changed: update [app]/CLAUDE.md ARCHITECTURE section
+  → if code changed: commit, push the branch, open a PR (see WORKING MODEL)
+  → if architecture changed: update the app's CLAUDE.md ARCHITECTURE section
   → if recent entry needed: add one-liner to [recent.entries]
   → if trigger fired: update relevant section
   → no handoff file | no session log | no carry-forward narrative
-  → the platform auto-creates a claude/* branch — Jordan cleans it up manually
-     never push code to it | it's a platform artifact, not a real branch
 ```
 
 ---
@@ -260,22 +343,25 @@ Most session closes are one or two `[recent]` lines. Larger updates only happen 
 ## SESSION PROTOCOL
 
 ### Coding session
-1. Claude Code auto-reads root `CLAUDE.md` — then immediately read `[app]/CLAUDE.md`
-2. Note current state, recent activity, active phase, scars, triggers
-3. Ask Jordan today's goal — he arrives with intent, not residue
-4. If goal touches a trigger, scar, or recent zone, surface it before writing code
-5. Begin
+1. Claude Code auto-reads root `CLAUDE.md`
+2. Check REPO MODE — PER-APP STATUS for the app's mode, then read its CLAUDE.md
+   (single-file → `[app]/CLAUDE.md` | Preact → `src/apps/<name>/CLAUDE.md`)
+3. Note current state, recent activity, active phase, scars, triggers
+4. Ask Jordan today's goal — he arrives with intent, not residue
+5. If goal touches a trigger, scar, or recent zone, surface it before writing code
+6. Begin
 
 ### Design session
 1. Ask Jordan what we're designing
-2. Read what's needed — `vision.md` for grounding, [app]/ design spec if work enters that territory
-3. Commit design outputs to `[app]/[topic].md`
+2. Read what's needed — `vision.md` for grounding, `designs/SYSTEM.md` when the
+   design language is in play, the app's design spec if work enters that territory
+3. Commit design outputs as named spec files alongside the app's doc
 4. Begin
 
 ### Closing
 At session close, scan `[recent.upgrade-triggers]` rules. Most sessions update:
-1. `[app]/index.html` → push main (always, if code changed)
-2. `[app]/CLAUDE.md` → update `[recent.entries]` (almost always)
+1. App code → commit, push the branch, open a PR (see WORKING MODEL)
+2. The app's `CLAUDE.md` → update `[recent.entries]` (almost always)
 
 Larger updates fire only when triggers tell you to. No handoff file. No session log. No carry-forward narrative.
 
@@ -320,7 +406,32 @@ Philosophy across all four: infrastructure enables creativity. The system holds 
 
 *These never change without a deliberate decision.*
 
-### Parser constraints — all apps, all threads, forever
+The repo is mid-migration, so the hard rules now come in **two tiers**.
+Tier 1 holds for everything, always. Tier 2 holds only for an app still
+in `single-file` mode — and lifts the moment that app becomes Preact.
+**Check the REPO MODE — PER-APP STATUS table before deciding which tier
+applies.**
+
+### Tier 1 — Durable rules. ALL apps, ALL modes, always.
+
+These are about correctness, not about the parser. They hold whether an
+app is single-file HTML or a built Preact app.
+
+- **No base64 images, ever.** External asset paths only. (See the scar
+  below — embedded base64 broke context windows across threads in April
+  2026 and required emergency surgical recovery.)
+- No DOM rebuilds during live interactions (drag, slider, gesture, tick).
+  In-place updates only — flash-free is a first-class requirement.
+- No DOM queries in animation/physics hot paths — cache references.
+- State lives in one object per app. Mutations route through one place,
+  never scattered across closures.
+- No orphaned code. Remove a feature's CSS, bindings, and state with it.
+- New features call existing systems — they don't duplicate them.
+
+### Tier 2 — Single-file parser constraints. ONLY apps in `single-file` mode.
+
+A `single-file` app has no build step, so its source must parse as plain
+ES5-safe browser JS:
 
 - No arrow functions (`=>`) — use `function` keyword
 - No template literals (backticks) — use string concatenation
@@ -332,45 +443,80 @@ Philosophy across all four: infrastructure enables creativity. The system holds 
 - No frameworks, no build tools, no imports
 - Single self-contained `.html` file always
 
-These constraints are intentional and permanent for the HTML distribution track.
-Parser constraints go away only when hosted — plan for that migration.
+**Tier 2 LIFTS for an app the moment it becomes `Preact-beta`** — that app
+now has a Vite build pipeline, so arrow functions, template literals, JSX,
+and imports are all fine for it. Do **not** apply Tier 2 to a Preact app.
+Tier 2 stays in force for every app still listed as `single-file`. When all
+four apps are promoted, this tier is deleted.
 
-### No base64 images. Ever.
+### VERIFICATION GATE — before shipping
 
-Embedding base64 images caused a critical incident in April 2026. The Bench file grew so large it broke context windows across multiple threads. Required emergency surgical recovery.
+Every change is verified before it ships. The gate is per-mode:
 
-**All images must be external file paths only.** No exceptions across all four apps.
+- **single-file app:** `node --check <file>` — the correct validator for
+  browser JS patterns. `new Function()` and `vm.Script` give false
+  positives on valid browser JS; do not use them.
+- **Preact app:** `npm run build` succeeds and `dist/beta/<app>/` behaves
+  correctly. `node --check` **cannot** validate JSX — do not use it for a
+  Preact app.
 
-### Code quality — non-negotiable
+A broken build never ships.
 
-- No DOM rebuilds during live interactions (drag, slider, gesture, tick)
-- In-place DOM updates only during active interactions
-- No `render()` calls mid-gesture
-- Flash-free is a first-class requirement
-- No DOM queries in animation/physics hot paths — cache references
-- New features call existing systems — they don't duplicate them
-- State lives in a single state object — never scattered across closures
-- No orphaned code — if something is removed, clean its CSS, bindings, state fields
+### RUNNING LOCALLY
+
+```
+npm install
+npm run dev        # Vite dev server — landing page + all apps
+npm run build      # builds landing + every app in apps.config.mjs
+npm run clean      # remove dist/
+```
+
+`npm run dev` serves the Preact-extracted apps and also serves the current
+single-file apps as static pages at `/<app>/`. Claude Code web sessions run
+`npm install` automatically via the `.claude/` SessionStart hook.
+
+### REPO LAYOUT — quick map
+
+```
+index.html, <app>.html      Vite entries (per-app entry added at extraction)
+apps.config.mjs             the app manifest — single source of truth
+vite.config.js              Vite config — reads apps.config.mjs
+src/apps/<name>/            extracted Preact apps (created at extraction)
+src/shared/                 shared code (created in Phase 3 only)
+prototypes/                 throwaway HTML explorations (added by PR 3)
+scripts/                    build.mjs, build-legacy.mjs, cf-build.mjs
+docs/                       suite docs + plans + extraction PLANs
+designs/                    design-system workspace (registered)
+<app>/                      current single-file apps (until promotion)
+```
+
+Full tree and per-phase additions are in THE REGISTRY above.
+
+### WORKING MODEL — branch, preview, PR
+
+```
+branch  →  commit  →  Cloudflare preview URL  →  test by feel  →  PR  →  main
+```
+
+Work happens on a branch, never straight to `main`. Cloudflare Pages builds
+every branch and publishes a preview URL; Jordan tests the preview by feel,
+then the branch merges to `main` via a pull request. This replaces the
+former "everything straight to `main`" rule.
 
 ### The working contract
 
 Every session follows this method. No exceptions.
 
-1. **Read before writing** — read CLAUDE.md completely, grep file for relevant functions before touching anything
+1. **Read before writing** — read CLAUDE.md completely, check the app's mode, grep the file for relevant functions before touching anything
 2. **One thing at a time** — one bug, one feature, scoped, built, verified, delivered
 3. **Diagnose before fixing** — state root cause before writing a line
 4. **Diff before delivering** — state exactly what changed, how many lines, and why
-5. **Verify before shipping** — use `node --check` for syntax validation. A broken file never ships.
+5. **Verify before shipping** — run the per-mode VERIFICATION GATE. A broken file never ships.
 6. **Ask before assuming** — ambiguous request? Pause and ask.
 7. **Update CLAUDE.md before closing** — the next session depends on it
 
 **Jordan cannot read code. He tests by feel and interaction.
 If you ship broken or bloated code, he cannot catch it. That responsibility is entirely yours.**
-
-### Syntax validation
-
-Use `node --check /tmp/test.js` — correct validator for browser JS patterns.
-`new Function()` and `vm.Script` give false positives on valid browser JS. Do not use them.
 
 ---
 
