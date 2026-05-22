@@ -1,10 +1,10 @@
 ---
-name: app-extraction
-description: Workflow rules for converting one of the four suite apps (The Bench, Constellation, Decision Wizard, Spatial Calendar) from its single-file HTML form into a Preact + Vite app under src/apps/<name>/. Invoke whenever the user asks to extract, split, port, convert, or migrate an app to Preact. Covers the plan-first discipline, the zone-driven decomposition, the two-tier hard rules, anti-premature-extraction guards, per-app doc relocation, leaf-first behavioral verification, and the /beta/<app>/ publish convention.
+name: extract
+description: Drives Phase 2 of the monorepo migration — converting one of the four suite apps (The Bench, Constellation, Decision Wizard, Spatial Calendar) from single-file HTML into a Preact + Vite app under src/apps/<name>/. Invoke as `/extract <plan|approve|run|status> <app>`, or whenever the user asks to extract, split, port, convert, or migrate an app to Preact. Covers the plan-first gate, the zone-driven decomposition, the two-tier hard rules, anti-premature-extraction guards, per-app doc relocation, leaf-first behavioral verification, and the /beta/<app>/ publish convention.
 user-invocable: true
 ---
 
-# App Extraction Skill
+# Extract Skill
 
 Operational rules for Phase 2 of the monorepo migration: taking one app from a
 single-file `index.html` to a modular Preact app under `src/apps/<name>/`,
@@ -19,6 +19,80 @@ spec wins — re-read it.
 One app per PR. An app's PR may itself span several commits, extracting
 features leaf-first. Extraction is a refactor: it adds no features and changes
 no behavior.
+
+---
+
+## Commands
+
+Invoke as `/extract <subcommand> <app>` — `<app>` is one of `bench`,
+`constellation`, `wizard`, `spatial`. Dispatch on the first argument:
+
+| Command | What it does | Gate |
+|---|---|---|
+| `/extract plan <app>`    | Research the app and write the extraction PLAN. | — |
+| `/extract approve <app>` | Stamp the PLAN as approved. | PLAN must exist |
+| `/extract run <app>`     | Extract the next slice of the PLAN. | PLAN must be `approved` |
+| `/extract status <app>`  | Report PLAN state + progress. Read-only. | — |
+
+The PLAN file — `docs/plans/extraction-<app>.md` — is the spine of all four
+commands: `plan` writes it, `approve` flips its status, `run` reads its
+checklist and ticks it, `status` reports it.
+
+### `/extract plan <app>`
+
+Produce the extraction PLAN. **No extraction code is written by this command.**
+
+1. Read the app's `index.html` zone registry (`BEGIN`/`END` markers) and its
+   `CLAUDE.md` architecture section. Read spec §11.2 (the PLAN template).
+2. Write `docs/plans/extraction-<app>.md` per §11.2 (full contents in §1 below).
+   - The **Extraction Order** section is written as a **checkbox list** — one
+     box per unit of work, scaffold first (see §6). `/extract run` consumes
+     this checklist; `/extract status` counts it.
+   - The first line of the Context section is `Status: draft — awaiting review`.
+3. Stop. Hand the PLAN to the app owner for review. Do not scaffold, do not
+   touch `apps.config.mjs`, do not write a component.
+
+This command cannot raise its own thinking budget or enter the harness's plan
+mode — those are session-level and user-controlled. If you want deeper
+deliberation on the split, enable plan mode or ask for more thinking *before*
+running `/extract plan`.
+
+### `/extract approve <app>`
+
+Record the app owner's approval. Precondition: `docs/plans/extraction-<app>.md`
+exists. Flip its Status line to:
+
+```
+Status: approved — <reviewer name>, <date>
+```
+
+That is all this command does. The approval is the app owner's judgment; this
+command only records the gesture. Never self-approve a PLAN you wrote without
+the app owner actually saying so.
+
+### `/extract run <app>`
+
+Extract the next slice of the approved PLAN.
+
+1. **Gate.** Read `docs/plans/extraction-<app>.md`. If it does not exist, or its
+   Status line is not `approved`, **stop** — tell the user to run
+   `/extract plan` / `/extract approve` first. This gate is absolute.
+2. Read the Extraction Order checklist. Take the **next unchecked item(s)**, up
+   to a sensible commit/PR boundary — do not run the whole PLAN in one go.
+3. Extract leaf-first per §6. After each commit: `npm run build`, open
+   `dist/beta/<app>/index.html`, compare behavior to the still-live current app.
+4. Tick the completed checkbox(es) in the PLAN and commit that change with the
+   work, so the PLAN always reflects true progress.
+5. Stop at the boundary. Report what shipped and what remains. Repeated
+   `/extract run` invocations carry the extraction to completion across
+   commits/PRs — the PLAN checklist is the progress ledger between runs.
+
+### `/extract status <app>`
+
+Read-only. Report: whether `docs/plans/extraction-<app>.md` exists; its Status
+(`draft` / `approved`); the Extraction Order progress (checked / total) and the
+next unchecked item; the app's row in the root `CLAUDE.md` status table. Change
+nothing.
 
 ---
 
@@ -49,16 +123,18 @@ migration spec** — follow it exactly. The PLAN must contain:
 - **Entanglement & Hard-Rule Audit** — scattered globals, hot-path DOM queries,
   cross-feature coupling found in the source, and how each is resolved in the
   split.
-- **Extraction Order (leaf-first)** — leaf components / pure utilities first,
-  then mid-level features, then state-heavy features, then composite shells and
-  `App.jsx` wire-up last.
+- **Extraction Order (leaf-first)** — written as a **checkbox list**: the
+  scaffold step first, then leaf components / pure utilities, then mid-level
+  features, then state-heavy features, then composite shells and `App.jsx`
+  wire-up last. `/extract run` works down this list and ticks it.
 - **Verification Checklist** — the golden-path behaviors to compare against the
   still-live current app.
 - **Out of Scope** — no new features, no shared-code extraction, no bridges
   wired.
 
 The review gate is real and auditable. The PLAN file itself records its
-approval: it carries a **status line** near the top —
+approval: it carries a **status line** as the first line of its Context
+section —
 
 ```
 Status: draft — awaiting review
@@ -66,8 +142,8 @@ Status: approved — <reviewer name>, <date>
 ```
 
 The PLAN starts as `draft`. No extraction code is written until that line
-reads `approved`. A PLAN with no status line, or one still marked `draft`, is
-a hard stop. (The §11.2 template's Context section is where this line lives.)
+reads `approved` (set by `/extract approve`). A PLAN with no status line, or
+one still marked `draft`, is a hard stop.
 
 ---
 
@@ -136,7 +212,8 @@ splitting further than the work justifies.
 
 - **Do not split a feature finer than its zone justifies.** If a zone is one
   coherent feature, it is one feature folder — not five micro-components
-  invented for tidiness.
+  invented for tidiness. (The §2 refinement pass adjusts boundaries to fit the
+  code; it is not licence to over-split.)
 - **Do not create `src/shared/` during a single-app extraction.** Shared code
   is **Phase 3**, and only after real duplication is proven across **at least
   two extracted apps**. Phase 2 creates no cross-app abstractions.
@@ -171,6 +248,13 @@ The suite's per-app living-doc system is kept, relocated — not flattened.
 ---
 
 ## 6. Output & verify — leaf-first, behavioral
+
+The first item on the PLAN's Extraction Order checklist is always the
+**scaffold**: create the `src/apps/<name>/` skeleton, the `<app>.html` entry,
+add `{ name, entry }` to `apps.config.mjs`, add runtime deps to `package.json`,
+and add the app's row to the root `CLAUDE.md` status table (mode `Preact-beta`).
+Behavior after the scaffold step is an empty `/beta/<app>/` page. Every later
+checklist item is a feature slice.
 
 - Extract **leaf-first**: leaf components and pure utilities first, then
   mid-level features, then state-heavy features, then the composite shell and
@@ -212,21 +296,32 @@ Every extracted Preact app builds to `dist/beta/<app>/` and is served at
 
 ---
 
-## Extraction flow at a glance
+## Command flow at a glance
 
 ```
-1. Invoke this skill.
-2. Read the app's index.html zone registry + its CLAUDE.md architecture.
-3. Draft docs/plans/extraction-<app>.md (the PLAN — spec §11.2): zone-map
-   first-pass split, then a refinement pass. Status line starts as `draft`.
-   ── REVIEW GATE: app owner approves; the PLAN's Status line flips to
-      `approved`. No extraction code before that. ──
-4. Scaffold PR: src/apps/<name>/ skeleton, <app>.html entry,
-   { name, entry } in apps.config.mjs, runtime deps in package.json.
-   Behavior: an empty /beta/<app>/ page. Add the app's status-table row.
-5. Extraction commits, leaf-first, one feature (≈ one zone) per commit.
-   After each: npm run build, open dist/beta/<app>/, compare to the live app.
-6. Relocate <app>/CLAUDE.md + design specs into src/apps/<name>/;
-   update zone vocabulary to file names.
-7. Beta verified by the app owner ─▶ Phase 4 promotion (separate, gated).
+/extract plan <app>
+   read index.html zone registry + CLAUDE.md architecture + spec §11.2
+   write docs/plans/extraction-<app>.md  — Extraction Order as a checklist,
+                                           Status: draft
+        │  ── REVIEW GATE: app owner reviews the PLAN ──
+        ▼
+/extract approve <app>
+   flip the PLAN's Status line → approved — <reviewer>, <date>
+        │
+        ▼
+/extract run <app>          (repeat until the checklist is fully ticked)
+   gate: Status must be approved
+   take the next unchecked checklist item(s), up to a PR boundary
+   item 1 = scaffold (empty /beta/<app>/); later items = feature slices
+   after each commit: npm run build, open dist/beta/<app>/, compare to live
+   tick the checkbox(es) in the PLAN, commit
+        │
+        ▼
+relocate <app>/CLAUDE.md + design specs into src/apps/<name>/;
+update zone vocabulary to file names
+        │
+        ▼
+beta verified by the app owner ─▶ Phase 4 promotion (separate, gated)
+
+/extract status <app>  — at any point: PLAN state + checklist progress
 ```
