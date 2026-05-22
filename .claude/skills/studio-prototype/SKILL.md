@@ -1,6 +1,6 @@
 ---
 name: studio-prototype
-description: Workflow rules for HTML prototypes in `prototypes/<slug>/` — file layout, the self-contained HTML constraint, the iPhone-frame requirement, the Cloudflare Pages branch-preview URL pattern, the 28-char branch-name limit, the plain-text URL rule, the commit+push expectation, and the path for promoting an approved prototype into a real app under `src/apps/<name>/`. Use when creating, editing, or promoting a prototype, or when working anywhere under `prototypes/`.
+description: Workflow rules for HTML prototypes in `prototypes/<slug>/` — file layout, the self-contained HTML constraint, the iPhone-frame requirement, reading the Cloudflare Pages branch-preview URL from the PR bot comment, the plain-text URL rule, the commit+push expectation, and the path for promoting an approved prototype into a real app under `src/apps/<name>/`. Use when creating, editing, or promoting a prototype, or when working anywhere under `prototypes/`.
 user-invocable: true
 ---
 
@@ -33,21 +33,20 @@ Cloudflare Pages is connected to the repo and builds every branch. The
 build command is `node scripts/cf-build.mjs`, which includes prototypes/
 on every non-`main` branch.
 
-Preview URL, stable for the lifetime of the branch:
+DO NOT hand-construct the preview URL. Cloudflare's branch-alias subdomain
+is truncated and can collide, so a guessed URL may 404. Read the real URL
+from Cloudflare's own comment on the PR:
 
-    https://<branch-alias>.<project>.pages.dev/prototypes/<slug>/
+1. After the branch is pushed, open the PR for it.
+2. Find the comment from `cloudflare-workers-and-pages[bot]` (titled
+   "Deploying ... with Cloudflare Pages"). It is posted/updated per deploy.
+3. Take the **Branch Preview URL** from that comment — e.g.
+   `https://scaffold-docs.bench-suite.pages.dev`.
+4. The prototype is the Branch Preview URL + `/prototypes/<slug>/`. A
+   generated index of all prototypes on the branch is the URL + `/prototypes/`.
 
-A generated index of all prototypes on the branch lives at
-`/prototypes/` (no slug).
-
-BRANCH NAME LIMIT. Cloudflare truncates the branch-alias subdomain label
-to 28 characters. Branch names longer than that produce a truncated or
-colliding alias and the preview URL may 404. Keep working-branch names
-short; rename a long branch before pushing:
-
-    git branch -m <shorter-name>
-    git push origin -u <shorter-name>
-    git push origin --delete <old-name>
+If the bot comment hasn't appeared yet, the build is still running — wait
+for it rather than guessing the URL.
 
 Production (`main`) never ships prototypes/ — the live site has no
 /prototypes/ path at all.
@@ -58,8 +57,10 @@ Production (`main`) never ships prototypes/ — the live site has no
 2. `git add`.
 3. Commit with a behavioral message.
 4. Push to the working branch.
-5. Paste the preview URL as PLAIN TEXT (no markdown — phone clients
-   include markup in the click target).
+5. Get the Branch Preview URL from the Cloudflare bot's PR comment (see
+   Deploy model above), append `/prototypes/<slug>/`, and paste the result
+   as PLAIN TEXT (no markdown — phone clients include markup in the click
+   target).
 
 ## Promote
 

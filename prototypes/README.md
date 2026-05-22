@@ -32,26 +32,22 @@ prototypes/
 edit prototypes/<slug>/index.html
   -> git add + commit (behavioral message)
   -> git push to the working branch
-  -> open the Cloudflare branch preview URL on the phone
+  -> get the branch preview URL from the Cloudflare PR comment
+  -> open <branch-preview-url>/prototypes/<slug>/ on the phone
 ```
 
 ## Deploy model: Cloudflare Pages branch previews
 
 Cloudflare Pages is connected to the repo and builds every branch with
 `node scripts/cf-build.mjs`. That command publishes `prototypes/` on every
-non-`main` branch, so each prototype is reachable at:
+non-`main` branch.
 
-```
-https://<branch-alias>.<project>.pages.dev/prototypes/<slug>/
-```
-
-A generated index of all prototypes on the branch lives at `/prototypes/`
-(no slug).
-
-**Branch-name limit.** Cloudflare truncates the branch-alias subdomain label
-to 28 characters. Branch names longer than that produce a truncated or
-colliding alias and the preview URL may 404. Keep working-branch names short,
-or rename a long branch before pushing.
+Don't hand-construct the preview URL — Cloudflare's branch-alias subdomain
+is truncated and can collide, so a guessed URL may 404. Instead, after
+pushing, open the PR and read the **Branch Preview URL** from the
+`cloudflare-workers-and-pages[bot]` comment. The prototype is that URL +
+`/prototypes/<slug>/`; the generated index of all prototypes on the branch
+is that URL + `/prototypes/`.
 
 Production (`main`) never ships `prototypes/` — the live site has no
 `/prototypes/` path at all. A `_headers` rule additionally marks
