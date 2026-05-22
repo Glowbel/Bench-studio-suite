@@ -212,7 +212,7 @@ bench-studio-suite/
 
 ### 7.2 Three states of the repo over time
 
-**State A — after Phase 1 (scaffold).** Vite tooling exists; `apps.config.mjs` is empty; the four current apps are untouched in `bench/`, `constellation/`, `wizard/`, `spatial/` and still deployed by their existing sites. `npm run build` produces only the landing page.
+**State A — after Phase 1 (scaffold).** Vite tooling exists; `apps.config.mjs` lists no Preact apps yet; the four current apps are untouched in `bench/`, `constellation/`, `wizard/`, `spatial/` and still deployed by their existing sites. `npm run build` produces the landing page **and** a verbatim copy of each current single-file app at `dist/<app>/` (see §7.4 and the §18 Progress Log — this refines the spec's original "landing page only" State A).
 
 **State B — mid-migration (e.g. Wizard extracted).** `src/apps/wizard/` exists; `wizard.html` is a Vite entry; `apps.config.mjs` lists `wizard`; `npm run build` produces the landing + `dist/beta/wizard/`. The other three apps are still single-file and untouched. The Wizard beta is viewable at `/beta/wizard`; the current Wizard is still live and canonical.
 
@@ -220,7 +220,15 @@ bench-studio-suite/
 
 ### 7.3 Build model
 
-`vite-plugin-singlefile` cannot compose with rollup multi-input, so the build runs **one Vite invocation per app**, selected by the `VITE_APP` env var, each producing one self-contained HTML file. `scripts/build.mjs` discovers the app list from `apps.config.mjs` and invokes Vite once per app plus once for the landing page. The landing page builds to `dist/index.html`; each app builds to `dist/beta/<app>/index.html`.
+`vite-plugin-singlefile` cannot compose with rollup multi-input, so the build runs **one Vite invocation per app**, selected by the `VITE_APP` env var, each producing one self-contained HTML file. `scripts/build.mjs` discovers the app list from `apps.config.mjs` and invokes Vite once per app plus once for the landing page. The landing page builds to `dist/index.html`; each Preact app builds to `dist/beta/<app>/index.html`.
+
+### 7.4 Legacy apps in the build output
+
+The build also publishes the **current single-file apps** so the monorepo site presents the whole suite from one landing page. `scripts/build-legacy.mjs` copies each `<app>/index.html` **verbatim** (byte-for-byte, no transform) to `dist/<app>/index.html`, for the apps listed in `apps.config.mjs`'s `legacyApps` array.
+
+- **URL scheme** (app-owner decision, 2026-05-22 — resolves part of §17 item 1): current apps sit at the bare path `/<app>/` because they are still canonical; only the in-conversion Preact builds carry a marker, at `/beta/<app>/`.
+- This is **additive and does not violate Principle 1.** The current apps' own Cloudflare sites stay live and untouched; this only copies them into the monorepo's `dist/`.
+- An app drops off `legacyApps` when it is promoted (Phase 4) and its `<app>/index.html` is removed; at that point its canonical home becomes the promoted Preact build.
 
 ---
 
@@ -328,7 +336,7 @@ Four PRs. **PR 1 lands first** (foundation). **PR 2, 3, 4 then proceed in parall
 1. Add `package.json` (below).
 2. Add `apps.config.mjs` — the empty app manifest (below).
 3. Add `vite.config.js` (below).
-4. Add `scripts/build.mjs` — the dynamic build (below).
+4. Add `scripts/build.mjs` — the dynamic build (below) — and `scripts/build-legacy.mjs`, which copies the current single-file apps verbatim into `dist/<app>/` (see §7.4; as-built details in §18).
 5. Add `index.html` — the landing page (below).
 6. Add `.gitignore` (below). _`.env.example` deferred — see Progress Log (§18); it is created by the extraction PR for the first Supabase-using app (The Bench)._
 7. Add `.claude/settings.json` and `.claude/hooks/session-start.sh` (below). **Bundled into PR 1 deliberately:** without the SessionStart hook, Claude Code web sessions cannot `npm install` and so cannot iterate on the new Vite project.
@@ -337,7 +345,7 @@ Four PRs. **PR 1 lands first** (foundation). **PR 2, 3, 4 then proceed in parall
 **Acceptance criteria.**
 
 - `npm install` succeeds.
-- `npm run build` succeeds and produces `dist/index.html` (the landing page).
+- `npm run build` succeeds and produces `dist/index.html` (the landing page) plus `dist/<app>/index.html` — a verbatim copy of each current single-file app (see §7.4; refines the original "landing page only" criterion).
 - `npm run dev` serves the landing page; the four current apps remain reachable at `/<app>/` in the dev server (Vite serves them as static multi-page files).
 - A Claude Code web session triggers `npm install` automatically via the SessionStart hook.
 - The four current Cloudflare sites are unaffected (PR 1 adds only new root-level files; it does not touch `bench/`, `constellation/`, `wizard/`, `spatial/`).
@@ -391,6 +399,12 @@ export const apps = [
   // { name: 'constellation', entry: 'constellation.html' },
 ];
 ```
+
+> **As-built note.** The code blocks in this section are the spec's original
+> proposal. PR 1 as shipped also adds a `legacyApps` array to `apps.config.mjs`,
+> a `scripts/build-legacy.mjs`, a `build:legacy` npm script, a final legacy-copy
+> step in `scripts/build.mjs`, and a two-section landing `index.html` (Current /
+> beta). See §7.4 for the design and §18 for the full as-built delta.
 
 #### `vite.config.js`
 
@@ -1207,10 +1221,17 @@ Execution progress against the §9 work breakdown. Updated as PRs land.
 
 ### PR 1 — Vite build pipeline + Claude Code web setup — ✅ done
 
-- **Issue:** [#2](https://github.com/Glowbel/Bench-studio-suite/issues/2) · **Branch:** `scaffold-vite-pipeline`
-- **Files added:** `package.json`, `apps.config.mjs`, `vite.config.js`, `scripts/build.mjs`, `index.html` (landing), `.gitignore`, `.claude/settings.json`, `.claude/hooks/session-start.sh` (executable bit set).
-- **Verified locally:** `npm install` succeeds (95 packages); `npm run build` → `dist/index.html` (1.39 kB), 0 apps as expected; `npm run dev` serves the landing page and the four current apps remain reachable at `/bench/`, `/wizard/`, etc. No files under `bench/`, `constellation/`, `wizard/`, `spatial/` modified.
-- **Divergence from §10:** `.env.example` was **not** added. The spec included it "so the convention is established," but that contradicts Principle 2 (no speculative scaffolding) and the spec's own note that it is "only needed once an app that uses Supabase is extracted." Decision (app owner, 2026-05-22): defer it to the first Supabase-using extraction PR (The Bench, issue #9), created in context there.
+- **Issue:** [#2](https://github.com/Glowbel/Bench-studio-suite/issues/2) · **Branch:** `scaffold-vite-pipeline` · **PR:** [#16](https://github.com/Glowbel/Bench-studio-suite/pull/16)
+- **Files added:** `package.json`, `apps.config.mjs`, `vite.config.js`, `scripts/build.mjs`, `scripts/build-legacy.mjs`, `index.html` (landing), `.gitignore`, `.claude/settings.json`, `.claude/hooks/session-start.sh` (executable bit set).
+- **Verified locally:** `npm install` succeeds (95 packages); `npm run build` → `dist/index.html` plus `dist/{bench,constellation,wizard,spatial}/index.html` (each a byte-identical copy of the current app); `npm run dev` serves the landing page and the four current apps at `/bench/`, `/wizard/`, etc. No files under `bench/`, `constellation/`, `wizard/`, `spatial/` modified.
+
+**As-built decisions (app owner, 2026-05-22):**
+
+1. **`.env.example` not added.** The spec included it "so the convention is established," but that contradicts Principle 2 (no speculative scaffolding) and the spec's own note that it is "only needed once an app that uses Supabase is extracted." Deferred to the first Supabase-using extraction PR (The Bench, issue #9), created in context there.
+
+2. **Build also publishes the current single-file apps** — see §7.4. The original spec had PR 1's `npm run build` produce "only the landing page" (State A). Refined: the build now also copies each current app verbatim to `dist/<app>/`, so the monorepo's landing page presents the whole suite. Added `scripts/build-legacy.mjs`, a `legacyApps` array in `apps.config.mjs`, a `build:legacy` npm script, a final legacy-copy step in `scripts/build.mjs`, and a two-section landing page (Current `/<app>/` · beta `/beta/<app>/`). Additive only — the current apps and their own Cloudflare sites are untouched (Principle 1).
+
+3. **Beta-app URL marker.** The "in-conversion" marker the app owner asked for is the spec's existing `/beta/<app>/` scheme — no new convention needed. Current apps stay at the bare `/<app>/` path (still canonical); resolves part of §17 item 1.
 
 ### PR 2, 3, 4 — Phase 1 scaffold remainder — ⬜ not started
 

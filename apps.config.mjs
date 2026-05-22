@@ -17,3 +17,15 @@ export const apps = [
   // { name: 'bench',         entry: 'bench.html' },
   // { name: 'constellation', entry: 'constellation.html' },
 ];
+
+// The current single-file apps — still canonical. Each is copied verbatim
+// (byte-for-byte) into dist/<app>/ by scripts/build-legacy.mjs, so the
+// monorepo site can serve them alongside the new Preact /beta/<app>/ builds.
+//
+// These are NOT disturbed — copying is additive; the apps' own Cloudflare
+// sites stay live and untouched (Principle 1).
+//
+// Drop an app from this list when it is promoted (Phase 4) and its
+// <app>/index.html is removed from the repo.
+
+export const legacyApps = ['bench', 'constellation', 'wizard', 'spatial'];
