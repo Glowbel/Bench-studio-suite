@@ -173,7 +173,7 @@
             android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:lineSpacingMultiplier="1.1"
+            android:lineSpacingMultiplier="1.35"
             android:ellipsize="end"
             android:textIsSelectable="false"
             android:paddingStart="16dp"

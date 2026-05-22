@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   android:id="@+id/LinearLayout"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
@@ -15,7 +16,8 @@
     android:layout_width="24dp"
     android:layout_height="24dp"
     android:layout_gravity="center_vertical"
-    android:src="@drawable/checkbox" />
+    android:src="@drawable/checkbox"
+    app:tint="?attr/colorOnSurface" />
 
   <TextView
     android:id="@+id/CheckBoxText"

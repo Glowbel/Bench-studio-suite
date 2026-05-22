@@ -4,7 +4,7 @@
   android:id="@+id/Layout"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="?android:colorBackground">
+  android:background="?attr/colorSurface">
 
   <TextView
     android:id="@+id/Text"
