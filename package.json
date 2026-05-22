@@ -14,7 +14,6 @@
     "clean": "rm -rf dist",
     "build": "node scripts/build.mjs",
     "build:legacy": "node scripts/build-legacy.mjs",
-    "build:cf": "node scripts/cf-build.mjs",
     "preview": "vite preview"
   },
   "devDependencies": {

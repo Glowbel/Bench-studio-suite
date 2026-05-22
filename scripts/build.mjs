@@ -5,6 +5,10 @@ import { apps } from '../apps.config.mjs';
 // Dynamic suite build. Discovers the app list from apps.config.mjs — no
 // hardcoded apps. Cleans dist/, builds the landing page, then builds every
 // extracted app. Each invocation is one Vite build (see vite.config.js).
+//
+// Run via `npm run build`: npm puts node_modules/.bin on PATH (so the bare
+// `vite` below resolves) and sets CWD to the repo root (which every relative
+// path here and in build-legacy.mjs assumes).
 
 rmSync('dist', { recursive: true, force: true });
 

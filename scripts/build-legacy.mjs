@@ -1,5 +1,5 @@
 import { mkdirSync, copyFileSync, existsSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, join } from 'node:path';
 import { legacyApps } from '../apps.config.mjs';
 
 // Copies each current single-file app (<app>/index.html) verbatim into
@@ -18,12 +18,12 @@ import { legacyApps } from '../apps.config.mjs';
 
 let copied = 0;
 for (const app of legacyApps) {
-  const src = app + '/index.html';
+  const src = join(app, 'index.html');
   if (!existsSync(src)) {
     console.log('  ⚠ skipping ' + app + ' — ' + src + ' not found');
     continue;
   }
-  const dest = 'dist/' + app + '/index.html';
+  const dest = join('dist', app, 'index.html');
   mkdirSync(dirname(dest), { recursive: true });
   copyFileSync(src, dest);
   console.log('  ✓ ' + src + ' → ' + dest);
