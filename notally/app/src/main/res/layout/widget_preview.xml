@@ -12,14 +12,14 @@
         android:fontFamily="sans-serif-medium"
         android:paddingBottom="16dp"
         android:text="Taylor’s albums"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+        android:textAppearance="?attr/textAppearanceBodyLarge" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="16dp"
         android:text="Sun 4 June 2023"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
         android:textColor="#99d8dfdc" />
 
     <TextView

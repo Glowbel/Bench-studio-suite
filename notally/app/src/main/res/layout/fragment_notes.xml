@@ -106,7 +106,7 @@
         android:src="@drawable/ornament_divider_horizontal"
         android:adjustViewBounds="true"
         android:layout_marginVertical="4dp"
-        android:visibility="gone"
+        android:visibility="visible"
         android:contentDescription="@null"
         app:layout_constraintTop_toBottomOf="@id/ReminderFilter"
         app:layout_constraintStart_toStartOf="parent"
