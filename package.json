@@ -1,0 +1,19 @@
+{
+  "name": "bench-studio-suite",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Jordan Wolberg's studio suite — The Bench, Constellation, Decision Wizard, Spatial Calendar. Each app builds to a single self-contained HTML file.",
+  "scripts": {
+    "dev": "vite",
+    "clean": "rm -rf dist",
+    "build": "node scripts/build.mjs",
+    "build:cf": "node scripts/cf-build.mjs",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.5",
+    "vite": "^8.0.11",
+    "vite-plugin-singlefile": "^2.3.3"
+  }
+}
