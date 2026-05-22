@@ -178,7 +178,7 @@ bench-studio-suite/
     skills/
       studio-prototype/
         SKILL.md
-      app-extraction/
+      extract/
         SKILL.md
   scripts/
     build.mjs               dynamic build — discovers apps from the manifest
@@ -227,7 +227,7 @@ bench-studio-suite/
 The build also publishes the **current single-file apps** so the monorepo site presents the whole suite from one landing page. `scripts/build-legacy.mjs` copies each `<app>/index.html` **verbatim** (byte-for-byte, no transform) to `dist/<app>/index.html`, for the apps listed in `apps.config.mjs`'s `legacyApps` array.
 
 - **URL scheme** (app-owner decision, 2026-05-22 — resolves part of §17 item 1): current apps sit at the bare path `/<app>/` because they are still canonical; the in-conversion Preact builds carry the **`beta` path-segment marker**, at `/beta/<app>/`.
-- **`/beta/<app>/` is the suite's standing convention for an app under conversion.** The `beta` segment IS the work-in-progress marker — it says "this app is mid-extraction, not yet canonical." It is introduced by the app's extraction PR (governed by the `app-extraction` skill — PR 4, §10) and removed only at promotion (Phase 4), when the Preact build takes over the bare `/<app>/` path. No extracted app is ever published anywhere but `/beta/<app>/`.
+- **`/beta/<app>/` is the suite's standing convention for an app under conversion.** The `beta` segment IS the work-in-progress marker — it says "this app is mid-extraction, not yet canonical." It is introduced by the app's extraction PR (governed by the `extract` skill — PR 4, §10) and removed only at promotion (Phase 4), when the Preact build takes over the bare `/<app>/` path. No extracted app is ever published anywhere but `/beta/<app>/`.
 - This is **additive and does not violate Principle 1.** The current apps' own Cloudflare sites stay live and untouched; this only copies them into the monorepo's `dist/`.
 - An app drops off `legacyApps` when it is promoted (Phase 4) and its `<app>/index.html` is removed; at that point its canonical home becomes the promoted Preact build.
 
@@ -286,7 +286,7 @@ on approval ─▶ "promote": port into src/apps/<name>/, leave prototype frozen
 ### 8.4 App-extraction flow (per app, Phase 2)
 
 ```
-invoke the app-extraction skill
+invoke the extract skill (`/extract plan <app>`)
    │
 read the app's index.html zone registry + its CLAUDE.md architecture section
    │
@@ -733,17 +733,17 @@ Production (`main`) never ships prototypes/ — the live site has no
 
 ---
 
-### PR 4 — App-extraction skill
+### PR 4 — Extract skill
 
 **Goal.** Codify the Phase 2 per-app extraction workflow as a reusable skill, so every extraction is consistent: plan-first, hard-rule-aware, zone-driven, and protected against premature extraction. Standalone PR; can be authored in parallel.
 
 **Task list.**
 
-1. Add `.claude/skills/app-extraction/SKILL.md` with the content specified below.
+1. Add `.claude/skills/extract/SKILL.md` with the content specified below.
 
 **`SKILL.md` — required content.**
 
-- **Frontmatter:** `name: app-extraction`, a `description` that triggers when the user asks to extract / split / port / migrate one of the four apps to Preact, `user-invocable: true`.
+- **Frontmatter:** `name: extract`, a `description` that triggers when the user asks to extract / split / port / migrate one of the four apps to Preact, `user-invocable: true`. The skill is invoked as `/extract <plan|approve|run|status> <app>`.
 - **Plan first, always.** No extraction code is written until `docs/plans/extraction-<app>.md` exists and is approved. That PLAN must contain: a source/zone map (every in-file zone with line ranges); a component breakdown (proposed `src/apps/<name>/` file tree with ~line estimates, nothing over ~200 lines); an entanglement & hard-rule audit (scattered globals, hot-path DOM queries, coupling); a leaf-first extraction order; and a verification checklist. The PLAN template is §11.2 of the migration spec.
 - **Use the in-file zone registry as the decomposition scaffold.** Each app's `index.html` carries numbered zones with `BEGIN`/`END` markers and an in-file registry. Map zones → feature folders/components; do not invent a structure the zones don't support.
 - **Hard rules.** Durable rules apply always (no base64 images; no DOM rebuilds during live interaction; no DOM queries in animation/physics hot paths; one root state object per app; no orphaned code; new features call existing systems). Parser constraints (no arrow functions, etc.) **lift** for the app being extracted — it is now a Preact app with a build step.
@@ -754,7 +754,7 @@ Production (`main`) never ships prototypes/ — the live site has no
 
 **Acceptance criteria.**
 
-- `.claude/skills/app-extraction/SKILL.md` exists, is invocable, and covers all bullets above.
+- `.claude/skills/extract/SKILL.md` exists, is invocable, and covers all bullets above.
 - The skill explicitly forbids writing extraction code before an approved `docs/plans/extraction-<app>.md`.
 - The skill explicitly states the `/beta/<app>/` publish convention and that an extraction never overwrites the canonical `/<app>/` deploy.
 
@@ -762,7 +762,7 @@ Production (`main`) never ships prototypes/ — the live site has no
 
 ## 11. Phase 2 — Per-app Extraction
 
-One app per PR (each app may itself span several commits/sub-PRs as features are extracted leaf-first). Driven by the `app-extraction` skill and a per-app PLAN.
+One app per PR (each app may itself span several commits/sub-PRs as features are extracted leaf-first). Driven by the `extract` skill and a per-app PLAN.
 
 ### 11.1 Order and rationale
 
@@ -783,6 +783,8 @@ One app per PR (each app may itself span several commits/sub-PRs as features are
 # <App> Extraction: single-file HTML → Preact + Vite
 
 ## Context
+Status: draft — awaiting review   (the review gate flips this to
+  "approved — <reviewer>, <date>"; no extraction code until it reads approved)
 What the app is, current line count, why it's being extracted now,
 freeze cut-line commit SHA (hot apps only).
 
@@ -821,7 +823,7 @@ No new features. No shared-code extraction. No bridges wired.
 
 ### 11.3 Per-app extraction steps
 
-1. **Invoke the `app-extraction` skill.** Write `docs/plans/extraction-<app>.md`. **Review gate:** the app owner / reviewer approves the PLAN before any extraction code.
+1. **Invoke the `extract` skill** (`/extract plan <app>`)**.** Write `docs/plans/extraction-<app>.md`. **Review gate:** the app owner / reviewer approves the PLAN (`/extract approve <app>`) before any extraction code.
 2. **Scaffold PR (behavior: empty app).** Create `src/apps/<name>/` skeleton, `<app>.html` entry, add `{ name, entry }` to `apps.config.mjs`, add the app's runtime deps (`preact`, `@preact/signals`, etc.) to `package.json`. `npm run build` now also produces `dist/beta/<app>/` (an empty page). Add the app's row to the root `CLAUDE.md` status table (mode `Preact-beta`).
 3. **Extraction commits (leaf-first).** Extract one feature group (≈ one zone) per commit. After each: `npm run build`; open `dist/beta/<app>/index.html`; compare to the live current app.
 4. **Doc relocation.** Move `<app>/CLAUDE.md` and design specs into `src/apps/<name>/`; update its zone vocabulary to file names.
@@ -917,7 +919,7 @@ To confirm with the app owner before / during execution:
 3. **Supabase for preview deploys** — real project or a separate preview project.
 4. **Branch workflow** — adopting branch + preview + PR in place of "straight to `main`."
 5. **Bench / Constellation freeze windows** — when each hot app can pause single-file work for extraction.
-6. **Skill names** — `studio-prototype` and `app-extraction` are proposed; confirm or rename.
+6. **Skill names** — resolved: `studio-prototype` (kept) and `extract` (renamed from the proposed `app-extraction`, so it invokes as `/extract`).
 
 ---
 
