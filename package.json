@@ -4,6 +4,11 @@
   "private": true,
   "type": "module",
   "description": "Jordan Wolberg's studio suite — The Bench, Constellation, Decision Wizard, Spatial Calendar. Each app builds to a single self-contained HTML file.",
+  "packageManager": "npm@11.15.0",
+  "engines": {
+    "node": ">=22",
+    "npm": ">=11"
+  },
   "scripts": {
     "dev": "vite",
     "clean": "rm -rf dist",
