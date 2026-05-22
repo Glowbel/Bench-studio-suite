@@ -43,12 +43,26 @@ Supabase cross-device sync works automatically in the wrapped version.
 
 **Implication for code:** parser constraints stay until the hosted/wrapped migration. Plan for it but don't pre-optimize.
 
-### Track 3 — Netlify subdirectory deploy (active, per this repo)
+### Track 3 — Cloudflare Pages + the Preact monorepo (active, per this repo)
 
-All apps live on main as subdirectories (bench/, constellation/, wizard/, spatial/).
-Each app has its own Netlify site with base directory set to its subfolder.
-Push to main → all Netlify sites auto-deploy from their respective subdirectory.
-Same HTML file — no structural changes. Just a hosting layer.
+This repo is mid-migration to a Preact + Vite monorepo (see
+`docs/plans/20260522-bench-studio-suite-monorepo-migration.md`). Each app
+is being re-authored as small modular Preact components but still **builds
+to one self-contained HTML file** via `vite-plugin-singlefile` — the
+"open it anywhere, email it to anyone" property is preserved as build output.
+
+Hosting is **Cloudflare Pages**, not Netlify. Cloudflare's Git integration
+builds and deploys every branch directly — production from `main`, a preview
+URL for every other branch — with no GitHub Actions. The build command is
+`node scripts/cf-build.mjs`; the output directory is `dist/`.
+
+The migration is staged so current production deploys are never disturbed:
+each app stays single-file at the canonical `/<app>/` path until its Preact
+build is validated and promoted. In-conversion Preact builds publish to a
+parallel `/beta/<app>/` path so both versions are viewable side by side.
+
+(The earlier plan — one per-app Netlify site, base directory per subfolder,
+push-to-`main` auto-deploy with no build step — is superseded by this.)
 
 ---
 
@@ -76,7 +90,7 @@ apps: independently functional | no hard dependencies
 bridges: additive only | never structural
 supabase.rls: needs confirmation before real user data
 auth: required for multi-user | not yet designed
-parser: constraints lift when hosted (Vercel/Netlify) | plan migration
+parser: constraints lift per-app as it becomes Preact (the monorepo migration)
 ```
 
 If any feature would force two apps to depend on each other to function, stop. That breaks distribution flexibility.
