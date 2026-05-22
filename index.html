@@ -26,6 +26,8 @@
       }
       a:hover { border-color: #4acc85; color: #4acc85; }
       .empty { color: #5f6b67; font-size: 0.85rem; margin: 0; }
+      /* Auto-hides the empty-state once #beta-apps has a real <li> child. */
+      #beta-apps:not(:empty) + .empty { display: none; }
       .meta { color: #8a9692; font-size: 0.85rem; }
     </style>
   </head>
@@ -48,6 +50,8 @@
         <!-- Preact builds are linked here as apps are extracted: -->
         <!-- <li><a href="./beta/wizard/">Decision Wizard</a></li> -->
       </ul>
+      <!-- Auto-hidden by CSS once #beta-apps gets a real <li>; extraction PRs
+           need only add the link, not delete this line. -->
       <p class="empty">No apps converted yet.</p>
     </section>
 

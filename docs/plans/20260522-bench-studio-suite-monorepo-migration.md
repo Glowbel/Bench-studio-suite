@@ -638,7 +638,7 @@ This PR touches **no code** and is independently reviewable.
 **Task list.**
 
 1. Add `scripts/build-prototypes-index.mjs` — ported verbatim from the POC (**Appendix A.6**); it generates `dist/prototypes/index.html` listing every prototype on the branch.
-2. Add `scripts/cf-build.mjs` (below) — the Cloudflare build entrypoint.
+2. Add `scripts/cf-build.mjs` (below) — the Cloudflare build entrypoint. Also (re)add the `build:cf` npm script (`"build:cf": "node scripts/cf-build.mjs"`) and its `Bash(npm run build:cf)` permission entry in `.claude/settings.json` — both were deferred out of PR 1 (see §18) because they pointed at this not-yet-existing file.
 3. Add `_headers` (below) — Cloudflare headers file; `noindex` for `/prototypes/*`.
 4. Add `prototypes/README.md` and `prototypes/CLAUDE.md` (adapt the POC versions in **Appendix A.4/A.5** — replace all Netlify specifics with the Cloudflare equivalents below).
 5. Add one sample `prototypes/hello/index.html` (any minimal self-contained HTML in an iPhone frame).
@@ -1235,6 +1235,8 @@ Execution progress against the §9 work breakdown. Updated as PRs land.
 2. **Build also publishes the current single-file apps** — see §7.4. The original spec had PR 1's `npm run build` produce "only the landing page" (State A). Refined: the build now also copies each current app verbatim to `dist/<app>/`, so the monorepo's landing page presents the whole suite. Added `scripts/build-legacy.mjs`, a `legacyApps` array in `apps.config.mjs`, a `build:legacy` npm script, a final legacy-copy step in `scripts/build.mjs`, and a two-section landing page (Current `/<app>/` · beta `/beta/<app>/`). Additive only — the current apps and their own Cloudflare sites are untouched (Principle 1).
 
 3. **Beta-app URL marker.** The "in-conversion" marker the app owner asked for is the spec's existing `/beta/<app>/` scheme — no new convention needed. Current apps stay at the bare `/<app>/` path (still canonical); resolves part of §17 item 1.
+
+4. **`build:cf` deferred to PR 3.** The spec wired the `build:cf` npm script in PR 1, but `scripts/cf-build.mjs` does not exist until PR 3 — so `npm run build:cf` errored. By the same Principle-2 reasoning as decision 1, the `build:cf` script and its `Bash(npm run build:cf)` permission entry were removed; **PR 3 (issue #4) re-adds both** alongside `scripts/cf-build.mjs`. Found in the PR #16 self-review.
 
 ### PR 2, 3, 4 — Phase 1 scaffold remainder — ⬜ not started
 
