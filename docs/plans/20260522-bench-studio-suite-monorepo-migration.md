@@ -226,7 +226,8 @@ bench-studio-suite/
 
 The build also publishes the **current single-file apps** so the monorepo site presents the whole suite from one landing page. `scripts/build-legacy.mjs` copies each `<app>/index.html` **verbatim** (byte-for-byte, no transform) to `dist/<app>/index.html`, for the apps listed in `apps.config.mjs`'s `legacyApps` array.
 
-- **URL scheme** (app-owner decision, 2026-05-22 — resolves part of §17 item 1): current apps sit at the bare path `/<app>/` because they are still canonical; only the in-conversion Preact builds carry a marker, at `/beta/<app>/`.
+- **URL scheme** (app-owner decision, 2026-05-22 — resolves part of §17 item 1): current apps sit at the bare path `/<app>/` because they are still canonical; the in-conversion Preact builds carry the **`beta` path-segment marker**, at `/beta/<app>/`.
+- **`/beta/<app>/` is the suite's standing convention for an app under conversion.** The `beta` segment IS the work-in-progress marker — it says "this app is mid-extraction, not yet canonical." It is introduced by the app's extraction PR (governed by the `app-extraction` skill — PR 4, §10) and removed only at promotion (Phase 4), when the Preact build takes over the bare `/<app>/` path. No extracted app is ever published anywhere but `/beta/<app>/`.
 - This is **additive and does not violate Principle 1.** The current apps' own Cloudflare sites stay live and untouched; this only copies them into the monorepo's `dist/`.
 - An app drops off `legacyApps` when it is promoted (Phase 4) and its `<app>/index.html` is removed; at that point its canonical home becomes the promoted Preact build.
 
@@ -749,12 +750,13 @@ Production (`main`) never ships prototypes/ — the live site has no
 - **Anti-premature-extraction.** Do not split a feature finer than its zone justifies. Do **not** create `src/shared/` or cross-app abstractions during a single-app extraction — shared code is Phase 3, after duplication is proven across ≥2 apps. If a utility looks shared, leave it in `src/apps/<name>/lib/` and note it for Phase 3.
 - **Per-app doc handling.** The app's `CLAUDE.md` living doc moves into `src/apps/<name>/CLAUDE.md`; its `zones` vocabulary (architecture/recent sections) updates from zone names to file names; design specs (`<app>-*.md`, `node-system.md`, etc.) move alongside. The `phase-N` section is handled per the app's own lifecycle — do not delete a live phase section as a side effect of extraction.
 - **Output & verify.** Each app extracts leaf-first, one feature per commit. After every commit: `npm run build`, open `dist/beta/<app>/index.html`, and compare behavior to the still-live current app. Behavior must match — the current single-file app is the reference. Describe every change in behavioral terms.
-- **Publish to `/beta/<app>`.** Never overwrite the app owner's current canonical deploy. Promotion is a separate, app-owner-gated step (Phase 4).
+- **Publish to `/beta/<app>/` — and only there.** Every extracted Preact app builds to `dist/beta/<app>/` and is served at `/beta/<app>/`. The `beta` path segment is the suite's standing **work-in-progress marker** (see §7.4): it signals the app is mid-conversion and not yet canonical. The skill must state this convention explicitly, write extracted apps to no other path, and never overwrite the app owner's current canonical deploy at `/<app>/`. The current single-file app keeps the bare `/<app>/` path until promotion. Promotion (`/beta/<app>/` → canonical `/<app>/`) is a separate, app-owner-gated step (Phase 4).
 
 **Acceptance criteria.**
 
 - `.claude/skills/app-extraction/SKILL.md` exists, is invocable, and covers all bullets above.
 - The skill explicitly forbids writing extraction code before an approved `docs/extraction-<app>.md`.
+- The skill explicitly states the `/beta/<app>/` publish convention and that an extraction never overwrites the canonical `/<app>/` deploy.
 
 ---
 
@@ -849,7 +851,8 @@ Per app, **app-owner-gated**:
 2. The canonical Cloudflare deploy for that app is switched to the Preact build (mechanics depend on the deferred Cloudflare topology — see §14).
 3. Archive the pre-split single-file file to `legacy/<app>-vNN.html` (frozen behavioral reference).
 4. Remove the now-obsolete `<app>/index.html`; `<app>/CLAUDE.md` and specs already moved in Phase 2.
-5. Flip the app's status-table row from `Preact-beta` to `Preact` (canonical).
+5. Remove the app's entry from `legacyApps` in `apps.config.mjs` (the build stops copying it to `/<app>/`); the Preact build now owns the bare `/<app>/` path. Update the landing-page link for `<app>` accordingly — it moves from the Current section to point at the promoted build.
+6. Flip the app's status-table row from `Preact-beta` to `Preact` (canonical).
 
 When all four apps are promoted, delete the single-file-only hard-rule tier from root `CLAUDE.md`.
 
