@@ -330,7 +330,7 @@ Four PRs. **PR 1 lands first** (foundation). **PR 2, 3, 4 then proceed in parall
 3. Add `vite.config.js` (below).
 4. Add `scripts/build.mjs` — the dynamic build (below).
 5. Add `index.html` — the landing page (below).
-6. Add `.gitignore` and `.env.example` (below).
+6. Add `.gitignore` (below). _`.env.example` deferred — see Progress Log (§18); it is created by the extraction PR for the first Supabase-using app (The Bench)._
 7. Add `.claude/settings.json` and `.claude/hooks/session-start.sh` (below). **Bundled into PR 1 deliberately:** without the SessionStart hook, Claude Code web sessions cannot `npm install` and so cannot iterate on the new Vite project.
 8. Verify acceptance criteria locally.
 
@@ -541,7 +541,7 @@ VITE_SUPABASE_URL=https://your-project-ref.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
-> Only needed once an app that uses Supabase is extracted (The Bench). Shipped in PR 1 so the convention is established.
+> Only needed once an app that uses Supabase is extracted (The Bench). **Not shipped in PR 1** (see §18) — deferred to that extraction PR, per Principle 2 (no speculative scaffolding).
 
 #### `.claude/settings.json`
 
@@ -1198,6 +1198,23 @@ before working on it.
 Branch -> commit -> Cloudflare preview URL -> test by feel -> PR -> main.
 (Replaces the former "everything straight to main" rule.)
 ```
+
+---
+
+## 18. Progress Log
+
+Execution progress against the §9 work breakdown. Updated as PRs land.
+
+### PR 1 — Vite build pipeline + Claude Code web setup — ✅ done
+
+- **Issue:** [#2](https://github.com/Glowbel/Bench-studio-suite/issues/2) · **Branch:** `scaffold-vite-pipeline`
+- **Files added:** `package.json`, `apps.config.mjs`, `vite.config.js`, `scripts/build.mjs`, `index.html` (landing), `.gitignore`, `.claude/settings.json`, `.claude/hooks/session-start.sh` (executable bit set).
+- **Verified locally:** `npm install` succeeds (95 packages); `npm run build` → `dist/index.html` (1.39 kB), 0 apps as expected; `npm run dev` serves the landing page and the four current apps remain reachable at `/bench/`, `/wizard/`, etc. No files under `bench/`, `constellation/`, `wizard/`, `spatial/` modified.
+- **Divergence from §10:** `.env.example` was **not** added. The spec included it "so the convention is established," but that contradicts Principle 2 (no speculative scaffolding) and the spec's own note that it is "only needed once an app that uses Supabase is extracted." Decision (app owner, 2026-05-22): defer it to the first Supabase-using extraction PR (The Bench, issue #9), created in context there.
+
+### PR 2, 3, 4 — Phase 1 scaffold remainder — ⬜ not started
+
+### Phases 2–4 — ⬜ not started
 
 ---
 
