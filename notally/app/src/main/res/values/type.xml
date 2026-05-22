@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Note title: tighter tracking, jeweler precision -->
+    <style name="TextAppearance.Filigree.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Note body: relaxed line rhythm for reading -->
+    <style name="TextAppearance.Filigree.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:lineSpacingMultiplier">1.35</item>
+    </style>
+
+    <!-- Chip / reminder labels: tighter tracking -->
+    <style name="TextAppearance.Filigree.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:letterSpacing">0.04</item>
+    </style>
+
+    <!-- Settings section headers: small caps feel via tracking -->
+    <style name="TextAppearance.Filigree.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:letterSpacing">0.06</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+</resources>

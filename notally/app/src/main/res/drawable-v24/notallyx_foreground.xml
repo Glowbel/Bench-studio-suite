@@ -27,26 +27,26 @@
       </path>
 
       <path
-          android:fillColor="#FFFF"
+          android:fillColor="#232531"
           android:pathData="M32,32L76,32L76,76L32,76L32,32Z" />
 
       <!-- First row -->
       <path
-          android:strokeColor="#E4E4E4"
+          android:strokeColor="#4acc85"
           android:strokeWidth="2"
           android:pathData="M37,38L44,38L44,44.01L37,44.01L37,40Z" />
       <path
-          android:fillColor="#E4E4E4"
+          android:fillColor="#d8dfdc"
           android:pathData="M36,40L72,40L72,43.01L48,43.01L48,40Z" />
 
       <!-- Second row -->
       <path
-          android:fillColor="#E4E4E4"
+          android:fillColor="#d8dfdc"
           android:pathData="M36,48.01L72,48.01L72,51.01L36,51.01L36,48.01Z" />
 
       <!-- Third row -->
       <path
-          android:fillColor="#E4E4E4"
+          android:fillColor="#d8dfdc"
           android:pathData="M36,56L72,56L72,59L36,59L36,56Z" />
 
   </group>

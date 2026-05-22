@@ -55,6 +55,11 @@
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
         <item name="materialCardViewStyle">@style/FiligreeCard</item>
 
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.Filigree.TitleLarge</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.Filigree.BodyLarge</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Filigree.LabelSmall</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.Filigree.TitleSmall</item>
+
         <item name="android:textColorLink">?attr/colorOnSurface</item>
         <item name="android:textColorHighlight">?attr/colorOnSurface</item>
         <item name="cursorColor">?attr/colorOnSurface</item>
