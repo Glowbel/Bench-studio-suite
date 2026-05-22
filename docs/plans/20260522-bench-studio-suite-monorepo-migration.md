@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Draft for review |
+| **Status** | In progress |
 | **Date** | 2026-05-22 |
 | **Owner** | tmr08c |
 | **Reviewers** | bench-studio-suite app owner |
@@ -1230,7 +1230,7 @@ Execution progress against the §9 work breakdown. Updated as PRs land.
 
 **As-built decisions (app owner, 2026-05-22):**
 
-1. **`.env.example` not added.** The spec included it "so the convention is established," but that contradicts Principle 2 (no speculative scaffolding) and the spec's own note that it is "only needed once an app that uses Supabase is extracted." Deferred to the first Supabase-using extraction PR (The Bench, issue #9), created in context there.
+1. **`.env.example` not added, and the `.env*` rules dropped from `.gitignore`.** The spec included `.env.example` "so the convention is established," but that contradicts Principle 2 (no speculative scaffolding) and the spec's own note that it is "only needed once an app that uses Supabase is extracted." For the same reason the `.env`, `.env.local`, `.env.*.local` ignore rules were also removed — no `.env` file exists in the suite yet. **Both are deferred to the first Supabase-using extraction PR (The Bench, issue #9):** that PR must add `.env.example` *and* re-add the `.env*` rules to `.gitignore` (the ignore rule is a secrets safety net — it must be in place before any real `.env` is created).
 
 2. **Build also publishes the current single-file apps** — see §7.4. The original spec had PR 1's `npm run build` produce "only the landing page" (State A). Refined: the build now also copies each current app verbatim to `dist/<app>/`, so the monorepo's landing page presents the whole suite. Added `scripts/build-legacy.mjs`, a `legacyApps` array in `apps.config.mjs`, a `build:legacy` npm script, a final legacy-copy step in `scripts/build.mjs`, and a two-section landing page (Current `/<app>/` · beta `/beta/<app>/`). Additive only — the current apps and their own Cloudflare sites are untouched (Principle 1).
 
