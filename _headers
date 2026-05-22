@@ -1,0 +1,4 @@
+# Cloudflare Pages headers. Belt-and-suspenders: production never ships
+# prototypes/ at all, but if a preview is ever crawled, keep it unindexed.
+/prototypes/*
+  X-Robots-Tag: noindex, nofollow
