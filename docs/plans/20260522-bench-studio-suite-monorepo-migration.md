@@ -205,7 +205,7 @@ bench-studio-suite/
   docs/
     plans/
       20260522-bench-studio-suite-monorepo-migration.md   (this document)
-    extraction-<app>.md     per-app extraction PLAN, written before each extraction
+      extraction-<app>.md   per-app extraction PLAN, written before each extraction
   designs/                  design-system workspace (now registered in CLAUDE.md)
   legacy/                   pre-split single-file HTML, archived at promotion time
 ```
@@ -290,7 +290,7 @@ invoke the app-extraction skill
    │
 read the app's index.html zone registry + its CLAUDE.md architecture section
    │
-write docs/extraction-<app>.md  (the PLAN — see §11.2)
+write docs/plans/extraction-<app>.md  (the PLAN — see §11.2)
    │  ── review gate: app owner / reviewer approves the PLAN ──
    │
 scaffold src/apps/<name>/ + <app>.html + manifest entry  (PR, behavior: empty)
@@ -316,7 +316,7 @@ beta verified by app owner ─▶ Phase 4 promotion
 | **3. Shared code** | Extract proven-shared code into `src/shared/` | 1+ PR | After ≥2 apps extracted |
 | **4. Promotion** | Beta → canonical, per app | 1 step per app | App-owner-gated |
 
-Phase 1 is detailed to the file in §10. Phases 2–4 are specified at the process level in §11–§13; each app extraction produces its own granular PLAN document (`docs/extraction-<app>.md`) before code is written.
+Phase 1 is detailed to the file in §10. Phases 2–4 are specified at the process level in §11–§13; each app extraction produces its own granular PLAN document (`docs/plans/extraction-<app>.md`) before code is written.
 
 ---
 
@@ -744,7 +744,7 @@ Production (`main`) never ships prototypes/ — the live site has no
 **`SKILL.md` — required content.**
 
 - **Frontmatter:** `name: app-extraction`, a `description` that triggers when the user asks to extract / split / port / migrate one of the four apps to Preact, `user-invocable: true`.
-- **Plan first, always.** No extraction code is written until `docs/extraction-<app>.md` exists and is approved. That PLAN must contain: a source/zone map (every in-file zone with line ranges); a component breakdown (proposed `src/apps/<name>/` file tree with ~line estimates, nothing over ~200 lines); an entanglement & hard-rule audit (scattered globals, hot-path DOM queries, coupling); a leaf-first extraction order; and a verification checklist. The PLAN template is §11.2 of the migration spec.
+- **Plan first, always.** No extraction code is written until `docs/plans/extraction-<app>.md` exists and is approved. That PLAN must contain: a source/zone map (every in-file zone with line ranges); a component breakdown (proposed `src/apps/<name>/` file tree with ~line estimates, nothing over ~200 lines); an entanglement & hard-rule audit (scattered globals, hot-path DOM queries, coupling); a leaf-first extraction order; and a verification checklist. The PLAN template is §11.2 of the migration spec.
 - **Use the in-file zone registry as the decomposition scaffold.** Each app's `index.html` carries numbered zones with `BEGIN`/`END` markers and an in-file registry. Map zones → feature folders/components; do not invent a structure the zones don't support.
 - **Hard rules.** Durable rules apply always (no base64 images; no DOM rebuilds during live interaction; no DOM queries in animation/physics hot paths; one root state object per app; no orphaned code; new features call existing systems). Parser constraints (no arrow functions, etc.) **lift** for the app being extracted — it is now a Preact app with a build step.
 - **Anti-premature-extraction.** Do not split a feature finer than its zone justifies. Do **not** create `src/shared/` or cross-app abstractions during a single-app extraction — shared code is Phase 3, after duplication is proven across ≥2 apps. If a utility looks shared, leave it in `src/apps/<name>/lib/` and note it for Phase 3.
@@ -755,7 +755,7 @@ Production (`main`) never ships prototypes/ — the live site has no
 **Acceptance criteria.**
 
 - `.claude/skills/app-extraction/SKILL.md` exists, is invocable, and covers all bullets above.
-- The skill explicitly forbids writing extraction code before an approved `docs/extraction-<app>.md`.
+- The skill explicitly forbids writing extraction code before an approved `docs/plans/extraction-<app>.md`.
 - The skill explicitly states the `/beta/<app>/` publish convention and that an extraction never overwrites the canonical `/<app>/` deploy.
 
 ---
@@ -777,7 +777,7 @@ One app per PR (each app may itself span several commits/sub-PRs as features are
 
 **Constellation note.** The POC repo's `src/apps/constellation/` scaffold and its `PLAN.md` were built from an earlier Constellation version (~8.3k lines) than the current one (~9.5k lines). Constellation's extraction PLAN must reconcile that divergence; the POC is a starting point, not a drop-in.
 
-### 11.2 The per-app extraction PLAN template (`docs/extraction-<app>.md`)
+### 11.2 The per-app extraction PLAN template (`docs/plans/extraction-<app>.md`)
 
 ```
 # <App> Extraction: single-file HTML → Preact + Vite
@@ -821,7 +821,7 @@ No new features. No shared-code extraction. No bridges wired.
 
 ### 11.3 Per-app extraction steps
 
-1. **Invoke the `app-extraction` skill.** Write `docs/extraction-<app>.md`. **Review gate:** the app owner / reviewer approves the PLAN before any extraction code.
+1. **Invoke the `app-extraction` skill.** Write `docs/plans/extraction-<app>.md`. **Review gate:** the app owner / reviewer approves the PLAN before any extraction code.
 2. **Scaffold PR (behavior: empty app).** Create `src/apps/<name>/` skeleton, `<app>.html` entry, add `{ name, entry }` to `apps.config.mjs`, add the app's runtime deps (`preact`, `@preact/signals`, etc.) to `package.json`. `npm run build` now also produces `dist/beta/<app>/` (an empty page). Add the app's row to the root `CLAUDE.md` status table (mode `Preact-beta`).
 3. **Extraction commits (leaf-first).** Extract one feature group (≈ one zone) per commit. After each: `npm run build`; open `dist/beta/<app>/index.html`; compare to the live current app.
 4. **Doc relocation.** Move `<app>/CLAUDE.md` and design specs into `src/apps/<name>/`; update its zone vocabulary to file names.
