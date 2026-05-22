@@ -10,25 +10,47 @@
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
         margin: 0; min-height: 100vh;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
-        gap: 1.25rem;
+        gap: 1.75rem; padding: 2rem 1rem; box-sizing: border-box;
       }
       h1 { font-weight: 500; font-size: 1.6rem; margin: 0; }
+      section { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
+      h2 {
+        font-weight: 500; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+        color: #8a9692; margin: 0;
+      }
       ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
       a {
         color: #d8dfdc; text-decoration: none; font-size: 1.05rem;
         padding: 0.5rem 1rem; border: 1px solid rgba(61,72,88,0.6); border-radius: 8px;
-        display: inline-block; min-width: 12rem; text-align: center;
+        display: inline-block; min-width: 13rem; text-align: center;
       }
       a:hover { border-color: #4acc85; color: #4acc85; }
+      .empty { color: #5f6b67; font-size: 0.85rem; margin: 0; }
       .meta { color: #8a9692; font-size: 0.85rem; }
     </style>
   </head>
   <body>
     <h1>Bench Studio Suite</h1>
-    <ul id="apps">
-      <!-- Beta (Preact) builds are linked here as apps are extracted: -->
-      <!-- <li><a href="./beta/wizard/">Decision Wizard (beta)</a></li> -->
-    </ul>
+
+    <section>
+      <h2>Current</h2>
+      <ul>
+        <li><a href="./bench/">The Bench</a></li>
+        <li><a href="./constellation/">Constellation</a></li>
+        <li><a href="./wizard/">Decision Wizard</a></li>
+        <li><a href="./spatial/">Spatial Calendar</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>In conversion · beta</h2>
+      <ul id="beta-apps">
+        <!-- Preact builds are linked here as apps are extracted: -->
+        <!-- <li><a href="./beta/wizard/">Decision Wizard</a></li> -->
+      </ul>
+      <p class="empty">No apps converted yet.</p>
+    </section>
+
     <p class="meta">Each app builds to a single self-contained HTML file.</p>
   </body>
 </html>

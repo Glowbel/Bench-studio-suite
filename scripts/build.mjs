@@ -19,7 +19,11 @@ function build(appKey) {
 build('landing');
 for (const app of apps) build(app.name);
 
+// Copy the current single-file apps verbatim into dist/<app>/.
+console.log('\n▶ copying legacy single-file apps');
+execSync('node scripts/build-legacy.mjs', { stdio: 'inherit' });
+
 // Cloudflare headers file ships at the root of the published dir.
 if (existsSync('_headers')) cpSync('_headers', 'dist/_headers');
 
-console.log('\n✓ built landing + ' + apps.length + ' app(s)');
+console.log('\n✓ built landing + ' + apps.length + ' Preact app(s) + legacy');
