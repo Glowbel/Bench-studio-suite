@@ -163,28 +163,15 @@ wizard/wizard-suite-architecture.md
 
 ### Persistent references — not transitional spec files
 
-```
-designs/
-  what:        the design-system workspace — the Filigree × Bench design
-               language. Colors, typography, components, motion, the bezel
-               system, the heraldic mark, the context → color map.
-  read when:   Jordan names a color, component, pattern, or context
-               ("ceremony divider", "bezel-gold card", "teal context").
-  key files:   designs/SYSTEM.md  — authoritative design-language reference
-               designs/tokens.css — canonical CSS custom property source
-               designs/bench/     — ui kits, component previews, token CSS
-  lifecycle:   permanent. Unlike a design spec, designs/ is not distilled
-               into an [app]/CLAUDE.md and deleted — it is the suite's
-               standing design reference. In Phase 3, designs/tokens.css
-               is folded in as src/shared/styles/tokens.css.
+Unlike the design specs above, these are not distilled-and-deleted — they stand.
 
+```
+designs/   design-system workspace. Read when Jordan names a color,
+           component, or pattern. Key: designs/SYSTEM.md (reference),
+           designs/tokens.css (canonical tokens).
 docs/plans/20260522-bench-studio-suite-monorepo-migration.md
-  what:        the monorepo migration tech spec — the full plan for the
-               Preact + Vite migration this repo is mid-way through.
-  read when:   working on any migration-phase task (scaffold, extraction,
-               shared code, promotion) or when an app changes mode.
-  lifecycle:   stays until the migration completes; the Progress Log (§18)
-               is updated as PRs land.
+           the monorepo migration spec. Read for any migration-phase task
+           or when an app changes mode.
 ```
 
 ### Versioning
@@ -348,8 +335,12 @@ Most session closes are one or two `[recent]` lines. Larger updates only happen 
    (single-file → `[app]/CLAUDE.md` | Preact → `src/apps/<name>/CLAUDE.md`)
 3. Note current state, recent activity, active phase, scars, triggers
 4. Ask Jordan today's goal — he arrives with intent, not residue
-5. If goal touches a trigger, scar, or recent zone, surface it before writing code
-6. Begin
+5. Once the goal names an app, state that app's current mode (single-file or
+   Preact) back to Jordan and confirm it before writing code — modes change as
+   the migration proceeds, and the hard-rule tier and verification gate depend
+   on it. Don't assume; confirm.
+6. If goal touches a trigger, scar, or recent zone, surface it before writing code
+7. Begin
 
 ### Design session
 1. Ask Jordan what we're designing
