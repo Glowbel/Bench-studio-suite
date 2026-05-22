@@ -34,8 +34,10 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug \
-            -Papp.versionCode=1 \
-            -Papp.versionName=filigree-preview \
+            -PRELEASE_STORE_FILE=/dev/null \
+            -PRELEASE_STORE_PASSWORD=dummy \
+            -PRELEASE_KEY_ALIAS=dummy \
+            -PRELEASE_KEY_PASSWORD=dummy \
             -x generateTranslations \
             --no-daemon \
             --stacktrace
