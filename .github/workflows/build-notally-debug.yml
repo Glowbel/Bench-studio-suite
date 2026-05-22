@@ -38,6 +38,8 @@ jobs:
             -PRELEASE_STORE_PASSWORD=dummy \
             -PRELEASE_KEY_ALIAS=dummy \
             -PRELEASE_KEY_PASSWORD=dummy \
+            -x installLocalGitHooks \
+            -x exportTranslationsToExcel \
             -x generateTranslations \
             --no-daemon \
             --stacktrace
