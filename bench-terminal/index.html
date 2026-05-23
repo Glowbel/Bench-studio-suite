@@ -168,7 +168,8 @@ body {
   padding: 4px 12px;
   cursor: pointer;
 }
-#diff-back:hover { background: #181818; border-color: #444; color: #c0c0c0; }
+#diff-back:hover:not(:disabled) { background: #181818; border-color: #444; color: #c0c0c0; }
+#diff-back:disabled { opacity: 0.35; cursor: default; }
 #diff-commit-btn { border-color: #1e3a1e; color: #5a9a5a; }
 #diff-commit-btn:hover:not(:disabled) { background: #111a11; border-color: #3a6a3a; color: #7acc7a; }
 #diff-commit-btn:disabled { opacity: 0.35; cursor: default; }
@@ -359,7 +360,8 @@ var state = {
     content:         "",
     originalContent: "",
     sha:             "",
-    dirty:           false
+    dirty:           false,
+    pendingPath:     ""
   },
   view:   "auth",
   status: { type: "idle", text: "", shaConflict: false }
@@ -508,14 +510,18 @@ function onFileItemClick() {
   var path = this.dataset.path;
   if (state.activeFile.dirty) {
     if (!confirm("Discard unsaved changes to " + state.activeFile.path + "?")) return;
+    state.activeFile.dirty = false;  // clear immediately so commit button disables
+    updateStatusBar();
   }
   loadFile(path);
 }
 
 /* ── file load ─────────────────────────────────────────────────────────── */
 function loadFile(path) {
+  state.activeFile.pendingPath = path;
   setStatus("working", "Loading...");
   apiGet("/file?path=" + encodeURIComponent(path), function(data) {
+    if (state.activeFile.pendingPath !== path) return;
     state.activeFile.path            = path;
     state.activeFile.content         = data.content;
     state.activeFile.originalContent = data.content;
@@ -534,6 +540,7 @@ function loadFile(path) {
     setStatus("idle", "");
     updateStatusBar();
   }, function(err) {
+    if (state.activeFile.pendingPath !== path) return;
     if (err.error === "not_found") {
       setStatus("error", "File not found.");
     } else {
@@ -638,25 +645,36 @@ function handleCommit() {
   var message = document.getElementById("diff-message").value.trim();
   if (!message) { setStatus("error", "Commit message required."); return; }
 
-  var btn = document.getElementById("diff-commit-btn");
-  btn.disabled = true;
+  var btn     = document.getElementById("diff-commit-btn");
+  var backBtn = document.getElementById("diff-back");
+  btn.disabled     = true;
+  backBtn.disabled = true;
   setStatus("working", "Committing...");
 
+  var committedPath    = state.activeFile.path;
+  var committedContent = state.activeFile.content;
+
   apiPut({
-    path:    state.activeFile.path,
-    content: state.activeFile.content,
+    path:    committedPath,
+    content: committedContent,
     sha:     state.activeFile.sha,
     message: message
   }, function(data) {
+    btn.disabled     = false;
+    backBtn.disabled = false;
+    if (state.activeFile.path !== committedPath) {
+      setStatus("success", "Committed " + committedPath + ".");
+      return;
+    }
     state.activeFile.sha             = data.newSha;
-    state.activeFile.originalContent = state.activeFile.content;
-    state.activeFile.dirty           = false;
-    btn.disabled = false;
+    state.activeFile.originalContent = committedContent;
+    state.activeFile.dirty           = (state.activeFile.content !== committedContent);
     setStatus("success", "Committed.");
     showView("editor");
     updateStatusBar();
   }, function(err) {
-    btn.disabled = false;
+    btn.disabled     = false;
+    backBtn.disabled = false;
     if (err.error === "sha_conflict") {
       setStatus("error", "File changed remotely — reload before committing.", true);
     } else if (err.error === "rate_limit") {
