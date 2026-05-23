@@ -1,0 +1,1252 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Palette Testing — Bench Studio Suite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       STYLE INDEX — palette.html is organized by SECTION number
+       ════════════════════════════════════════════════════════════
+       TOKENS  · all design tokens (single source on the page)
+       SECTION 1  COLOR PALETTE
+       SECTION 2  TYPOGRAPHY
+       SECTION 3  BOX SHAPES (radius)
+       SECTION 4  DIVIDERS
+       SECTION 5  BEZEL SPECTRUM
+       SECTION 6  ELEVATION
+       SECTION 7  COMPONENTS
+                  7A cards · 7B buttons · 7C chips
+                  7D toggles · 7E checkboxes · 7F progress
+       SECTION 8  ORCHESTRATED EXAMPLES (3 scenes)
+       SECTION 9  MERGER ZONE — Bench meets Filigree
+                  9A capsule · 9B tab-bar · 9C skill card
+                  9D node orb · 9E before / after
+       ============================================================ */
+
+    /* ============================================================
+       TOKENS
+       ============================================================ */
+    :root {
+      --ink-950: #1c1d22;
+      --ink-900: #232531;
+      --ink-800: #2c2f42;
+      --ink-700: #353953;
+      --ink-600: #404663;
+      --ink-500: #4c537a;
+      --teal-100: #ccf2d5; --teal-200: #95e5b0; --teal-300: #4acc85;
+      --teal-500: #168258; --teal-700: #094428; --teal-900: #051a10;
+      --violet-100: #e6d2f5; --violet-200: #c9a9eb; --violet-300: #b083d8;
+      --violet-500: #7c44b8; --violet-700: #4d2580; --violet-900: #260f44;
+      --gold-300: #f0d28a; --gold-400: #d9b465; --gold-600: #9a7c3d;
+      --mist-100: #f3f6f5; --mist-200: #d8dfdc; --mist-300: #b3bdba;
+      --mist-400: #8a9692; --mist-500: #5e6a66;
+      --copper: #b87333; --silver: #c0c8cc; --metal-gold: #c9a96e;
+      --border: rgba(61,72,88,0.40);
+      --border-strong: rgba(61,72,88,0.70);
+      --border-faint: rgba(61,72,88,0.20);
+      --font-display: "Cormorant Garamond", Georgia, serif;
+      --font-body:    "Outfit", system-ui, sans-serif;
+      --font-mono:    "JetBrains Mono", "Courier New", monospace;
+      --ease-settle: cubic-bezier(0.25, 0.8, 0.25, 1);
+      --ease-rise:   cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ============================================================
+       RESET + BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 80% 60% at 72% 18%, rgba(95,213,193,0.055), transparent 60%),
+        radial-gradient(ellipse 65% 50% at 18% 88%, rgba(124,68,184,0.065), transparent 60%),
+        #1c1d22;
+      color: #d8dfdc;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* ============================================================
+       PAGE LAYOUT
+       ============================================================ */
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 80px 40px 140px;
+      display: flex;
+      flex-direction: column;
+      gap: 88px;
+    }
+
+    /* ============================================================
+       HERO
+       ============================================================ */
+    .hero { display: flex; flex-direction: column; align-items: center; gap: 18px; text-align: center; }
+    .hero-mark { width: 76px; height: 76px; color: #4acc85; animation: mark-breath 5.5s ease-in-out infinite; }
+    .hero-mark svg { width: 100%; height: 100%; }
+    .hero-eyebrow { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #5e6a66; }
+    .hero-title { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 52px; line-height: 1.05; letter-spacing: -0.015em; color: #f3f6f5; }
+    .hero-sub { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 17px; color: #5e6a66; max-width: 520px; line-height: 1.5; }
+    .hero-link { display: inline-flex; align-items: center; gap: 14px; padding: 14px 22px; background: #232531; border: 1px solid rgba(61,72,88,0.40); border-radius: 12px; text-decoration: none; color: #d8dfdc; box-shadow: inset 0 0 24px rgba(95,213,193,0.08), 0 1px 2px rgba(0,0,0,0.45); transition: all 240ms cubic-bezier(0.25,0.8,0.25,1); margin-top: 10px; }
+    .hero-link:hover { background: #2c2f42; border-color: rgba(95,213,193,0.28); box-shadow: inset 0 0 32px rgba(95,213,193,0.16), 0 8px 24px rgba(0,0,0,0.50); transform: translateY(-1px); }
+    .hero-link-body { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+    .hero-link-name { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 16px; color: #f3f6f5; }
+    .hero-link-sub { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 13px; color: #5e6a66; }
+    .hero-link-tag { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 10px; letter-spacing: 0.06em; color: #4acc85; text-transform: uppercase; padding: 3px 10px; border: 1px solid rgba(95,213,193,0.28); border-radius: 9999px; background: rgba(15,90,82,0.25); }
+    .hero-link-arrow { font-size: 16px; color: #4c537a; transition: color 240ms, transform 240ms cubic-bezier(0.25,0.8,0.25,1); }
+    .hero-link:hover .hero-link-arrow { color: #4acc85; transform: translateX(3px); }
+
+    /* ============================================================
+       SECTION SHELL
+       ============================================================ */
+    .section { display: flex; flex-direction: column; gap: 36px; }
+    .section-head { display: flex; flex-direction: column; gap: 6px; }
+    .section-num { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #4c537a; }
+    .section-title { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 30px; letter-spacing: -0.01em; color: #f3f6f5; display: flex; align-items: center; gap: 14px; }
+    .section-title::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(61,72,88,0.40), transparent); }
+    .section-sub { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 14px; color: #5e6a66; max-width: 600px; line-height: 1.5; }
+    .block { display: flex; flex-direction: column; gap: 14px; }
+    .block-label { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 10px; letter-spacing: 0.07em; color: #5e6a66; text-transform: uppercase; }
+
+    /* ============================================================
+       SECTION 1 — COLOR PALETTE
+       ============================================================ */
+    .swatch-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .swatch { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .swatch-chip { width: 64px; height: 64px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.07); }
+    .swatch-name { font-family: "Cormorant Garamond", Georgia, serif; font-variant: small-caps; font-size: 10px; letter-spacing: 0.08em; color: #8a9692; }
+    .swatch-hex { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 9px; color: #5e6a66; }
+    .sem-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .sem-block { flex: 1; min-width: 88px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .sem-chip { width: 100%; height: 40px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.07); }
+    .sem-name { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 9px; letter-spacing: 0.04em; color: #5e6a66; text-align: center; }
+
+    /* ============================================================
+       SECTION 2 — TYPOGRAPHY
+       ============================================================ */
+    .type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .type-spec { padding: 22px 24px; background: #232531; border: 1px solid rgba(61,72,88,0.40); border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .type-spec-label { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: #4c537a; }
+    .type-spec-glyphs { line-height: 1.1; color: #f3f6f5; }
+    .type-spec-glyphs.display { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 44px; }
+    .type-spec-glyphs.body { font-family: "Outfit", system-ui, sans-serif; font-weight: 400; font-size: 36px; }
+    .type-spec-glyphs.mono { font-family: "JetBrains Mono", "Courier New", monospace; font-weight: 500; font-size: 28px; }
+    .type-spec-meta { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 10px; color: #8a9692; line-height: 1.5; margin-top: 4px; }
+    .type-example { padding-top: 12px; margin-top: 6px; border-top: 1px solid rgba(61,72,88,0.20); font-size: 14px; color: #b3bdba; line-height: 1.55; }
+    .type-example.display-ex { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; }
+    .type-example.body-ex { font-family: "Outfit", system-ui, sans-serif; }
+    .type-example.mono-ex { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 12px; }
+
+    .type-composition { background: #232531; border: 1px solid rgba(61,72,88,0.40); border-radius: 14px; padding: 32px 40px; display: flex; flex-direction: column; gap: 10px; box-shadow: inset 0 0 28px rgba(95,213,193,0.06); }
+    .reg-eyebrow { font-family: "Cormorant Garamond", Georgia, serif; font-variant: small-caps; letter-spacing: 0.20em; font-size: 11px; color: #8a9692; }
+    .reg-heading { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 32px; letter-spacing: -0.01em; color: #f3f6f5; line-height: 1.15; }
+    .reg-body { font-family: "Outfit", system-ui, sans-serif; font-weight: 400; font-size: 15px; color: #b3bdba; line-height: 1.65; }
+    .reg-spec { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 14px; color: #8a9692; }
+    .reg-price { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 28px; color: #f3f6f5; letter-spacing: -0.01em; font-feature-settings: "onum" 1; }
+    .reg-price .cur { font-style: italic; font-weight: 400; font-size: 0.6em; color: #8a9692; margin-right: 3px; vertical-align: 0.2em; }
+    .reg-quiet { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 13px; color: #5e6a66; margin-top: 4px; }
+    .reg-tag { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 9px; color: #4c537a; letter-spacing: 0.06em; text-transform: uppercase; min-width: 72px; display: inline-block; }
+    .reg-line { display: flex; align-items: baseline; gap: 16px; padding-bottom: 8px; border-bottom: 1px solid rgba(61,72,88,0.18); }
+    .reg-line:last-child { border-bottom: 0; padding-bottom: 0; }
+
+    /* ============================================================
+       SECTION 3 — BOX SHAPES
+       ============================================================ */
+    .shape-grid { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; }
+    .shape-cell { display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1; min-width: 140px; }
+    .shape-box { width: 100%; min-height: 80px; background: linear-gradient(180deg, #2c2f42, #232531); border: 1px solid rgba(61,72,88,0.40); box-shadow: inset 0 0 22px rgba(95,213,193,0.10); display: flex; align-items: center; justify-content: center; padding: 14px; font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; color: #f3f6f5; }
+    .shape-tag { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 10px; color: #5e6a66; letter-spacing: 0.05em; }
+    .shape-val { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 9px; color: #4c537a; }
+
+    /* ============================================================
+       SECTION 4 — DIVIDERS
+       ============================================================ */
+    .div-demo { display: flex; flex-direction: column; gap: 14px; padding: 18px 0; }
+    .div-context { display: flex; align-items: center; gap: 18px; }
+    .div-ctx-tag { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: #5e6a66; white-space: nowrap; width: 130px; flex-shrink: 0; }
+    .div-teal { flex: 1; height: 1px; background: linear-gradient(90deg, transparent 0%, rgba(95,213,193,0.10) 10%, rgba(95,213,193,0.48) 50%, rgba(95,213,193,0.10) 90%, transparent 100%); box-shadow: 0 0 10px rgba(95,213,193,0.25), 0 0 24px rgba(95,213,193,0.12); }
+    .div-gold { flex: 1; height: 1px; background: linear-gradient(90deg, transparent 0%, rgba(217,180,101,0.10) 10%, rgba(217,180,101,0.48) 50%, rgba(217,180,101,0.10) 90%, transparent 100%); box-shadow: 0 0 10px rgba(217,180,101,0.28), 0 0 24px rgba(217,180,101,0.14); }
+    .div-whisper { flex: 1; height: 1px; background: rgba(61,72,88,0.22); }
+    .div-ornament-wrap { flex: 1; display: flex; justify-content: center; align-items: center; }
+    .div-ornament-svg { width: 100%; max-width: 480px; height: 56px; color: #b083d8; animation: ornament-breath 6s ease-in-out infinite; }
+    .div-text { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 14px; color: #8a9692; padding-left: 148px; }
+
+    /* ============================================================
+       SECTION 5 — BEZEL SPECTRUM
+       ============================================================ */
+    .bezel-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+    .bezel-card { flex: 1; min-width: 140px; height: 96px; background: #232531; border: 1px solid rgba(61,72,88,0.40); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+    .bz-lv { font-family: "Cormorant Garamond", Georgia, serif; font-variant: small-caps; font-size: 11px; letter-spacing: 0.16em; color: #b3bdba; }
+    .bz-desc { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 9px; color: #5e6a66; }
+    .bz-1 { box-shadow: inset 0 0 36px rgba(95,213,193,0.05); }
+    .bz-2 { box-shadow: inset 0 0 28px rgba(95,213,193,0.10); }
+    .bz-3 { box-shadow: inset 0 0 22px rgba(95,213,193,0.18); }
+    .bz-4 { box-shadow: inset 0 0 16px rgba(95,213,193,0.30); }
+    .bz-5 { box-shadow: inset 0 0 8px rgba(95,213,193,0.45), inset 0 0 0 1px rgba(95,213,193,0.45); }
+    .bz-teal { box-shadow: inset 0 0 24px rgba(95,213,193,0.08); }
+    .bz-violet { box-shadow: inset 0 0 24px rgba(176,131,216,0.08); }
+    .bz-violet-strong { box-shadow: inset 0 0 32px rgba(176,131,216,0.18); }
+    .bz-gold { box-shadow: inset 0 0 28px rgba(217,180,101,0.14); border-color: rgba(217,180,101,0.18); }
+    .bz-gold-strong { box-shadow: inset 0 0 18px rgba(217,180,101,0.30), inset 0 0 0 1px rgba(217,180,101,0.22); border-color: rgba(217,180,101,0.28); }
+
+    /* ============================================================
+       SECTION 6 — ELEVATION
+       ============================================================ */
+    .elev-grid { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-end; padding: 16px 0 32px; }
+    .elev-card { flex: 1; min-width: 200px; background: #232531; border: 1px solid rgba(61,72,88,0.40); border-radius: 12px; padding: 22px 24px; display: flex; flex-direction: column; gap: 8px; }
+    .elev-e1 { box-shadow: 0 1px 2px rgba(0,0,0,0.45); }
+    .elev-e2 { box-shadow: 0 8px 24px rgba(0,0,0,0.50), 0 0 32px rgba(95,213,193,0.06); }
+    .elev-e3 { box-shadow: 0 24px 64px rgba(0,0,0,0.60), 0 0 80px rgba(124,68,184,0.10); }
+    .elev-tag { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 9px; letter-spacing: 0.10em; text-transform: uppercase; color: #4c537a; }
+    .elev-name { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 17px; color: #f3f6f5; }
+    .elev-desc { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 13px; color: #8a9692; line-height: 1.5; }
+
+    /* ============================================================
+       SECTION 7 — COMPONENTS
+       ============================================================ */
+    /* 7A cards */
+    .card-trio { display: flex; gap: 16px; flex-wrap: wrap; }
+    .card { flex: 1; min-width: 220px; position: relative; background: linear-gradient(180deg, rgba(255,255,255,0.025), transparent 35%), #232531; border: 1px solid; border-color: rgba(255,255,255,0.08) rgba(255,255,255,0.04) rgba(0,0,0,0.4) rgba(255,255,255,0.04); border-radius: 13px 12px 11px 14px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; overflow: hidden; isolation: isolate; transition: transform 600ms cubic-bezier(0.25,0.8,0.25,1); }
+    .card::before { content: ""; position: absolute; inset: -30%; z-index: 0; background: radial-gradient(circle at 30% 40%, rgba(95,213,193,0.16) 0%, rgba(95,213,193,0.06) 25%, transparent 55%); filter: blur(20px); animation: aurora-drift 16s ease-in-out infinite alternate; pointer-events: none; }
+    .card::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; box-shadow: inset 0 0 28px rgba(95,213,193,0.10); animation: bezel-breath 6.5s ease-in-out infinite; z-index: 1; }
+    .card.violet::before { background: radial-gradient(circle at 65% 60%, rgba(176,131,216,0.22) 0%, rgba(176,131,216,0.08) 25%, transparent 55%); animation-duration: 18s; animation-direction: alternate-reverse; }
+    .card.violet::after { box-shadow: inset 0 0 32px rgba(176,131,216,0.14); }
+    .card.gold { border-color: rgba(217,180,101,0.20) rgba(217,180,101,0.10) rgba(0,0,0,0.4) rgba(217,180,101,0.10); }
+    .card.gold::before { background: radial-gradient(circle at 50% 35%, rgba(255,220,150,0.22) 0%, rgba(217,180,101,0.10) 25%, transparent 55%); animation-duration: 14s; }
+    .card.gold::after { box-shadow: inset 0 0 10px rgba(217,180,101,0.30), inset 0 0 0 1px rgba(217,180,101,0.32); }
+    .mote { position: absolute; z-index: 1; width: 3px; height: 3px; border-radius: 50%; pointer-events: none; mix-blend-mode: screen; will-change: transform, opacity; }
+    .mote.teal { background: rgba(166,240,220,0.95); box-shadow: 0 0 8px rgba(95,213,193,0.9), 0 0 16px rgba(95,213,193,0.45); }
+    .mote.violet { background: rgba(220,180,245,0.95); box-shadow: 0 0 8px rgba(176,131,216,0.9), 0 0 16px rgba(176,131,216,0.45); }
+    .mote.gold { background: rgba(255,235,180,0.95); box-shadow: 0 0 8px rgba(240,210,138,0.9), 0 0 16px rgba(240,210,138,0.45); }
+    .mote.a { top: 18%; left: 10%; animation: mote-a 9s ease-in-out infinite; }
+    .mote.b { top: 70%; left: 60%; animation: mote-b 11s ease-in-out infinite 2s; }
+    .card > * { position: relative; z-index: 2; }
+    .card-eyebrow { font-family: "Cormorant Garamond", Georgia, serif; font-variant: small-caps; letter-spacing: 0.18em; font-size: 11px; color: #8a9692; }
+    .card-eyebrow.gold-eb { color: #d9b465; }
+    .card-title { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 20px; color: #f3f6f5; letter-spacing: 0.005em; }
+    .card-body { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 13px; color: #b3bdba; line-height: 1.55; }
+    .card-price { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 24px; color: #f3f6f5; letter-spacing: -0.005em; font-feature-settings: "onum" 1; }
+    .card-price.gold-price { color: #f0d28a; }
+    .card-price .cur { font-style: italic; font-weight: 400; font-size: 0.65em; color: #8a9692; margin-right: 3px; vertical-align: 0.15em; }
+
+    /* 7B buttons */
+    .btn-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .btn-row-tag { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 9px; color: #4c537a; letter-spacing: 0.06em; text-transform: uppercase; width: 80px; flex-shrink: 0; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 8px; font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 15px; cursor: pointer; transition: all 240ms cubic-bezier(0.25,0.8,0.25,1); border: 1px solid transparent; letter-spacing: 0.01em; }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: #094428; color: #f3f6f5; border-color: rgba(95,213,193,0.30); box-shadow: inset 0 0 18px rgba(95,213,193,0.18), 0 1px 2px rgba(0,0,0,0.4); }
+    .btn-primary:hover { background: #168258; box-shadow: inset 0 0 26px rgba(95,213,193,0.35), 0 0 24px rgba(95,213,193,0.18); }
+    .btn-secondary { background: #2c2f42; color: #d8dfdc; border-color: rgba(61,72,88,0.40); box-shadow: inset 0 0 16px rgba(176,131,216,0.06); }
+    .btn-secondary:hover { background: #353953; box-shadow: inset 0 0 22px rgba(176,131,216,0.14); }
+    .btn-ceremony { background: linear-gradient(180deg, #2a1d10, #1a1208); color: #f0d28a; border-color: rgba(217,180,101,0.40); box-shadow: inset 0 0 22px rgba(217,180,101,0.18), 0 1px 2px rgba(0,0,0,0.4); }
+    .btn-ceremony:hover { box-shadow: inset 0 0 30px rgba(217,180,101,0.32), 0 0 26px rgba(217,180,101,0.18); }
+    .btn-ghost { background: transparent; color: #b3bdba; border-color: transparent; }
+    .btn-ghost:hover { color: #f3f6f5; background: rgba(255,255,255,0.04); }
+
+    /* 7C chips */
+    .chip-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; font-family: "Cormorant Garamond", Georgia, serif; font-variant: small-caps; font-size: 11px; letter-spacing: 0.12em; padding: 4px 12px; border-radius: 9999px; border: 1px solid; }
+    .chip-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .chip-teal { color: #4acc85; border-color: rgba(95,213,193,0.35); background: rgba(15,90,82,0.30); }
+    .chip-teal .chip-dot { background: #4acc85; box-shadow: 0 0 5px #4acc85; }
+    .chip-gold { color: #f0d28a; border-color: rgba(217,180,101,0.40); background: rgba(40,28,12,0.60); }
+    .chip-gold .chip-dot { background: #f0d28a; box-shadow: 0 0 5px #d9b465; }
+    .chip-violet { color: #b083d8; border-color: rgba(176,131,216,0.35); background: rgba(38,15,68,0.50); }
+    .chip-violet .chip-dot { background: #b083d8; box-shadow: 0 0 5px #b083d8; }
+    .chip-muted { color: #8a9692; border-color: rgba(61,72,88,0.40); background: transparent; }
+
+    /* 7D toggles */
+    .toggle-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+    .toggle-group { display: flex; align-items: center; gap: 10px; }
+    .toggle-lbl { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 13px; color: #8a9692; }
+    .toggle { position: relative; width: 50px; height: 26px; border-radius: 9999px; background: #353953; border: 1px solid rgba(61,72,88,0.40); transition: background 600ms cubic-bezier(0.25,0.8,0.25,1), border-color 600ms cubic-bezier(0.25,0.8,0.25,1), box-shadow 600ms cubic-bezier(0.25,0.8,0.25,1); overflow: visible; cursor: pointer; flex-shrink: 0; display: inline-block; }
+    .toggle::after { content: ""; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #8a9692; transition: left 600ms cubic-bezier(0.25,0.8,0.25,1), background 600ms cubic-bezier(0.25,0.8,0.25,1), box-shadow 600ms cubic-bezier(0.25,0.8,0.25,1); }
+    .toggle.on-teal { background: linear-gradient(90deg, #051a10, #094428); border-color: rgba(95,213,193,0.50); box-shadow: inset 0 0 16px rgba(95,213,193,0.30), 0 0 18px rgba(95,213,193,0.18); animation: tbreath-teal 4s ease-in-out infinite; }
+    .toggle.on-teal::after { left: 26px; background: radial-gradient(circle, #d8fff3 0%, #4acc85 60%, #168258 100%); box-shadow: 0 0 14px rgba(95,213,193,0.95), 0 0 28px rgba(95,213,193,0.50); animation: tdot-teal 2.4s ease-in-out infinite; }
+    .toggle.on-gold { background: linear-gradient(90deg, #1a0e04, #2e1c08); border-color: rgba(217,180,101,0.55); box-shadow: inset 0 0 16px rgba(217,180,101,0.28), 0 0 18px rgba(217,180,101,0.18); animation: tbreath-gold 4s ease-in-out infinite; }
+    .toggle.on-gold::after { left: 26px; background: radial-gradient(circle, #fffae8 0%, #f0d28a 60%, #9a7c3d 100%); box-shadow: 0 0 14px rgba(240,210,138,0.95), 0 0 28px rgba(217,180,101,0.55); animation: tdot-gold 2.4s ease-in-out infinite; }
+    .toggle.on-violet { background: linear-gradient(90deg, #260f44, #4d2580); border-color: rgba(176,131,216,0.50); box-shadow: inset 0 0 16px rgba(176,131,216,0.28), 0 0 18px rgba(176,131,216,0.16); animation: tbreath-violet 4s ease-in-out infinite; }
+    .toggle.on-violet::after { left: 26px; background: radial-gradient(circle, #f0e8ff 0%, #b083d8 60%, #7c44b8 100%); box-shadow: 0 0 14px rgba(176,131,216,0.90), 0 0 28px rgba(176,131,216,0.45); animation: tdot-violet 2.4s ease-in-out infinite; }
+    .trail { display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 4px; height: 4px; border-radius: 50%; mix-blend-mode: screen; }
+    .toggle.on-teal .trail { display: block; background: rgba(166,240,220,0.9); box-shadow: 0 0 8px rgba(95,213,193,0.9); }
+    .toggle.on-gold .trail { display: block; background: rgba(255,240,180,0.9); box-shadow: 0 0 8px rgba(217,180,101,0.9); }
+    .toggle.on-violet .trail { display: block; background: rgba(220,180,255,0.9); box-shadow: 0 0 8px rgba(176,131,216,0.9); }
+    .t1 { left: 18px; animation: trail-fade 2.4s ease-in-out infinite; }
+    .t2 { left: 12px; animation: trail-fade 2.4s ease-in-out infinite 0.4s; opacity: 0; }
+
+    /* 7E checkboxes */
+    .check-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+    .check-group { display: flex; align-items: center; gap: 10px; }
+    .check { position: relative; width: 22px; height: 22px; border-radius: 5px; border: 1px solid rgba(61,72,88,0.70); background: #2c2f42; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 480ms cubic-bezier(0.25,0.8,0.25,1), border-color 480ms cubic-bezier(0.25,0.8,0.25,1), box-shadow 480ms cubic-bezier(0.25,0.8,0.25,1); }
+    .check svg { width: 14px; height: 14px; stroke: #f3f6f5; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 24; stroke-dashoffset: 24; transition: stroke-dashoffset 600ms cubic-bezier(0.25,0.8,0.25,1), stroke 300ms; }
+    .check.on-teal { background: linear-gradient(180deg, #094428, #051a10); border-color: rgba(95,213,193,0.55); box-shadow: inset 0 0 14px rgba(95,213,193,0.32), 0 0 16px rgba(95,213,193,0.18); animation: cbreath-teal 4.2s ease-in-out infinite; }
+    .check.on-teal svg { stroke-dashoffset: 0; filter: drop-shadow(0 0 4px rgba(95,213,193,0.8)); }
+    .check.on-gold { background: linear-gradient(180deg, #2e1c08, #1a0e04); border-color: rgba(217,180,101,0.55); box-shadow: inset 0 0 14px rgba(217,180,101,0.30), 0 0 16px rgba(217,180,101,0.18); animation: cbreath-gold 4.2s ease-in-out infinite; }
+    .check.on-gold svg { stroke-dashoffset: 0; stroke: #f0d28a; filter: drop-shadow(0 0 4px rgba(217,180,101,0.8)); }
+    .check.on-violet { background: linear-gradient(180deg, #4d2580, #260f44); border-color: rgba(176,131,216,0.55); box-shadow: inset 0 0 14px rgba(176,131,216,0.30), 0 0 16px rgba(176,131,216,0.16); animation: cbreath-violet 4.2s ease-in-out infinite; }
+    .check.on-violet svg { stroke-dashoffset: 0; stroke: #c9a9eb; filter: drop-shadow(0 0 4px rgba(176,131,216,0.8)); }
+
+    /* 7F progress */
+    .prog-list { display: flex; flex-direction: column; gap: 18px; }
+    .prog-item { display: flex; flex-direction: column; gap: 8px; }
+    .prog-head { display: flex; align-items: baseline; justify-content: space-between; }
+    .prog-title { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 14px; color: #d8dfdc; }
+    .prog-pct { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 12px; color: #8a9692; }
+    .prog { position: relative; height: 8px; background: #353953; border-radius: 9999px; overflow: hidden; border: 1px solid rgba(61,72,88,0.20); box-shadow: inset 0 1px 2px rgba(0,0,0,0.5); }
+    .prog-fill { position: relative; height: 100%; border-radius: 9999px; overflow: hidden; }
+    .prog-fill::before { content: ""; position: absolute; top: 0; left: 0; width: 60%; height: 100%; animation: shimmer 2.8s linear infinite; }
+    .prog-fill::after { content: ""; position: absolute; top: 50%; right: 0; transform: translate(50%, -50%); width: 14px; height: 14px; border-radius: 50%; pointer-events: none; animation: comet-pulse 2s ease-in-out infinite; }
+    .prog-fill.teal { background: linear-gradient(90deg, #094428 0%, #168258 40%, #4acc85 100%); box-shadow: 0 0 10px rgba(95,213,193,0.50); }
+    .prog-fill.teal::before { background: linear-gradient(90deg, transparent 0%, rgba(220,255,245,0.55) 50%, transparent 100%); }
+    .prog-fill.teal::after { background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(166,240,220,0.7) 30%, rgba(95,213,193,0) 70%); }
+    .prog-fill.gold { background: linear-gradient(90deg, #3d2a0a 0%, #9a7c3d 40%, #f0d28a 100%); box-shadow: 0 0 10px rgba(217,180,101,0.50); }
+    .prog-fill.gold::before { background: linear-gradient(90deg, transparent 0%, rgba(255,248,200,0.55) 50%, transparent 100%); }
+    .prog-fill.gold::after { background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,240,160,0.7) 30%, rgba(217,180,101,0) 70%); }
+    .prog-fill.violet { background: linear-gradient(90deg, #260f44 0%, #7c44b8 40%, #b083d8 100%); box-shadow: 0 0 10px rgba(176,131,216,0.50); }
+    .prog-fill.violet::before { background: linear-gradient(90deg, transparent 0%, rgba(240,220,255,0.55) 50%, transparent 100%); }
+    .prog-fill.violet::after { background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(210,170,255,0.7) 30%, rgba(176,131,216,0) 70%); }
+
+    /* ============================================================
+       SECTION 8 — ORCHESTRATED EXAMPLES
+       ============================================================ */
+    .scene-grid { display: flex; gap: 18px; flex-wrap: wrap; }
+    .scene { flex: 1; min-width: 260px; background: #232531; border: 1px solid rgba(61,72,88,0.40); border-radius: 16px; padding: 24px 26px; display: flex; flex-direction: column; gap: 18px; }
+    .scene-teal { box-shadow: inset 0 0 26px rgba(95,213,193,0.10), 0 1px 2px rgba(0,0,0,0.45); }
+    .scene-gold { box-shadow: inset 0 0 30px rgba(217,180,101,0.14), 0 1px 2px rgba(0,0,0,0.45); border-color: rgba(217,180,101,0.18); }
+    .scene-violet { box-shadow: inset 0 0 26px rgba(176,131,216,0.10), 0 1px 2px rgba(0,0,0,0.45); }
+    .scene-head { display: flex; align-items: center; justify-content: space-between; }
+    .scene-eb { font-family: "Cormorant Garamond", Georgia, serif; font-variant: small-caps; letter-spacing: 0.18em; font-size: 11px; }
+    .scene-eb.teal-eb { color: #4acc85; }
+    .scene-eb.gold-eb { color: #d9b465; }
+    .scene-eb.violet-eb { color: #b083d8; }
+    .scene-title { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 22px; color: #f3f6f5; }
+    .scene-body { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 13px; color: #b3bdba; line-height: 1.55; }
+    .scene-controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .scene-price { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 24px; letter-spacing: -0.01em; font-feature-settings: "onum" 1; }
+    .scene-price.teal-price { color: #f3f6f5; }
+    .scene-price.gold-price { color: #f0d28a; }
+    .scene-price .cur { font-style: italic; font-weight: 400; font-size: 0.6em; color: #8a9692; margin-right: 3px; vertical-align: 0.2em; }
+    .scene-rule.teal-rule { height: 1px; background: linear-gradient(90deg, transparent, rgba(95,213,193,0.30) 50%, transparent); }
+    .scene-rule.gold-rule { height: 1px; background: linear-gradient(90deg, transparent, rgba(217,180,101,0.32) 50%, transparent); }
+    .scene-rule.violet-rule { height: 1px; background: linear-gradient(90deg, transparent, rgba(176,131,216,0.30) 50%, transparent); }
+    .scene-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+
+    /* ============================================================
+       SECTION 9 — MERGER ZONE
+       ============================================================ */
+    .merger-intro { padding: 20px 24px; background: #232531; border: 1px solid rgba(61,72,88,0.40); border-left: 2px solid #4acc85; border-radius: 8px; font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 14px; color: #b3bdba; line-height: 1.65; box-shadow: inset 0 0 22px rgba(95,213,193,0.06); }
+    .merger-sub-head { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .merger-sub-num { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #4acc85; }
+    .merger-sub-title { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 20px; color: #f3f6f5; }
+    .merger-sub-sub { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 13px; color: #5e6a66; }
+    .merger-block { display: flex; flex-direction: column; gap: 20px; }
+
+    /* 9A capsule */
+    .capsule { background: linear-gradient(180deg, #2c2f42, #232531); border: 1px solid rgba(61,72,88,0.40); border-radius: 16px; overflow: hidden; box-shadow: inset 0 0 32px rgba(95,213,193,0.10), 0 8px 24px rgba(0,0,0,0.50); }
+    .cap-top { padding: 18px 24px; border-bottom: 1px solid rgba(61,72,88,0.25); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .cap-name-row { display: flex; align-items: center; gap: 10px; }
+    .cap-name { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 22px; color: #f3f6f5; }
+    .cap-timer { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 28px; font-weight: 400; color: #4acc85; letter-spacing: -0.02em; text-shadow: 0 0 18px rgba(74,204,133,0.45); }
+    .cap-body { padding: 16px 24px 8px; display: flex; flex-direction: column; }
+    .cap-todo { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(61,72,88,0.18); }
+    .cap-todo:last-child { border-bottom: none; }
+    .cap-text { font-family: "Outfit", system-ui, sans-serif; font-weight: 400; font-size: 14px; color: #b3bdba; flex: 1; }
+    .cap-text.done { color: #5e6a66; text-decoration: line-through; }
+    .cap-foot { padding: 12px 24px 16px; border-top: 1px solid rgba(61,72,88,0.20); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .cap-spec { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 10px; color: #5e6a66; letter-spacing: 0.06em; }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #4acc85; box-shadow: 0 0 8px rgba(74,204,133,0.95), 0 0 16px rgba(74,204,133,0.45); animation: live-pulse 2s ease-in-out infinite; }
+
+    /* 9B tab-bar */
+    .m-tabbar { display: flex; gap: 3px; padding: 5px; background: #232531; border: 1px solid rgba(61,72,88,0.40); border-radius: 9999px; width: fit-content; box-shadow: inset 0 0 24px rgba(95,213,193,0.08); }
+    .m-tab { display: inline-flex; align-items: center; gap: 7px; padding: 8px 18px; border-radius: 9999px; background: transparent; border: 0; font-family: "Cormorant Garamond", Georgia, serif; font-size: 14px; font-weight: 500; color: #8a9692; cursor: pointer; transition: all 240ms cubic-bezier(0.25,0.8,0.25,1); }
+    .m-tab:hover { color: #d8dfdc; }
+    .m-tab.active { background: #2c2f42; color: #f3f6f5; box-shadow: inset 0 0 14px rgba(95,213,193,0.16); }
+    .m-tab.active.violet-tab { box-shadow: inset 0 0 14px rgba(176,131,216,0.18); }
+    .m-tab.active.gold-tab { box-shadow: inset 0 0 14px rgba(217,180,101,0.20); }
+    .m-tab-dot { width: 5px; height: 5px; border-radius: 50%; background: #4c537a; flex-shrink: 0; transition: all 240ms cubic-bezier(0.25,0.8,0.25,1); }
+    .m-tab.active .m-tab-dot { background: #4acc85; box-shadow: 0 0 6px #4acc85; }
+    .m-tab.active.violet-tab .m-tab-dot { background: #b083d8; box-shadow: 0 0 6px #b083d8; }
+    .m-tab.active.gold-tab .m-tab-dot { background: #f0d28a; box-shadow: 0 0 6px #f0d28a; }
+
+    /* 9C skill card */
+    .skill-card { background: #232531; border: 1px solid rgba(61,72,88,0.40); border-radius: 12px; padding: 18px 20px; display: flex; align-items: center; gap: 18px; box-shadow: inset 0 0 24px rgba(95,213,193,0.08), 0 1px 2px rgba(0,0,0,0.45); transition: box-shadow 280ms cubic-bezier(0.25,0.8,0.25,1), border-color 280ms cubic-bezier(0.25,0.8,0.25,1), transform 280ms cubic-bezier(0.25,0.8,0.25,1); }
+    .skill-card:hover { box-shadow: inset 0 0 32px rgba(95,213,193,0.16), 0 8px 24px rgba(0,0,0,0.50); border-color: rgba(95,213,193,0.20); transform: translateY(-1px); }
+    .skill-card.violet-skill { box-shadow: inset 0 0 24px rgba(176,131,216,0.08), 0 1px 2px rgba(0,0,0,0.45); }
+    .skill-card.violet-skill:hover { box-shadow: inset 0 0 32px rgba(176,131,216,0.18), 0 8px 24px rgba(0,0,0,0.50); border-color: rgba(176,131,216,0.20); }
+    .skill-card.gold-skill { box-shadow: inset 0 0 28px rgba(217,180,101,0.14), 0 1px 2px rgba(0,0,0,0.45); border-color: rgba(217,180,101,0.16); }
+    .skill-card.gold-skill:hover { box-shadow: inset 0 0 36px rgba(217,180,101,0.24), 0 8px 24px rgba(0,0,0,0.50); border-color: rgba(217,180,101,0.32); }
+    .skill-crest { width: 56px; height: 56px; border-radius: 50%; background: #2c2f42; border: 1px solid rgba(61,72,88,0.40); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 22px; }
+    .skill-crest.teal-crest { color: #4acc85; box-shadow: inset 0 0 14px rgba(95,213,193,0.30), 0 0 0 2px rgba(95,213,193,0.18); text-shadow: 0 0 12px rgba(74,204,133,0.55); }
+    .skill-crest.violet-crest { color: #b083d8; box-shadow: inset 0 0 14px rgba(176,131,216,0.30), 0 0 0 2px rgba(176,131,216,0.18); text-shadow: 0 0 12px rgba(176,131,216,0.55); }
+    .skill-crest.gold-crest { color: #f0d28a; box-shadow: inset 0 0 14px rgba(217,180,101,0.30), 0 0 0 2px rgba(217,180,101,0.20); text-shadow: 0 0 12px rgba(217,180,101,0.55); }
+    .skill-info { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .skill-name { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 17px; color: #f3f6f5; }
+    .skill-desc { font-family: "Outfit", system-ui, sans-serif; font-weight: 400; font-size: 13px; color: #8a9692; line-height: 1.45; }
+    .skill-arc-wrap { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .skill-pct { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 13px; }
+    .skill-pct.teal-pct { color: #4acc85; }
+    .skill-pct.silver-pct { color: #c0c8cc; }
+    .skill-pct.gold-pct { color: #c9a96e; }
+    .skill-metal-tag { font-family: "Cormorant Garamond", Georgia, serif; font-variant: small-caps; font-size: 10px; letter-spacing: 0.14em; }
+    .metal-copper { color: #b87333; }
+    .metal-silver { color: #c0c8cc; }
+    .metal-gold { color: #c9a96e; }
+
+    /* 9D node orb */
+    .node-grid { display: flex; gap: 32px; align-items: flex-start; flex-wrap: wrap; padding: 12px 0; }
+    .node-cell { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .node-orb { width: 72px; height: 72px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #353953, #2c2f42); border: 1px solid rgba(61,72,88,0.40); display: flex; align-items: center; justify-content: center; position: relative; }
+    .node-orb.orb-teal { box-shadow: inset 0 0 10px rgba(95,213,193,0.45), inset 0 0 0 1px rgba(95,213,193,0.45), 0 0 20px rgba(95,213,193,0.30); border-color: rgba(95,213,193,0.40); }
+    .node-orb.orb-violet { box-shadow: inset 0 0 10px rgba(176,131,216,0.45), inset 0 0 0 1px rgba(176,131,216,0.45), 0 0 20px rgba(176,131,216,0.25); border-color: rgba(176,131,216,0.40); }
+    .node-orb.orb-gold { box-shadow: inset 0 0 10px rgba(217,180,101,0.42), inset 0 0 0 1px rgba(217,180,101,0.42), 0 0 22px rgba(217,180,101,0.28); border-color: rgba(217,180,101,0.40); animation: orb-breath-gold 5s ease-in-out infinite; }
+    .node-glyph { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 26px; line-height: 1; }
+    .node-glyph.teal-g { color: #4acc85; text-shadow: 0 0 14px rgba(95,213,193,0.65); }
+    .node-glyph.violet-g { color: #b083d8; text-shadow: 0 0 14px rgba(176,131,216,0.65); }
+    .node-glyph.gold-g { color: #f0d28a; text-shadow: 0 0 14px rgba(217,180,101,0.65); }
+    .node-label { font-family: "Cormorant Garamond", Georgia, serif; font-variant: small-caps; font-size: 11px; letter-spacing: 0.16em; color: #b3bdba; }
+    .node-context { font-family: "JetBrains Mono", "Courier New", monospace; font-size: 9px; color: #5e6a66; letter-spacing: 0.06em; }
+
+    /* 9E before/after */
+    .ba-wrap { display: flex; gap: 16px; align-items: stretch; flex-wrap: wrap; }
+    .ba-panel { flex: 1; min-width: 260px; border-radius: 12px; padding: 24px 26px; display: flex; flex-direction: column; gap: 12px; }
+    .ba-before { background: #0e0e12; border: 1px solid #2c2d3c; }
+    .ba-after { background: #232531; border: 1px solid rgba(61,72,88,0.40); box-shadow: inset 0 0 28px rgba(95,213,193,0.10); }
+    .ba-head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; margin-bottom: 4px; border-bottom: 1px solid; }
+    .ba-before .ba-head { border-bottom-color: #1e1e28; }
+    .ba-after .ba-head { border-bottom-color: rgba(95,213,193,0.18); }
+    .ba-stamp { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; }
+    .ba-before .ba-stamp { font-family: "JetBrains Mono", "Courier New", monospace; color: #5c5f6e; }
+    .ba-after .ba-stamp { font-family: "JetBrains Mono", "Courier New", monospace; color: #4acc85; }
+    .ba-system { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 12px; color: #5c5f6e; }
+    .ba-after .ba-system { color: #8a9692; }
+    .ba-eyebrow { font-size: 10px; letter-spacing: 0.10em; text-transform: uppercase; margin-bottom: 2px; }
+    .ba-before .ba-eyebrow { font-family: "JetBrains Mono", "Courier New", monospace; color: #5c5f6e; }
+    .ba-after .ba-eyebrow { font-family: "Cormorant Garamond", Georgia, serif; font-variant: small-caps; letter-spacing: 0.18em; font-size: 11px; color: #8a9692; text-transform: none; }
+    .ba-name { font-size: 18px; line-height: 1.2; margin-bottom: 4px; }
+    .ba-before .ba-name { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 400; color: #d6d0c4; }
+    .ba-after .ba-name { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; color: #f3f6f5; }
+    .ba-desc { font-size: 13px; line-height: 1.55; }
+    .ba-before .ba-desc { font-family: "Cormorant Garamond", Georgia, serif; color: #5c5f6e; font-style: italic; }
+    .ba-after .ba-desc { font-family: "Outfit", system-ui, sans-serif; color: #b3bdba; }
+    .ba-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 6px; }
+    .ba-tag-chip { font-size: 10px; padding: 4px 10px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 6px; }
+    .ba-before .ba-tag-chip { font-family: "JetBrains Mono", "Courier New", monospace; letter-spacing: 0.06em; color: #4ec9d8; border: 1px solid rgba(78,201,216,0.30); background: rgba(78,201,216,0.08); }
+    .ba-after .ba-tag-chip { font-family: "Cormorant Garamond", Georgia, serif; font-variant: small-caps; letter-spacing: 0.14em; font-size: 11px; color: #4acc85; border: 1px solid rgba(95,213,193,0.35); background: rgba(15,90,82,0.30); }
+    .ba-after .ba-tag-chip::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #4acc85; box-shadow: 0 0 5px #4acc85; }
+    .ba-price-large { font-size: 22px; font-weight: 500; letter-spacing: -0.01em; }
+    .ba-before .ba-price-large { font-family: "DM Mono", "JetBrains Mono", monospace; color: #d6d0c4; }
+    .ba-after .ba-price-large { font-family: "Cormorant Garamond", Georgia, serif; color: #f3f6f5; font-feature-settings: "onum" 1; }
+    .ba-before .ba-price-large .cur, .ba-after .ba-price-large .cur { font-style: italic; font-weight: 400; font-size: 0.6em; color: #5c5f6e; margin-right: 3px; vertical-align: 0.2em; }
+    .ba-after .ba-price-large .cur { color: #8a9692; }
+
+    .merger-takeaway { padding: 18px 22px; background: linear-gradient(135deg, rgba(15,90,82,0.20), rgba(38,15,68,0.20)); border: 1px solid rgba(95,213,193,0.20); border-radius: 10px; font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 14px; color: #d8dfdc; line-height: 1.7; }
+    .merger-takeaway strong { font-style: normal; font-weight: 500; color: #f3f6f5; }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding-top: 24px; border-top: 1px solid rgba(61,72,88,0.22); }
+    .footer-text { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: 13px; color: #5e6a66; }
+    .footer-link { font-family: "Cormorant Garamond", Georgia, serif; font-size: 14px; color: #4acc85; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: color 240ms; }
+    .footer-link:hover { color: #95e5b0; }
+
+    /* ============================================================
+       KEYFRAMES
+       ============================================================ */
+    @keyframes mark-breath { 0%,100%{filter:drop-shadow(0 0 3px rgba(95,213,193,0.55)) drop-shadow(0 0 10px rgba(95,213,193,0.22))} 50%{filter:drop-shadow(0 0 6px rgba(95,213,193,1.0)) drop-shadow(0 0 22px rgba(95,213,193,0.55)) drop-shadow(0 0 42px rgba(95,213,193,0.24))} }
+    @keyframes ornament-breath { 0%,100%{filter:drop-shadow(0 0 3px rgba(176,131,216,0.45)) drop-shadow(0 0 10px rgba(176,131,216,0.22))} 50%{filter:drop-shadow(0 0 6px rgba(176,131,216,0.80)) drop-shadow(0 0 20px rgba(176,131,216,0.44)) drop-shadow(0 0 40px rgba(176,131,216,0.20))} }
+    @keyframes aurora-drift { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(8%,-6%) scale(1.15)} 100%{transform:translate(-6%,8%) scale(1.05)} }
+    @keyframes bezel-breath { 0%,100%{opacity:0.7} 50%{opacity:1} }
+    @keyframes mote-a { 0%{transform:translate(0,0) scale(0.5);opacity:0} 20%{opacity:1} 50%{transform:translate(40px,20px) scale(1);opacity:0.9} 80%{opacity:0.4} 100%{transform:translate(80px,60px) scale(0.6);opacity:0} }
+    @keyframes mote-b { 0%{transform:translate(0,0) scale(0.4);opacity:0} 25%{opacity:0.8} 60%{transform:translate(-30px,-40px) scale(1.1);opacity:1} 100%{transform:translate(-70px,-80px) scale(0.5);opacity:0} }
+    @keyframes tbreath-teal { 0%,100%{box-shadow:inset 0 0 14px rgba(95,213,193,0.28),0 0 14px rgba(95,213,193,0.14)} 50%{box-shadow:inset 0 0 22px rgba(95,213,193,0.42),0 0 26px rgba(95,213,193,0.28)} }
+    @keyframes tdot-teal { 0%,100%{box-shadow:0 0 12px rgba(95,213,193,0.85),0 0 22px rgba(95,213,193,0.40)} 50%{box-shadow:0 0 20px rgba(95,213,193,1.0),0 0 38px rgba(95,213,193,0.62)} }
+    @keyframes tbreath-gold { 0%,100%{box-shadow:inset 0 0 14px rgba(217,180,101,0.25),0 0 14px rgba(217,180,101,0.14)} 50%{box-shadow:inset 0 0 22px rgba(217,180,101,0.40),0 0 26px rgba(217,180,101,0.26)} }
+    @keyframes tdot-gold { 0%,100%{box-shadow:0 0 12px rgba(240,210,138,0.90),0 0 22px rgba(217,180,101,0.45)} 50%{box-shadow:0 0 20px rgba(240,210,138,1.0),0 0 38px rgba(217,180,101,0.65)} }
+    @keyframes tbreath-violet { 0%,100%{box-shadow:inset 0 0 14px rgba(176,131,216,0.24),0 0 14px rgba(176,131,216,0.12)} 50%{box-shadow:inset 0 0 22px rgba(176,131,216,0.40),0 0 26px rgba(176,131,216,0.24)} }
+    @keyframes tdot-violet { 0%,100%{box-shadow:0 0 12px rgba(176,131,216,0.85),0 0 22px rgba(176,131,216,0.40)} 50%{box-shadow:0 0 20px rgba(176,131,216,1.0),0 0 38px rgba(176,131,216,0.58)} }
+    @keyframes cbreath-teal { 0%,100%{box-shadow:inset 0 0 12px rgba(95,213,193,0.26),0 0 10px rgba(95,213,193,0.12)} 50%{box-shadow:inset 0 0 20px rgba(95,213,193,0.42),0 0 24px rgba(95,213,193,0.28)} }
+    @keyframes cbreath-gold { 0%,100%{box-shadow:inset 0 0 12px rgba(217,180,101,0.28),0 0 10px rgba(217,180,101,0.14)} 50%{box-shadow:inset 0 0 20px rgba(217,180,101,0.44),0 0 24px rgba(217,180,101,0.28)} }
+    @keyframes cbreath-violet { 0%,100%{box-shadow:inset 0 0 12px rgba(176,131,216,0.24),0 0 10px rgba(176,131,216,0.10)} 50%{box-shadow:inset 0 0 20px rgba(176,131,216,0.40),0 0 24px rgba(176,131,216,0.24)} }
+    @keyframes trail-fade { 0%,100%{opacity:0} 50%{opacity:0.85} }
+    @keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(400%)} }
+    @keyframes comet-pulse { 0%,100%{transform:translate(50%,-50%) scale(0.9);opacity:0.85} 50%{transform:translate(50%,-50%) scale(1.28);opacity:1} }
+    @keyframes live-pulse { 0%,100%{opacity:0.65;transform:scale(0.92)} 50%{opacity:1;transform:scale(1.08)} }
+    @keyframes orb-breath-gold { 0%,100%{box-shadow:inset 0 0 10px rgba(217,180,101,0.42),inset 0 0 0 1px rgba(217,180,101,0.42),0 0 22px rgba(217,180,101,0.28)} 50%{box-shadow:inset 0 0 14px rgba(217,180,101,0.62),inset 0 0 0 1px rgba(217,180,101,0.62),0 0 36px rgba(217,180,101,0.45)} }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ╔══════════════════════════════════════════════════════════════╗
+       ║  HERO                                                       ║
+       ╚══════════════════════════════════════════════════════════════╝ -->
+  <header class="hero">
+    <div class="hero-mark">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <g transform="translate(32 32)">
+          <circle r="26" stroke-width="0.6" opacity="0.30"></circle>
+          <path d="M -15 0 Q -8 -7.5 0 -7.5 Q 8 -7.5 15 0 Q 8 7.5 0 7.5 Q -8 7.5 -15 0 Z"></path>
+          <line x1="0" y1="-7.5" x2="0" y2="-19"></line>
+          <line x1="-7" y1="-5.5" x2="-13" y2="-16"></line>
+          <line x1="7" y1="-5.5" x2="13" y2="-16"></line>
+          <circle r="3" fill="currentColor" stroke="none"></circle>
+          <path d="M 0 9 Q -2.4 12 -2.4 15.5 Q -2.4 18.2 0 18.2 Q 2.4 18.2 2.4 15.5 Q 2.4 12 0 9 Z" fill="currentColor" stroke="none"></path>
+        </g>
+      </svg>
+    </div>
+    <div class="hero-eyebrow">bench studio suite · design lab</div>
+    <h1 class="hero-title">Palette Testing</h1>
+    <p class="hero-sub">Every font, every box shape, every divider, every color combination — orchestrated as real, intermingling examples. The reference artifact for future sessions.</p>
+    <a class="hero-link" href="./bench/">
+      <span class="hero-link-tag">hidden</span>
+      <div class="hero-link-body">
+        <span class="hero-link-name">Bench × Filigree — Fusion Lab</span>
+        <span class="hero-link-sub">interactive component depth · controls, dividers, heraldic mark</span>
+      </div>
+      <span class="hero-link-arrow">→</span>
+    </a>
+  </header>
+
+  <!-- ╔══════════════════════════════════════════════════════════════╗
+       ║  SECTION 1 — COLOR PALETTE                                  ║
+       ╚══════════════════════════════════════════════════════════════╝ -->
+  <section class="section" id="section-1">
+    <div class="section-head">
+      <div class="section-num">(Section 1)</div>
+      <h2 class="section-title">Color Palette</h2>
+      <p class="section-sub">Six families. Obsidian is the ground. Verdigris is alive. Amethyst is deep. Aurum is ceremony. Mist is parchment. Bench metals drive progress only — never type color.</p>
+    </div>
+
+    <div class="block">
+      <div class="block-label">Obsidian · the dark ground · never pure black</div>
+      <div class="swatch-row">
+        <div class="swatch"><div class="swatch-chip" style="background:#1c1d22"></div><div class="swatch-name">ink-950</div><div class="swatch-hex">#1c1d22</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#232531"></div><div class="swatch-name">ink-900</div><div class="swatch-hex">#232531</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#2c2f42"></div><div class="swatch-name">ink-800</div><div class="swatch-hex">#2c2f42</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#353953"></div><div class="swatch-name">ink-700</div><div class="swatch-hex">#353953</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#404663"></div><div class="swatch-name">ink-600</div><div class="swatch-hex">#404663</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#4c537a"></div><div class="swatch-name">ink-500</div><div class="swatch-hex">#4c537a</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label">Verdigris · the alive primary · workshop · active · tasks</div>
+      <div class="swatch-row">
+        <div class="swatch"><div class="swatch-chip" style="background:#ccf2d5"></div><div class="swatch-name">teal-100</div><div class="swatch-hex">#ccf2d5</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#95e5b0"></div><div class="swatch-name">teal-200</div><div class="swatch-hex">#95e5b0</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#4acc85"></div><div class="swatch-name">teal-300</div><div class="swatch-hex">#4acc85</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#168258"></div><div class="swatch-name">teal-500</div><div class="swatch-hex">#168258</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#094428"></div><div class="swatch-name">teal-700</div><div class="swatch-hex">#094428</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#051a10"></div><div class="swatch-name">teal-900</div><div class="swatch-hex">#051a10</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label">Amethyst · deep secondary · constellation · discovery · letters</div>
+      <div class="swatch-row">
+        <div class="swatch"><div class="swatch-chip" style="background:#e6d2f5"></div><div class="swatch-name">violet-100</div><div class="swatch-hex">#e6d2f5</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#c9a9eb"></div><div class="swatch-name">violet-200</div><div class="swatch-hex">#c9a9eb</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#b083d8"></div><div class="swatch-name">violet-300</div><div class="swatch-hex">#b083d8</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#7c44b8"></div><div class="swatch-name">violet-500</div><div class="swatch-hex">#7c44b8</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#4d2580"></div><div class="swatch-name">violet-700</div><div class="swatch-hex">#4d2580</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#260f44"></div><div class="swatch-name">violet-900</div><div class="swatch-hex">#260f44</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label">Aurum · ceremony accent · use sparingly · completion · delivered</div>
+      <div class="swatch-row">
+        <div class="swatch"><div class="swatch-chip" style="background:#f0d28a"></div><div class="swatch-name">gold-300</div><div class="swatch-hex">#f0d28a</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#d9b465"></div><div class="swatch-name">gold-400</div><div class="swatch-hex">#d9b465</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#9a7c3d"></div><div class="swatch-name">gold-600</div><div class="swatch-hex">#9a7c3d</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label">Mist · text and parchment · never pure white</div>
+      <div class="swatch-row">
+        <div class="swatch"><div class="swatch-chip" style="background:#f3f6f5"></div><div class="swatch-name">mist-100</div><div class="swatch-hex">#f3f6f5</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#d8dfdc"></div><div class="swatch-name">mist-200</div><div class="swatch-hex">#d8dfdc</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#b3bdba"></div><div class="swatch-name">mist-300</div><div class="swatch-hex">#b3bdba</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#8a9692"></div><div class="swatch-name">mist-400</div><div class="swatch-hex">#8a9692</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#5e6a66"></div><div class="swatch-name">mist-500</div><div class="swatch-hex">#5e6a66</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label">Bench metals · progress system · arc + connector only · never type color</div>
+      <div class="swatch-row">
+        <div class="swatch"><div class="swatch-chip" style="background:#b87333"></div><div class="swatch-name">copper</div><div class="swatch-hex">not started</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#c0c8cc"></div><div class="swatch-name">silver</div><div class="swatch-hex">in progress</div></div>
+        <div class="swatch"><div class="swatch-chip" style="background:#c9a96e"></div><div class="swatch-name">metal-gold</div><div class="swatch-hex">complete</div></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label">Semantic roles · compose UI against these, not raw scales</div>
+      <div class="sem-row">
+        <div class="sem-block"><div class="sem-chip" style="background:#1c1d22"></div><div class="sem-name">bg</div></div>
+        <div class="sem-block"><div class="sem-chip" style="background:#232531"></div><div class="sem-name">bg-raised</div></div>
+        <div class="sem-block"><div class="sem-chip" style="background:#2c2f42"></div><div class="sem-name">bg-hover</div></div>
+        <div class="sem-block"><div class="sem-chip" style="background:#14151a"></div><div class="sem-name">bg-sunken</div></div>
+        <div class="sem-block"><div class="sem-chip" style="background:#168258"></div><div class="sem-name">accent</div></div>
+        <div class="sem-block"><div class="sem-chip" style="background:#7c44b8"></div><div class="sem-name">accent-2</div></div>
+        <div class="sem-block"><div class="sem-chip" style="background:#d9b465"></div><div class="sem-name">ceremony</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════════════════════════════╗
+       ║  SECTION 2 — TYPOGRAPHY                                     ║
+       ╚══════════════════════════════════════════════════════════════╝ -->
+  <section class="section" id="section-2">
+    <div class="section-head">
+      <div class="section-num">(Section 2)</div>
+      <h2 class="section-title">Typography</h2>
+      <p class="section-sub">Three families. Display carries the soul, Body carries the reading, Mono carries the numbers. The composition below shows all six registers living in one frame.</p>
+    </div>
+
+    <div class="type-grid">
+      <div class="type-spec">
+        <div class="type-spec-label">display</div>
+        <div class="type-spec-glyphs display">Aa Gg</div>
+        <div class="type-spec-meta">Cormorant Garamond<br>400 · 500 · 600 · italic</div>
+        <div class="type-example display-ex">Anna's pendant, set in moonstone</div>
+      </div>
+      <div class="type-spec">
+        <div class="type-spec-label">body</div>
+        <div class="type-spec-glyphs body">Aa Gg</div>
+        <div class="type-spec-meta">Outfit<br>300 · 400 · 500 · 600</div>
+        <div class="type-example body-ex">Held a long conversation with Theo about the labradorite — he wants it oval, polished but soft.</div>
+      </div>
+      <div class="type-spec">
+        <div class="type-spec-label">mono</div>
+        <div class="type-spec-glyphs mono">Aa 0,2</div>
+        <div class="type-spec-meta">JetBrains Mono<br>400 · 500</div>
+        <div class="type-example mono-ex">$1,420 · 18 ga · 3.2 mm · 97%</div>
+      </div>
+    </div>
+
+    <div class="type-composition">
+      <div class="reg-line"><span class="reg-tag">eyebrow</span><span class="reg-eyebrow">in process · workshop</span></div>
+      <div class="reg-line"><span class="reg-tag">heading</span><span class="reg-heading">Anna's spiral pendant</span></div>
+      <div class="reg-line"><span class="reg-tag">body</span><span class="reg-body">Moonstone bezel set on twisted 18 ga sterling. The stone arrived on Tuesday — slightly more blue than the photo suggested, which is exactly what she hoped for.</span></div>
+      <div class="reg-line"><span class="reg-tag">spec</span><span class="reg-spec">18 ga · 22 mm cabochon · sterling, polished matte</span></div>
+      <div class="reg-line"><span class="reg-tag">price</span><span class="reg-price"><span class="cur">$</span>1,420</span></div>
+      <div class="reg-line"><span class="reg-tag">quiet</span><span class="reg-quiet">she'd like it by mid-June — no firm date, but before the solstice</span></div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════════════════════════════╗
+       ║  SECTION 3 — BOX SHAPES                                     ║
+       ╚══════════════════════════════════════════════════════════════╝ -->
+  <section class="section" id="section-3">
+    <div class="section-head">
+      <div class="section-num">(Section 3)</div>
+      <h2 class="section-title">Box Shapes</h2>
+      <p class="section-sub">Five radii: sm for chips and inputs, md for inputs and buttons, lg for cards and panels, xl for modals and floating surfaces, full for tags and pills.</p>
+    </div>
+
+    <div class="shape-grid">
+      <div class="shape-cell">
+        <div class="shape-box" style="border-radius:4px">chip</div>
+        <div class="shape-tag">radius-sm</div>
+        <div class="shape-val">4px · chips, inputs</div>
+      </div>
+      <div class="shape-cell">
+        <div class="shape-box" style="border-radius:8px">input</div>
+        <div class="shape-tag">radius-md</div>
+        <div class="shape-val">8px · buttons, fields</div>
+      </div>
+      <div class="shape-cell">
+        <div class="shape-box" style="border-radius:12px">card</div>
+        <div class="shape-tag">radius-lg</div>
+        <div class="shape-val">12px · cards, panels</div>
+      </div>
+      <div class="shape-cell">
+        <div class="shape-box" style="border-radius:20px">modal</div>
+        <div class="shape-tag">radius-xl</div>
+        <div class="shape-val">20px · floating</div>
+      </div>
+      <div class="shape-cell">
+        <div class="shape-box" style="border-radius:9999px;min-height:48px;padding:12px 24px">pill</div>
+        <div class="shape-tag">radius-full</div>
+        <div class="shape-val">9999px · tags</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════════════════════════════╗
+       ║  SECTION 4 — DIVIDERS                                       ║
+       ╚══════════════════════════════════════════════════════════════╝ -->
+  <section class="section" id="section-4">
+    <div class="section-head">
+      <div class="section-num">(Section 4)</div>
+      <h2 class="section-title">Dividers</h2>
+      <p class="section-sub">Four registers. Each carries a context. Pick by meaning, not by visual preference — the wrong divider in the wrong place is a sentence in the wrong voice.</p>
+    </div>
+
+    <div class="div-demo">
+      <div class="div-context">
+        <span class="div-ctx-tag">teal</span>
+        <span class="div-teal"></span>
+      </div>
+      <div class="div-text">Between workshop zones · active work sections</div>
+    </div>
+
+    <div class="div-demo">
+      <div class="div-context">
+        <span class="div-ctx-tag">gold</span>
+        <span class="div-gold"></span>
+      </div>
+      <div class="div-text">Ceremony · milestone · delivered · finished work</div>
+    </div>
+
+    <div class="div-demo">
+      <div class="div-context">
+        <span class="div-ctx-tag">violet · ornament</span>
+        <div class="div-ornament-wrap">
+          <svg class="div-ornament-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 56" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="0" y1="28" x2="140" y2="28" opacity="0.9"></line>
+            <line x1="40" y1="32" x2="140" y2="32" opacity="0.45"></line>
+            <line x1="0" y1="24" x2="140" y2="24" opacity="0.25"></line>
+            <line x1="340" y1="28" x2="480" y2="28" opacity="0.9"></line>
+            <line x1="340" y1="32" x2="440" y2="32" opacity="0.45"></line>
+            <line x1="340" y1="24" x2="480" y2="24" opacity="0.25"></line>
+            <g transform="translate(160 28)">
+              <path d="M 0 0 C -16 -2, -22 -10, -26 -16"></path>
+              <path d="M -8 -1 C -16 4, -22 10, -26 16"></path>
+              <circle cx="-26" cy="-16" r="1.6" fill="currentColor" stroke="none"></circle>
+              <circle cx="-26" cy="16" r="1.6" fill="currentColor" stroke="none"></circle>
+            </g>
+            <g transform="translate(320 28) scale(-1 1)">
+              <path d="M 0 0 C -16 -2, -22 -10, -26 -16"></path>
+              <path d="M -8 -1 C -16 4, -22 10, -26 16"></path>
+              <circle cx="-26" cy="-16" r="1.6" fill="currentColor" stroke="none"></circle>
+              <circle cx="-26" cy="16" r="1.6" fill="currentColor" stroke="none"></circle>
+            </g>
+            <g transform="translate(240 28)">
+              <path d="M 0 -22 L -3 -15 L 0 -12 L 3 -15 Z" fill="currentColor" stroke="none"></path>
+              <path d="M 0 -12 L 14 0 L 0 12 L -14 0 Z" stroke-width="1.5"></path>
+              <circle r="3.5" fill="currentColor" stroke="none"></circle>
+              <circle r="9" stroke-width="0.6" opacity="0.55"></circle>
+              <path d="M 0 12 L 0 18" stroke-width="1.3"></path>
+              <circle cy="20" r="1.4" fill="currentColor" stroke="none"></circle>
+            </g>
+          </svg>
+        </div>
+      </div>
+      <div class="div-text">Discovery · constellation · door · archive · reflection</div>
+    </div>
+
+    <div class="div-demo">
+      <div class="div-context">
+        <span class="div-ctx-tag">whisper</span>
+        <span class="div-whisper"></span>
+      </div>
+      <div class="div-text">Structural only · between list items · within sections</div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════════════════════════════╗
+       ║  SECTION 5 — BEZEL SPECTRUM                                 ║
+       ╚══════════════════════════════════════════════════════════════╝ -->
+  <section class="section" id="section-5">
+    <div class="section-head">
+      <div class="section-num">(Section 5)</div>
+      <h2 class="section-title">Bezel Spectrum</h2>
+      <p class="section-sub">The signature visual vocabulary. Bezel is an inset glow that makes a surface feel physically held — set like a stone — not floating on a page.</p>
+    </div>
+
+    <div class="block">
+      <div class="block-label">Teal levels · whisper → sharp</div>
+      <div class="bezel-grid">
+        <div class="bezel-card bz-1"><span class="bz-lv">whisper</span><span class="bz-desc">bezel-1</span></div>
+        <div class="bezel-card bz-2"><span class="bz-lv">soft</span><span class="bz-desc">bezel-2</span></div>
+        <div class="bezel-card bz-3"><span class="bz-lv">present</span><span class="bz-desc">bezel-3</span></div>
+        <div class="bezel-card bz-4"><span class="bz-lv">strong</span><span class="bz-desc">bezel-4</span></div>
+        <div class="bezel-card bz-5"><span class="bz-lv">sharp</span><span class="bz-desc">bezel-5</span></div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="block-label">Color variants · context-driven</div>
+      <div class="bezel-grid">
+        <div class="bezel-card bz-teal"><span class="bz-lv">teal</span><span class="bz-desc">workshop</span></div>
+        <div class="bezel-card bz-violet"><span class="bz-lv">violet</span><span class="bz-desc">discovery</span></div>
+        <div class="bezel-card bz-violet-strong"><span class="bz-lv">violet · strong</span><span class="bz-desc">letters</span></div>
+        <div class="bezel-card bz-gold"><span class="bz-lv">gold</span><span class="bz-desc">ceremony</span></div>
+        <div class="bezel-card bz-gold-strong"><span class="bz-lv">gold · strong</span><span class="bz-desc">delivered</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════════════════════════════╗
+       ║  SECTION 6 — ELEVATION                                      ║
+       ╚══════════════════════════════════════════════════════════════╝ -->
+  <section class="section" id="section-6">
+    <div class="section-head">
+      <div class="section-num">(Section 6)</div>
+      <h2 class="section-title">Elevation</h2>
+      <p class="section-sub">Outer shadows for outer space. Used alongside bezels — bezels say "I am held," elevation says "I float."</p>
+    </div>
+
+    <div class="elev-grid">
+      <div class="elev-card elev-e1">
+        <span class="elev-tag">e1 · at rest</span>
+        <span class="elev-name">Quiet card</span>
+        <span class="elev-desc">A card sitting on the page. Subtle, grounded.</span>
+      </div>
+      <div class="elev-card elev-e2">
+        <span class="elev-tag">e2 · hovering</span>
+        <span class="elev-name">Lifted card</span>
+        <span class="elev-desc">Hover state. The card invites attention.</span>
+      </div>
+      <div class="elev-card elev-e3">
+        <span class="elev-tag">e3 · modal depth</span>
+        <span class="elev-name">Floating overlay</span>
+        <span class="elev-desc">Modal, sheet, command bar. The world recedes beneath it.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════════════════════════════╗
+       ║  SECTION 7 — COMPONENTS                                     ║
+       ╚══════════════════════════════════════════════════════════════╝ -->
+  <section class="section" id="section-7">
+    <div class="section-head">
+      <div class="section-num">(Section 7)</div>
+      <h2 class="section-title">Components</h2>
+      <p class="section-sub">Cards, buttons, chips, toggles, checkboxes, progress. Each one shown in all three context colors — teal, violet, gold — where applicable. Toggles and checkboxes are live; click to flip.</p>
+    </div>
+
+    <!-- 7A cards -->
+    <div class="block">
+      <div class="block-label">7A · Cards · aurora drift + breathing bezel + drifting motes</div>
+      <div class="card-trio">
+        <div class="card">
+          <span class="mote teal a"></span>
+          <span class="mote teal b"></span>
+          <span class="card-eyebrow">in process</span>
+          <h3 class="card-title">Anna's pendant</h3>
+          <p class="card-body">Moonstone bezel set on twisted 18 ga sterling. Awaiting stone delivery.</p>
+          <span class="card-price"><span class="cur">$</span>1,420</span>
+        </div>
+        <div class="card violet">
+          <span class="mote violet a"></span>
+          <span class="mote violet b"></span>
+          <span class="card-eyebrow">awaiting reply</span>
+          <h3 class="card-title">Theo's pendant</h3>
+          <p class="card-body">Labradorite, oval. Holding two sketches — he'll choose this week.</p>
+          <span class="card-price"><span class="cur">—</span> not yet priced</span>
+        </div>
+        <div class="card gold">
+          <span class="mote gold a"></span>
+          <span class="mote gold b"></span>
+          <span class="card-eyebrow gold-eb">finished work</span>
+          <h3 class="card-title">Jonah's ring</h3>
+          <p class="card-body">Amethyst in spiral wire setting. Delivered in the spring.</p>
+          <span class="card-price gold-price"><span class="cur">$</span>3,240</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7B buttons -->
+    <div class="block">
+      <div class="block-label">7B · Buttons · primary, secondary, ceremony, ghost</div>
+      <div class="btn-row"><span class="btn-row-tag">primary</span><button class="btn btn-primary">Begin a piece</button><button class="btn btn-primary">Save and continue</button></div>
+      <div class="btn-row"><span class="btn-row-tag">secondary</span><button class="btn btn-secondary">Discard draft</button><button class="btn btn-secondary">Cancel</button></div>
+      <div class="btn-row"><span class="btn-row-tag">ceremony</span><button class="btn btn-ceremony">Mark finished</button><button class="btn btn-ceremony">Deliver</button></div>
+      <div class="btn-row"><span class="btn-row-tag">ghost</span><button class="btn btn-ghost">Skip for now</button><button class="btn btn-ghost">Later</button></div>
+    </div>
+
+    <!-- 7C chips -->
+    <div class="block">
+      <div class="block-label">7C · Chips · status, state, ceremonial labels</div>
+      <div class="chip-row">
+        <span class="chip chip-teal"><span class="chip-dot"></span>active</span>
+        <span class="chip chip-violet"><span class="chip-dot"></span>discovery</span>
+        <span class="chip chip-gold"><span class="chip-dot"></span>delivered</span>
+        <span class="chip chip-muted">draft</span>
+      </div>
+    </div>
+
+    <!-- 7D toggles -->
+    <div class="block">
+      <div class="block-label">7D · Toggles · click to flip · live breathing animation</div>
+      <div class="toggle-row">
+        <div class="toggle-group"><span class="toggle"></span><span class="toggle-lbl">off · neutral</span></div>
+        <div class="toggle-group"><span class="toggle on-teal" data-color="teal"><span class="trail t1"></span><span class="trail t2"></span></span><span class="toggle-lbl">teal · workshop</span></div>
+        <div class="toggle-group"><span class="toggle on-gold" data-color="gold"><span class="trail t1"></span><span class="trail t2"></span></span><span class="toggle-lbl">gold · ceremony</span></div>
+        <div class="toggle-group"><span class="toggle on-violet" data-color="violet"><span class="trail t1"></span><span class="trail t2"></span></span><span class="toggle-lbl">violet · discovery</span></div>
+      </div>
+    </div>
+
+    <!-- 7E checkboxes -->
+    <div class="block">
+      <div class="block-label">7E · Checkboxes · click to flip · check stroke draws on</div>
+      <div class="check-row">
+        <div class="check-group"><span class="check"><svg viewBox="0 0 18 18"><path d="M 4 9 L 8 13 L 14 6"></path></svg></span><span class="toggle-lbl">off</span></div>
+        <div class="check-group"><span class="check on-teal" data-color="teal"><svg viewBox="0 0 18 18"><path d="M 4 9 L 8 13 L 14 6"></path></svg></span><span class="toggle-lbl">teal</span></div>
+        <div class="check-group"><span class="check on-gold" data-color="gold"><svg viewBox="0 0 18 18"><path d="M 4 9 L 8 13 L 14 6"></path></svg></span><span class="toggle-lbl">gold</span></div>
+        <div class="check-group"><span class="check on-violet" data-color="violet"><svg viewBox="0 0 18 18"><path d="M 4 9 L 8 13 L 14 6"></path></svg></span><span class="toggle-lbl">violet</span></div>
+      </div>
+    </div>
+
+    <!-- 7F progress -->
+    <div class="block">
+      <div class="block-label">7F · Progress · shimmer band + comet pulse at fill edge</div>
+      <div class="prog-list">
+        <div class="prog-item">
+          <div class="prog-head"><span class="prog-title">Anna's pendant · workshop</span><span class="prog-pct">72%</span></div>
+          <div class="prog"><div class="prog-fill teal" style="width:72%"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-head"><span class="prog-title">Theo's labradorite · awaiting</span><span class="prog-pct">45%</span></div>
+          <div class="prog"><div class="prog-fill violet" style="width:45%"></div></div>
+        </div>
+        <div class="prog-item">
+          <div class="prog-head"><span class="prog-title">Jonah's ring · delivered</span><span class="prog-pct">100%</span></div>
+          <div class="prog"><div class="prog-fill gold" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════════════════════════════╗
+       ║  SECTION 8 — ORCHESTRATED EXAMPLES                          ║
+       ╚══════════════════════════════════════════════════════════════╝ -->
+  <section class="section" id="section-8">
+    <div class="section-head">
+      <div class="section-num">(Section 8)</div>
+      <h2 class="section-title">Orchestrated Examples</h2>
+      <p class="section-sub">Three scenes. Each one a context — workshop, ceremony, discovery — composed entirely from the elements above. This is how the system speaks when it's working.</p>
+    </div>
+
+    <div class="scene-grid">
+      <div class="scene scene-teal">
+        <div class="scene-head">
+          <span class="scene-eb teal-eb">in process</span>
+          <span class="chip chip-teal"><span class="chip-dot"></span>active</span>
+        </div>
+        <h3 class="scene-title">Anna's pendant</h3>
+        <p class="scene-body">Moonstone bezel set on twisted 18 ga sterling. The stone arrived Tuesday — slightly more blue than expected, exactly what she wanted.</p>
+        <div class="prog"><div class="prog-fill teal" style="width:68%"></div></div>
+        <div class="scene-controls">
+          <span class="toggle on-teal" data-color="teal"><span class="trail t1"></span><span class="trail t2"></span></span>
+          <span class="check on-teal" data-color="teal"><svg viewBox="0 0 18 18"><path d="M 4 9 L 8 13 L 14 6"></path></svg></span>
+          <span class="toggle-lbl">timer running · sketch approved</span>
+        </div>
+        <div class="scene-rule teal-rule"></div>
+        <div class="scene-foot">
+          <span class="scene-price teal-price"><span class="cur">$</span>1,420</span>
+          <button class="btn btn-primary">Open capsule</button>
+        </div>
+      </div>
+
+      <div class="scene scene-gold">
+        <div class="scene-head">
+          <span class="scene-eb gold-eb">finished work</span>
+          <span class="chip chip-gold"><span class="chip-dot"></span>delivered</span>
+        </div>
+        <h3 class="scene-title">Jonah's spiral ring</h3>
+        <p class="scene-body">Amethyst in spiral wire setting, sterling. Delivered in the spring at the studio — a quiet handoff with tea.</p>
+        <div class="prog"><div class="prog-fill gold" style="width:100%"></div></div>
+        <div class="scene-controls">
+          <span class="toggle on-gold" data-color="gold"><span class="trail t1"></span><span class="trail t2"></span></span>
+          <span class="check on-gold" data-color="gold"><svg viewBox="0 0 18 18"><path d="M 4 9 L 8 13 L 14 6"></path></svg></span>
+          <span class="toggle-lbl">payment received · note sent</span>
+        </div>
+        <div class="scene-rule gold-rule"></div>
+        <div class="scene-foot">
+          <span class="scene-price gold-price"><span class="cur">$</span>3,240</span>
+          <button class="btn btn-ceremony">Archive</button>
+        </div>
+      </div>
+
+      <div class="scene scene-violet">
+        <div class="scene-head">
+          <span class="scene-eb violet-eb">awaiting reply</span>
+          <span class="chip chip-violet"><span class="chip-dot"></span>in review</span>
+        </div>
+        <h3 class="scene-title">Theo's labradorite</h3>
+        <p class="scene-body">Oval cabochon, two sketches sent Monday. He's choosing between the bezel and the prong setting — no rush.</p>
+        <div class="prog"><div class="prog-fill violet" style="width:32%"></div></div>
+        <div class="scene-controls">
+          <span class="toggle on-violet" data-color="violet"><span class="trail t1"></span><span class="trail t2"></span></span>
+          <span class="check on-violet" data-color="violet"><svg viewBox="0 0 18 18"><path d="M 4 9 L 8 13 L 14 6"></path></svg></span>
+          <span class="toggle-lbl">letter sent · awaiting</span>
+        </div>
+        <div class="scene-rule violet-rule"></div>
+        <div class="scene-foot">
+          <span class="scene-price teal-price" style="color:#b083d8"><span class="cur">—</span> open</span>
+          <button class="btn btn-secondary">Send nudge</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════════════════════════════╗
+       ║  SECTION 9 — MERGER ZONE                                    ║
+       ╚══════════════════════════════════════════════════════════════╝ -->
+  <section class="section" id="section-9">
+    <div class="section-head">
+      <div class="section-num">(Section 9)</div>
+      <h2 class="section-title">The Merger Zone</h2>
+      <p class="section-sub">Where Bench meets Filigree. The current Bench app has unique, technically-correct UI — the capsule, the tab-bar, the node orbs, the skill cards. Here we sit those elements inside the new design language and ask: what survives, what adapts, where does grace replace machinery?</p>
+    </div>
+
+    <div class="merger-intro">
+      Bench's bones are good. Its colors lean cyan where Filigree leans verdant. Its mono-font labels feel technical where Cormorant + Outfit feel inhabited. Its hairline borders are correct but unbezelled — surfaces float instead of being set. Each subsection below shows a Bench element with Filigree applied at the surface. The structure is unchanged. Only the vocabulary shifts.
+    </div>
+
+    <!-- 9A capsule -->
+    <div class="merger-block">
+      <div class="merger-sub-head">
+        <span class="merger-sub-num">9A · capsule → filigree</span>
+        <span class="merger-sub-title">The live work surface</span>
+        <span class="merger-sub-sub">Bench's most unique element. Timer, todo queue, live state. Wrapped in Filigree bezel and Outfit body text.</span>
+      </div>
+      <div class="capsule">
+        <div class="cap-top">
+          <div class="cap-name-row">
+            <span class="live-dot"></span>
+            <span class="cap-name">Anna's pendant</span>
+          </div>
+          <span class="cap-timer">01:23:47</span>
+        </div>
+        <div class="cap-body">
+          <div class="cap-todo">
+            <span class="check on-teal" data-color="teal"><svg viewBox="0 0 18 18"><path d="M 4 9 L 8 13 L 14 6"></path></svg></span>
+            <span class="cap-text done">Anneal the wire</span>
+          </div>
+          <div class="cap-todo">
+            <span class="check on-teal" data-color="teal"><svg viewBox="0 0 18 18"><path d="M 4 9 L 8 13 L 14 6"></path></svg></span>
+            <span class="cap-text done">Twist the bail</span>
+          </div>
+          <div class="cap-todo">
+            <span class="check" data-color="teal"><svg viewBox="0 0 18 18"><path d="M 4 9 L 8 13 L 14 6"></path></svg></span>
+            <span class="cap-text">File the bezel cup</span>
+          </div>
+          <div class="cap-todo">
+            <span class="check" data-color="teal"><svg viewBox="0 0 18 18"><path d="M 4 9 L 8 13 L 14 6"></path></svg></span>
+            <span class="cap-text">Set the stone</span>
+          </div>
+          <div class="cap-todo">
+            <span class="check" data-color="teal"><svg viewBox="0 0 18 18"><path d="M 4 9 L 8 13 L 14 6"></path></svg></span>
+            <span class="cap-text">Polish · final pass</span>
+          </div>
+        </div>
+        <div class="cap-foot">
+          <span class="cap-spec">18 ga · sterling · 22 mm moonstone</span>
+          <span class="chip chip-teal"><span class="chip-dot"></span>workshop</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9B tab-bar -->
+    <div class="merger-block">
+      <div class="merger-sub-head">
+        <span class="merger-sub-num">9B · tab-bar → filigree</span>
+        <span class="merger-sub-title">Five-tab navigation</span>
+        <span class="merger-sub-sub">Bench's tab orbs become Filigree's pill dots. Active state earns a context-colored bezel. Hover lifts the label, the dot brightens.</span>
+      </div>
+      <div class="m-tabbar">
+        <button class="m-tab active"><span class="m-tab-dot"></span>Workshop</button>
+        <button class="m-tab"><span class="m-tab-dot"></span>Skills</button>
+        <button class="m-tab"><span class="m-tab-dot"></span>Letters</button>
+        <button class="m-tab"><span class="m-tab-dot"></span>Pieces</button>
+        <button class="m-tab"><span class="m-tab-dot"></span>Ledger</button>
+      </div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:6px">
+        <div class="m-tabbar">
+          <button class="m-tab active violet-tab"><span class="m-tab-dot"></span>Constellation</button>
+          <button class="m-tab"><span class="m-tab-dot"></span>Archive</button>
+        </div>
+        <div class="m-tabbar">
+          <button class="m-tab active gold-tab"><span class="m-tab-dot"></span>Finished</button>
+          <button class="m-tab"><span class="m-tab-dot"></span>Delivered</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9C skill card -->
+    <div class="merger-block">
+      <div class="merger-sub-head">
+        <span class="merger-sub-num">9C · skill card → filigree</span>
+        <span class="merger-sub-title">Skill rows · workshop dashboard</span>
+        <span class="merger-sub-sub">Bench's crest stays. Filigree adds bezel, Outfit body, Cormorant title. Bench metals (copper · silver · metal-gold) drive the progress register — these already speak Filigree's ceremony language.</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="skill-card">
+          <div class="skill-crest teal-crest">B</div>
+          <div class="skill-info">
+            <div class="skill-name">Bezel setting</div>
+            <div class="skill-desc">Cabochons, hand-cut bezels, sterling and high karat gold</div>
+          </div>
+          <div class="skill-arc-wrap">
+            <span class="skill-pct silver-pct">72%</span>
+            <span class="skill-metal-tag metal-silver">in progress</span>
+          </div>
+        </div>
+
+        <div class="skill-card violet-skill">
+          <div class="skill-crest violet-crest">L</div>
+          <div class="skill-info">
+            <div class="skill-name">Lost-wax casting</div>
+            <div class="skill-desc">Wax carving, sprueing, investment, burnout, pour</div>
+          </div>
+          <div class="skill-arc-wrap">
+            <span class="skill-pct silver-pct">34%</span>
+            <span class="skill-metal-tag metal-copper">starting</span>
+          </div>
+        </div>
+
+        <div class="skill-card gold-skill">
+          <div class="skill-crest gold-crest">S</div>
+          <div class="skill-info">
+            <div class="skill-name">Spiral wire work</div>
+            <div class="skill-desc">Twist, anneal, shape — the signature method now well-set</div>
+          </div>
+          <div class="skill-arc-wrap">
+            <span class="skill-pct gold-pct">100%</span>
+            <span class="skill-metal-tag metal-gold">mastered</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9D node orb -->
+    <div class="merger-block">
+      <div class="merger-sub-head">
+        <span class="merger-sub-num">9D · node orb → filigree</span>
+        <span class="merger-sub-title">The 56px workshop node</span>
+        <span class="merger-sub-sub">Bench's node orb already carries color-context identity (teal=workshop, violet=discovery, gold=mastered). Filigree's bezel-5 ("sharp · rim of light") completes it — the orb becomes a held jewel, not a flat puck.</span>
+      </div>
+      <div class="node-grid">
+        <div class="node-cell">
+          <div class="node-orb orb-teal"><span class="node-glyph teal-g">B</span></div>
+          <div class="node-label">Bezel</div>
+          <div class="node-context">workshop · teal-300</div>
+        </div>
+        <div class="node-cell">
+          <div class="node-orb orb-violet"><span class="node-glyph violet-g">L</span></div>
+          <div class="node-label">Lost-wax</div>
+          <div class="node-context">discovery · violet-300</div>
+        </div>
+        <div class="node-cell">
+          <div class="node-orb orb-gold"><span class="node-glyph gold-g">S</span></div>
+          <div class="node-label">Spiral</div>
+          <div class="node-context">mastered · gold-300</div>
+        </div>
+        <div class="node-cell">
+          <div class="node-orb"><span class="node-glyph" style="color:#5e6a66">·</span></div>
+          <div class="node-label">Empty</div>
+          <div class="node-context">unseeded · neutral</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9E before/after -->
+    <div class="merger-block">
+      <div class="merger-sub-head">
+        <span class="merger-sub-num">9E · before / after</span>
+        <span class="merger-sub-title">Same element. Different vocabulary.</span>
+        <span class="merger-sub-sub">A single skill card shown twice. The structure is identical. Only the surface tokens — color, font, border, glow — have shifted. This is what a partial integration looks like.</span>
+      </div>
+      <div class="ba-wrap">
+        <div class="ba-panel ba-before">
+          <div class="ba-head">
+            <span class="ba-stamp">before</span>
+            <span class="ba-system">bench classic</span>
+          </div>
+          <span class="ba-eyebrow">SKILL · LEVEL 2</span>
+          <h4 class="ba-name">Bezel setting</h4>
+          <p class="ba-desc">Cabochons, hand-cut bezels, sterling and high karat gold.</p>
+          <div class="ba-row">
+            <span class="ba-tag-chip">ACTIVE</span>
+            <span class="ba-price-large">72%</span>
+          </div>
+        </div>
+
+        <div class="ba-vs">→</div>
+
+        <div class="ba-panel ba-after">
+          <div class="ba-head">
+            <span class="ba-stamp">after</span>
+            <span class="ba-system">bench × filigree</span>
+          </div>
+          <span class="ba-eyebrow">skill · level two</span>
+          <h4 class="ba-name">Bezel setting</h4>
+          <p class="ba-desc">Cabochons, hand-cut bezels, sterling and high karat gold.</p>
+          <div class="ba-row">
+            <span class="ba-tag-chip">active</span>
+            <span class="ba-price-large">72%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="merger-takeaway">
+      <strong>Thematic unity is achieved at the surface.</strong> No bones broken. The capsule still ticks, the tabs still switch, the orbs still pulse. What changes is the language they speak — from technical to inhabited, from floating to set, from cyan to verdant. The Bench app's structure is already correct. The merger is a vocabulary swap, not a rewrite.
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════════════════════════════╗
+       ║  FOOTER                                                     ║
+       ╚══════════════════════════════════════════════════════════════╝ -->
+  <footer class="footer">
+    <span class="footer-text">Filigree × Bench · May 2026</span>
+    <a class="footer-link" href="./bench/">Open Fusion Lab →</a>
+  </footer>
+
+</div>
+
+<script>
+(function() {
+  function bindToggleable(selector) {
+    var nodes = document.querySelectorAll(selector);
+    var i = 0;
+    for (i = 0; !(i >= nodes.length); i = i + 1) {
+      nodes[i].addEventListener('click', function() {
+        var color = this.getAttribute('data-color');
+        if (!color) { return; }
+        var cls = 'on-' + color;
+        if (this.classList.contains(cls)) {
+          this.classList.remove(cls);
+        } else {
+          this.classList.add(cls);
+        }
+      });
+    }
+  }
+  bindToggleable('.toggle[data-color]');
+  bindToggleable('.check[data-color]');
+
+  var tabs = document.querySelectorAll('.m-tabbar');
+  var t = 0;
+  for (t = 0; !(t >= tabs.length); t = t + 1) {
+    var tabBtns = tabs[t].querySelectorAll('.m-tab');
+    var b = 0;
+    for (b = 0; !(b >= tabBtns.length); b = b + 1) {
+      tabBtns[b].addEventListener('click', function() {
+        var parent = this.parentNode;
+        var siblings = parent.querySelectorAll('.m-tab');
+        var s = 0;
+        for (s = 0; !(s >= siblings.length); s = s + 1) {
+          siblings[s].classList.remove('active');
+        }
+        this.classList.add('active');
+      });
+    }
+  }
+})();
+</script>
+</body>
+</html>
