@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Wizard prototype — reorder options</title>
+    <style>
+      :root {
+        --bg: #08111a;
+        --surface: rgba(10,28,44,0.85);
+        --surface2: rgba(14,36,56,0.7);
+        --border: rgba(80,160,200,0.15);
+        --border-light: rgba(80,160,200,0.28);
+        --gold: #7ecfea;
+        --gold-dim: #4a9ab8;
+        --gold-glow: rgba(126,207,234,0.10);
+        --text: #ddf0f8;
+        --text-dim: #6b9eb8;
+        --text-muted: #2e5a72;
+        --accent: #5ab8a0;
+        --danger: #7a5a6a;
+        --radius: 14px;
+        --transition: 0.2s ease;
+      }
+
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: #16171b;
+        font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Monaco, monospace;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+
+      .phone {
+        position: relative;
+        width: 390px;
+        height: 844px;
+        max-width: 100%;
+        background: linear-gradient(160deg, #081420 0%, #0a1e30 40%, #081828 100%);
+        border: 1px solid #3d4858;
+        border-radius: 44px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .viewport {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 36px 20px 28px;
+        color: var(--text);
+        font-size: 13px;
+      }
+
+      .phase-bar { display: flex; gap: 6px; margin-bottom: 22px; }
+      .phase-step { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+      .phase-step-track {
+        height: 2px;
+        background: var(--border);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .phase-step-fill {
+        height: 100%;
+        background: var(--gold-dim);
+        border-radius: 2px;
+        width: 0%;
+      }
+      .phase-step.active .phase-step-fill { width: 100%; background: var(--gold); }
+      .phase-step-label {
+        font-size: 9px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+      .phase-step.active .phase-step-label { color: var(--gold); }
+
+      .screen { display: flex; flex-direction: column; gap: 16px; }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px 18px;
+      }
+      .card-label {
+        font-size: 9px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 10px;
+      }
+      .card-title {
+        font-family: ui-serif, Georgia, 'Times New Roman', serif;
+        font-size: 19px;
+        font-weight: 400;
+        color: var(--text);
+        line-height: 1.4;
+        margin-bottom: 10px;
+      }
+      .card-body {
+        font-size: 12px;
+        color: var(--text-dim);
+        line-height: 1.7;
+      }
+
+      .input-row { display: flex; gap: 8px; }
+
+      input[type="text"] {
+        flex: 1;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 12px;
+        padding: 10px 14px;
+        outline: none;
+        transition: border-color var(--transition);
+      }
+      input[type="text"]:focus { border-color: var(--gold-dim); }
+      input[type="text"]::placeholder { color: var(--text-muted); }
+
+      .btn {
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text-dim);
+        font-family: inherit;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        padding: 9px 16px;
+        cursor: pointer;
+        transition: all var(--transition);
+        white-space: nowrap;
+      }
+      .btn:hover { border-color: var(--border-light); color: var(--text); }
+      .btn-gold {
+        background: var(--gold-glow);
+        border-color: var(--gold-dim);
+        color: var(--gold);
+      }
+
+      .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+      .chip {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        color: var(--text-dim);
+        font-size: 11px;
+        padding: 6px 14px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .chip:hover { border-color: var(--border-light); color: var(--text); }
+
+      .decision-list {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        margin-top: 12px;
+        position: relative;
+        touch-action: pan-y;
+      }
+
+      .decision-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 9px 10px 9px 6px;
+        will-change: transform;
+      }
+
+      .decision-item.sliding { transition: transform 0.18s ease; }
+
+      .decision-item.dragging {
+        border-color: var(--gold-dim);
+        background: rgba(14,36,56,0.95);
+        box-shadow:
+          0 12px 28px rgba(0,0,0,0.45),
+          0 0 0 1px var(--gold-dim),
+          0 0 24px rgba(126,207,234,0.18);
+        z-index: 10;
+        position: relative;
+        cursor: grabbing;
+      }
+
+      .drag-handle {
+        flex: 0 0 auto;
+        width: 22px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        cursor: grab;
+        touch-action: none;
+        transition: color var(--transition);
+        border-radius: 6px;
+      }
+      .drag-handle:hover { color: var(--text-dim); }
+      .decision-item.dragging .drag-handle { cursor: grabbing; color: var(--gold); }
+      .drag-handle svg { display: block; }
+
+      .decision-item-text {
+        flex: 1;
+        font-size: 12px;
+        color: var(--text);
+        line-height: 1.4;
+        user-select: none;
+      }
+
+      .decision-item-remove {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 16px;
+        line-height: 1;
+        padding: 4px 6px;
+        transition: color var(--transition);
+      }
+      .decision-item-remove:hover { color: var(--danger); }
+
+      .nav-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 4px;
+      }
+      .nav-row .btn-gold { padding: 11px 18px; }
+
+      .reorder-hint {
+        font-size: 10px;
+        color: var(--text-muted);
+        letter-spacing: 0.06em;
+        margin-top: 10px;
+        padding-left: 4px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      .reorder-hint.visible { opacity: 1; }
+    </style>
+  </head>
+  <body>
+    <div class="phone">
+      <div class="viewport">
+
+        <div class="phase-bar">
+          <div class="phase-step active">
+            <div class="phase-step-track"><div class="phase-step-fill"></div></div>
+            <div class="phase-step-label">Discover</div>
+          </div>
+          <div class="phase-step">
+            <div class="phase-step-track"><div class="phase-step-fill"></div></div>
+            <div class="phase-step-label">Align</div>
+          </div>
+          <div class="phase-step">
+            <div class="phase-step-track"><div class="phase-step-fill"></div></div>
+            <div class="phase-step-label">Choose</div>
+          </div>
+        </div>
+
+        <div class="screen">
+
+          <div class="card">
+            <div class="card-label">Uncover your options</div>
+            <div class="card-title">What are the different ways you could approach this?</div>
+            <div class="card-body">Decisions often carry more than one path. Name each option you're aware of &mdash; even rough ones.</div>
+          </div>
+
+          <div class="card">
+            <div class="input-row">
+              <input type="text" id="decisionInput" placeholder="Add a path or option..." />
+              <button class="btn btn-gold" id="addBtn">Add</button>
+            </div>
+            <div class="decision-list" id="decisionList"></div>
+            <div class="reorder-hint" id="reorderHint">Hold the handle and drag to reorder.</div>
+          </div>
+
+          <div class="card">
+            <div class="card-label">Theoretical options</div>
+            <div class="card-body" style="margin-bottom:10px;">Not sure yet? These are common starting points &mdash; tap any that feel relevant.</div>
+            <div class="chips">
+              <div class="chip" data-quick="Sell as-is">Sell as-is</div>
+              <div class="chip" data-quick="Process first, then sell">Process first, then sell</div>
+              <div class="chip" data-quick="Use creatively">Use creatively</div>
+              <div class="chip" data-quick="Do nothing for now">Do nothing for now</div>
+              <div class="chip" data-quick="Outsource the work">Outsource the work</div>
+            </div>
+          </div>
+
+          <div class="nav-row">
+            <button class="btn">&larr; Back</button>
+            <button class="btn btn-gold">Continue to Values &rarr;</button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var state = {
+          options: ['yes', 'no', 'maybe']
+        };
+
+        var listEl = document.getElementById('decisionList');
+        var inputEl = document.getElementById('decisionInput');
+        var addBtn = document.getElementById('addBtn');
+        var hintEl = document.getElementById('reorderHint');
+
+        var HANDLE_SVG =
+          '<svg width="14" height="18" viewBox="0 0 14 18" fill="currentColor" aria-hidden="true">' +
+          '<circle cx="4" cy="3" r="1.3"/>' +
+          '<circle cx="10" cy="3" r="1.3"/>' +
+          '<circle cx="4" cy="9" r="1.3"/>' +
+          '<circle cx="10" cy="9" r="1.3"/>' +
+          '<circle cx="4" cy="15" r="1.3"/>' +
+          '<circle cx="10" cy="15" r="1.3"/>' +
+          '</svg>';
+
+        function render() {
+          listEl.innerHTML = '';
+          for (var i = 0; i < state.options.length; i++) {
+            listEl.appendChild(buildItem(state.options[i], i));
+          }
+          updateHint();
+        }
+
+        function updateHint() {
+          if (state.options.length >= 2) {
+            hintEl.classList.add('visible');
+          } else {
+            hintEl.classList.remove('visible');
+          }
+        }
+
+        function buildItem(text, index) {
+          var item = document.createElement('div');
+          item.className = 'decision-item';
+          item.setAttribute('data-index', String(index));
+
+          var handle = document.createElement('div');
+          handle.className = 'drag-handle';
+          handle.innerHTML = HANDLE_SVG;
+          handle.title = 'Drag to reorder';
+
+          var label = document.createElement('div');
+          label.className = 'decision-item-text';
+          label.textContent = text;
+
+          var remove = document.createElement('button');
+          remove.className = 'decision-item-remove';
+          remove.innerHTML = '&times;';
+          remove.setAttribute('aria-label', 'Remove option');
+          remove.addEventListener('click', function () {
+            removeAt(parseInt(item.getAttribute('data-index'), 10));
+          });
+
+          item.appendChild(handle);
+          item.appendChild(label);
+          item.appendChild(remove);
+
+          attachDrag(handle, item);
+          return item;
+        }
+
+        function syncIndices() {
+          var kids = listEl.children;
+          var next = [];
+          for (var i = 0; i < kids.length; i++) {
+            kids[i].setAttribute('data-index', String(i));
+            var txt = kids[i].querySelector('.decision-item-text');
+            next.push(txt ? txt.textContent : '');
+          }
+          state.options = next;
+        }
+
+        function addOption(text) {
+          var t = (text == null ? '' : String(text)).replace(/^\s+|\s+$/g, '');
+          if (!t) return;
+          state.options.push(t);
+          render();
+        }
+
+        function removeAt(i) {
+          if (!(i >= 0) || !(i < state.options.length)) return;
+          state.options.splice(i, 1);
+          render();
+        }
+
+        addBtn.addEventListener('click', function () {
+          addOption(inputEl.value);
+          inputEl.value = '';
+          inputEl.focus();
+        });
+
+        inputEl.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            addOption(inputEl.value);
+            inputEl.value = '';
+          }
+        });
+
+        var chips = document.querySelectorAll('.chip');
+        for (var c = 0; c < chips.length; c++) {
+          (function (chip) {
+            chip.addEventListener('click', function () {
+              addOption(chip.getAttribute('data-quick'));
+            });
+          }(chips[c]));
+        }
+
+        function attachDrag(handle, item) {
+          handle.addEventListener('pointerdown', function (e) {
+            if (e.pointerType === 'mouse' && e.button !== 0) return;
+            e.preventDefault();
+
+            var pointerId = e.pointerId;
+            try { handle.setPointerCapture(pointerId); } catch (err) {}
+
+            var startRect = item.getBoundingClientRect();
+            var grabOffsetY = e.clientY - startRect.top;
+            var anchorTop = startRect.top;
+
+            item.classList.add('dragging');
+
+            var siblings = collectSiblings(item);
+            for (var i = 0; i < siblings.length; i++) {
+              siblings[i].classList.add('sliding');
+            }
+
+            function move(ev) {
+              if (ev.pointerId !== pointerId) return;
+              var translate = (ev.clientY - grabOffsetY) - anchorTop;
+              item.style.transform = 'translateY(' + translate + 'px)';
+
+              var draggedCenter = (ev.clientY - grabOffsetY) + (startRect.height / 2);
+
+              var sibs = collectSiblings(item);
+              for (var j = 0; j < sibs.length; j++) {
+                var sib = sibs[j];
+                var sRect = sib.getBoundingClientRect();
+                var sMid = sRect.top + (sRect.height / 2);
+                var sibAfterItem = (item.compareDocumentPosition(sib) & 4) !== 0;
+
+                if (sibAfterItem && draggedCenter > sMid) {
+                  reorder(sib, true, ev);
+                  return;
+                }
+                if (!sibAfterItem && !(draggedCenter >= sMid)) {
+                  reorder(sib, false, ev);
+                  return;
+                }
+              }
+            }
+
+            function reorder(sib, insertAfter, ev) {
+              if (insertAfter) {
+                listEl.insertBefore(item, sib.nextSibling);
+              } else {
+                listEl.insertBefore(item, sib);
+              }
+              var currentTransform = parseTranslateY(item.style.transform);
+              var newRect = item.getBoundingClientRect();
+              var newNaturalTop = newRect.top - currentTransform;
+              anchorTop = newNaturalTop;
+              var newTranslate = (ev.clientY - grabOffsetY) - anchorTop;
+              item.style.transform = 'translateY(' + newTranslate + 'px)';
+              syncIndices();
+            }
+
+            function up(ev) {
+              if (ev.pointerId !== pointerId) return;
+              document.removeEventListener('pointermove', move);
+              document.removeEventListener('pointerup', up);
+              document.removeEventListener('pointercancel', up);
+              try { handle.releasePointerCapture(pointerId); } catch (err) {}
+
+              item.style.transition = 'transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease, background 0.16s ease';
+              item.style.transform = '';
+              item.classList.remove('dragging');
+
+              setTimeout(function () {
+                item.style.transition = '';
+                var sibs2 = collectSiblings(item);
+                for (var k = 0; k < sibs2.length; k++) {
+                  sibs2[k].classList.remove('sliding');
+                }
+              }, 180);
+            }
+
+            document.addEventListener('pointermove', move);
+            document.addEventListener('pointerup', up);
+            document.addEventListener('pointercancel', up);
+          });
+        }
+
+        function collectSiblings(item) {
+          var out = [];
+          var kids = listEl.children;
+          for (var i = 0; i < kids.length; i++) {
+            if (kids[i] !== item) out.push(kids[i]);
+          }
+          return out;
+        }
+
+        function parseTranslateY(transform) {
+          if (!transform) return 0;
+          var m = transform.match(/translateY\(\s*(-?\d+(?:\.\d+)?)px\s*\)/);
+          if (!m) return 0;
+          return parseFloat(m[1]);
+        }
+
+        render();
+      }());
+    </script>
+  </body>
+</html>
