@@ -176,7 +176,7 @@ bench-studio-suite/
     hooks/
       session-start.sh      npm install on Claude Code web
     skills/
-      studio-prototype/
+      prototype/
         SKILL.md
       app-extraction/
         SKILL.md
@@ -642,7 +642,7 @@ This PR touches **no code** and is independently reviewable.
 3. Add `_headers` (below) — Cloudflare headers file; `noindex` for `/prototypes/*`.
 4. Add `prototypes/README.md` and `prototypes/CLAUDE.md` (adapt the POC versions in **Appendix A.4/A.5** — replace all Netlify specifics with the Cloudflare equivalents below).
 5. Add one sample `prototypes/hello/index.html` (any minimal self-contained HTML in an iPhone frame).
-6. Add `.claude/skills/studio-prototype/SKILL.md` — adapt the POC skill (**Appendix A.3**), rewriting the deploy section for Cloudflare (below).
+6. Add `.claude/skills/prototype/SKILL.md` — adapt the POC skill (**Appendix A.3**), rewriting the deploy section for Cloudflare (below). The skill is invoked as `/prototype <slug>`.
 
 **Cloudflare specifics that differ from the POC's Netlify model.**
 
@@ -693,7 +693,7 @@ if (branch && branch !== PRODUCTION_BRANCH) {
   X-Robots-Tag: noindex, nofollow
 ```
 
-#### Cloudflare deploy section for `.claude/skills/studio-prototype/SKILL.md`
+#### Cloudflare deploy section for `.claude/skills/prototype/SKILL.md`
 
 Replace the POC skill's "Deploy model" section with:
 
@@ -729,7 +729,7 @@ Production (`main`) never ships prototypes/ — the live site has no
 - `CF_PAGES_BRANCH=feature/x node scripts/cf-build.mjs` produces `dist/` **with** `dist/prototypes/` and a generated index.
 - `CF_PAGES_BRANCH=main node scripts/cf-build.mjs` produces `dist/` **without** `dist/prototypes/`.
 - `dist/_headers` is present and carries the `noindex` rule.
-- The `studio-prototype` skill is invocable and its deploy section describes Cloudflare, not Netlify.
+- The `prototype` skill is invocable and its deploy section describes Cloudflare, not Netlify.
 
 ---
 
@@ -902,7 +902,7 @@ There are no automated tests. Verification is mechanical for scaffold PRs and be
 | Premature shared abstraction creates coupling | `src/shared/` is Phase 3 only; each shared module needs ≥2 proven call sites. |
 | Single `dist/` partial build leaves stale files | `scripts/build.mjs` always `rm -rf dist` first; Cloudflare build command is always the umbrella `cf-build.mjs`, never an individual app build. |
 | Supabase env vars missing on preview deploys | §14: set vars in both Cloudflare Production and Preview scopes; decide preview Supabase target. |
-| Long auto-generated branch names break Cloudflare preview URLs | The `studio-prototype` skill documents the 28-char limit and the rename procedure. |
+| Long auto-generated branch names break Cloudflare preview URLs | The `prototype` skill documents the 28-char limit and the rename procedure. |
 | Unregistered files (`designs/`, `bench/node-system.md`) get silently dropped | PR 2 explicitly registers them. |
 | `node --check` can't validate JSX | Root `CLAUDE.md` states the per-mode gate: single-file → `node --check`; Preact → `npm run build`. |
 
@@ -917,7 +917,7 @@ To confirm with the app owner before / during execution:
 3. **Supabase for preview deploys** — real project or a separate preview project.
 4. **Branch workflow** — adopting branch + preview + PR in place of "straight to `main`."
 5. **Bench / Constellation freeze windows** — when each hot app can pause single-file work for extraction.
-6. **Skill names** — `studio-prototype` and `app-extraction` are proposed; confirm or rename.
+6. **Skill names** — `prototype` (renamed from the proposed `studio-prototype`) is confirmed; `app-extraction` is still proposed and can be confirmed or renamed.
 
 ---
 
