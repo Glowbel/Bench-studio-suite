@@ -293,9 +293,10 @@ read the app's index.html zone registry + its CLAUDE.md architecture section
 write docs/plans/extraction-<app>.md  (the PLAN — see §11.2)
    │  ── review gate: app owner / reviewer approves the PLAN ──
    │
-scaffold src/apps/<name>/ + <app>.html + manifest entry  (PR, behavior: empty)
+scaffold src/apps/<name>/ + <app>.html + manifest entry by relocating the
+current <app>/index.html into src/apps/<name>/  (PR, behavior: same as live)
    │
-extract leaf-first, one feature (≈ one zone) per commit
+refactor that relocated file into components leaf-first, one feature (≈ one zone) per commit
    │  after each: npm run build, open dist/beta/<app>/, compare to the live current app
    │
 relocate <app>/CLAUDE.md + design specs into src/apps/<name>/
@@ -824,8 +825,8 @@ No new features. No shared-code extraction. No bridges wired.
 ### 11.3 Per-app extraction steps
 
 1. **Invoke the `extract` skill** (`/extract plan <app>`). Write `docs/plans/extraction-<app>.md`. **Review gate:** the app owner / reviewer approves the PLAN (`/extract approve <app>`) before any extraction code.
-2. **Scaffold PR (behavior: empty app).** Create `src/apps/<name>/` skeleton, `<app>.html` entry, add `{ name, entry }` to `apps.config.mjs`, add the app's runtime deps (`preact`, `@preact/signals`, etc.) to `package.json`. `npm run build` now also produces `dist/beta/<app>/` (an empty page). Add the app's row to the root `CLAUDE.md` status table (mode `Preact-beta`).
-3. **Extraction commits (leaf-first).** Extract one feature group (≈ one zone) per commit. After each: `npm run build`; open `dist/beta/<app>/index.html`; compare to the live current app.
+2. **Scaffold PR (behavior: working copy of the live app, relocated).** Copy the current `<app>/index.html` into `src/apps/<name>/` (rename to a buildable entry as needed), create the `<app>.html` Vite entry, add `{ name, entry }` to `apps.config.mjs`, add the app's runtime deps (`preact`, `@preact/signals`, etc.) to `package.json`. `npm run build` now also produces `dist/beta/<app>/`, which serves the same app as the live `/<app>/` deploy — just under the build pipeline. Add the app's row to the root `CLAUDE.md` status table (mode `Preact-beta`).
+3. **Refactor commits (leaf-first).** Decompose the relocated file into components, one feature group (≈ one zone) per commit. After each: `npm run build`; open `dist/beta/<app>/index.html`; compare to the live current app.
 4. **Doc relocation.** Move `<app>/CLAUDE.md` and design specs into `src/apps/<name>/`; update its zone vocabulary to file names.
 5. **Beta complete.** The `/beta/<app>` build matches the current app on every golden path. Hand to the app owner for validation → Phase 4.
 
