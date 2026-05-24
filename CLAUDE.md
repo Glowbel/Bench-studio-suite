@@ -60,16 +60,16 @@ bench-studio-suite/
   .claude/
     settings.json             permissions + SessionStart hook
     hooks/session-start.sh    npm install on Claude Code web
-    skills/                   studio-prototype, app-extraction (added by PR 3/4)
-  scripts/
-    build.mjs                 dynamic suite build — discovers apps from the manifest
-    build-legacy.mjs          copies current single-file apps verbatim into dist/
-    (cf-build.mjs, build-prototypes-index.mjs — added by PR 3)
+    skills/                   skills that extend the capabilities of Claude Code
+  scripts/                  build + tooling scripts (look here when you need one)
+
+  src/
+    CLAUDE.md               source-tree orientation — where extracted apps live
+    apps/<name>/            extracted Preact apps (added at extraction time)
+    shared/                 proven-shared code (Phase 3 only)
 
   docs/
-    plans/
-      20260522-bench-studio-suite-monorepo-migration.md   the migration spec
-    (extraction-<app>.md — per-app extraction PLANs, written before each extraction)
+    plans/                  tech specs and per-app extraction PLANs
 
   designs/               design-system workspace — Filigree × Bench design language
     SYSTEM.md                 authoritative design-language reference
