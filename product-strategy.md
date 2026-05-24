@@ -51,7 +51,7 @@ is being re-authored as small modular Preact components but still **builds
 to one self-contained HTML file** via `vite-plugin-singlefile` — the
 "open it anywhere, email it to anyone" property is preserved as build output.
 
-Hosting is **Cloudflare Pages**, not Netlify. Cloudflare's Git integration
+Hosting is **Cloudflare Pages**. Cloudflare's Git integration
 builds and deploys every branch directly — production from `main`, a preview
 URL for every other branch — with no GitHub Actions. The build command is
 `node scripts/cf-build.mjs`; the output directory is `dist/`.
@@ -61,7 +61,7 @@ each app stays single-file at the canonical `/<app>/` path until its Preact
 build is validated and promoted. In-conversion Preact builds publish to a
 parallel `/beta/<app>/` path so both versions are viewable side by side.
 
-(The earlier plan — one per-app Netlify site, base directory per subfolder,
+(The earlier plan — one per-app site, base directory per subfolder,
 push-to-`main` auto-deploy with no build step — is superseded by this.)
 
 ---
