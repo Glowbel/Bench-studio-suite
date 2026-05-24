@@ -42,29 +42,39 @@ checklist and ticks it, `status` reports it.
 
 Produce the extraction PLAN. **No extraction code is written by this command.**
 
-1. Read the app's `index.html` zone registry (`BEGIN`/`END` markers) and its
+1. **Pause and surface the thinking-budget question.** Before doing anything
+   else, tell the user: *"This command does the most consequential thinking
+   in the whole extraction — reading the whole app, mapping zones to a
+   proposed file tree, and naming the entanglements. It benefits from a
+   raised thinking budget or plan mode. Want to bump it before I start, or
+   proceed at the current level?"* Wait for an answer. The command cannot
+   raise its own thinking budget or enter plan mode — those are
+   session-level and user-controlled, which is exactly why this prompt is
+   the user's chance to set them. Proceed only when the user says go.
+2. Read the app's `index.html` zone registry (`BEGIN`/`END` markers) and its
    `CLAUDE.md` architecture section. Read spec §11.2 (the PLAN template).
-2. Write `docs/plans/extraction-<app>.md` per §11.2 (full contents in §1 below).
+3. Write `docs/plans/extraction-<app>.md` per §11.2 (full contents in §1 below).
    - The **Extraction Order** section is written as a **checkbox list** — one
      box per unit of work, scaffold first (see §6). `/extract run` consumes
      this checklist; `/extract status` counts it.
    - The first line of the Context section is `Status: draft — awaiting review`.
-3. Stop. Hand the PLAN to the app owner for review. Do not scaffold, do not
+4. Stop. Hand the PLAN to the app owner for review. Do not scaffold, do not
    touch `apps.config.mjs`, do not write a component.
-
-This command cannot raise its own thinking budget or enter the harness's plan
-mode — those are session-level and user-controlled. If you want deeper
-deliberation on the split, enable plan mode or ask for more thinking *before*
-running `/extract plan`.
 
 ### `/extract approve <app>`
 
 Record the app owner's approval. Precondition: `docs/plans/extraction-<app>.md`
-exists. Flip its Status line to:
+exists.
 
-```
-Status: approved — <reviewer name>, <date>
-```
+1. Flip its Status line to:
+   ```
+   Status: approved — <reviewer name>, <date>
+   ```
+2. **Commit the change and open a PR for it.** Approval is auditable: the
+   merged commit on `main` is what materially unblocks `/extract run`. A
+   Status flip that only lives in a working copy doesn't count. Use a small
+   commit message naming the app, push the branch, and open a draft PR
+   titled something like `chore: approve extraction PLAN for <app>`.
 
 That is all this command does. The approval is the app owner's judgment; this
 command only records the gesture. Never self-approve a PLAN you wrote without
@@ -222,9 +232,6 @@ splitting further than the work justifies.
   inline note flagging it as a Phase 3 shared-code candidate. Do not hoist it
   early — speculative sharing creates coupling before the second call site
   even exists.
-- Do not port speculatively from the `wolbergs-world` POC repo. The POC is a
-  starting reference, not a drop-in (its Constellation scaffold was built from
-  an older, ~8.3k-line version).
 
 ---
 
@@ -250,11 +257,21 @@ The suite's per-app living-doc system is kept, relocated — not flattened.
 ## 6. Output & verify — leaf-first, behavioral
 
 The first item on the PLAN's Extraction Order checklist is always the
-**scaffold**: create the `src/apps/<name>/` skeleton, the `<app>.html` entry,
-add `{ name, entry }` to `apps.config.mjs`, add runtime deps to `package.json`,
-and add the app's row to the root `CLAUDE.md` status table (mode `Preact-beta`).
-Behavior after the scaffold step is an empty `/beta/<app>/` page. Every later
-checklist item is a feature slice.
+**scaffold**, and the scaffold is a **relocation, not an empty page.** Copy
+the app's current `<app>/index.html` into `src/apps/<name>/` (e.g. as
+`src/apps/<name>/index.html`, or rename to `index.jsx` if the Vite entry
+expects a module) so that `/beta/<app>/` immediately serves a working copy
+of the live app. Then wire the Vite plumbing around it: create the
+`<app>.html` entry, add `{ name, entry }` to `apps.config.mjs`, add runtime
+deps to `package.json`, and add the app's row to the root `CLAUDE.md` status
+table (mode `Preact-beta`).
+
+This trades an empty starting point for a working one — the very first
+`/beta/<app>/` build is the same app, just living under `src/apps/<name>/`
+with a build step around it. Every later checklist item then refactors that
+relocated file into smaller components, leaf-first. The behavior baseline is
+established immediately, so each subsequent commit can be compared against
+the previous build, not just against the still-live original.
 
 - Extract **leaf-first**: leaf components and pure utilities first, then
   mid-level features, then state-heavy features, then the composite shell and
@@ -312,7 +329,9 @@ Every extracted Preact app builds to `dist/beta/<app>/` and is served at
 /extract run <app>          (repeat until the checklist is fully ticked)
    gate: Status must be approved
    take the next unchecked checklist item(s), up to a PR boundary
-   item 1 = scaffold (empty /beta/<app>/); later items = feature slices
+   item 1 = scaffold — relocate index.html into src/apps/<name>/ so
+            /beta/<app>/ serves a working copy on first build
+   later items = refactor that relocated file into components, leaf-first
    after each commit: npm run build, open dist/beta/<app>/, compare to live
    tick the checkbox(es) in the PLAN, commit
         │
