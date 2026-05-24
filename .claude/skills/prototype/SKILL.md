@@ -1,6 +1,6 @@
 ---
-name: studio-prototype
-description: Workflow rules for HTML prototypes in `prototypes/<slug>/` — file layout, the self-contained HTML constraint, the iPhone-frame requirement, reading the Cloudflare Pages branch-preview URL from the PR bot comment, the plain-text URL rule, the commit+push expectation, and the path for promoting an approved prototype into a real app under `src/apps/<name>/`. Use when creating, editing, or promoting a prototype, or when working anywhere under `prototypes/`.
+name: prototype
+description: Workflow rules for HTML prototypes in `prototypes/<slug>/` — file layout, the self-contained HTML constraint, the iPhone-frame requirement, the shared starter template at `prototypes/_template/`, reading the Cloudflare Pages branch-preview URL from the PR bot comment, the plain-text URL rule, the commit+push expectation, and the path for promoting an approved prototype into a real app under `src/apps/<name>/`. Invoke as `/prototype <slug>` (or `/prototype` without args for general guidance), or whenever the user asks to create, edit, or promote a prototype, or works anywhere under `prototypes/`.
 user-invocable: true
 ---
 
@@ -16,13 +16,28 @@ Proto = single raw HTML file, mock data inline, NOT in production.
 If it needs real state, real persistence, or real navigation, it is an
 app change, not a prototype.
 
+## Starting a new prototype
+
+Copy the shared starter template:
+
+```
+cp -r prototypes/_template prototypes/<slug>
+```
+
+The template (`prototypes/_template/index.html`) sets up the 390x844 phone
+frame, scrollable inner viewport, dark background, system font stack, and a
+`<!-- prototype content -->` marker. Every prototype starts from it so they
+all share the same baseline. The build-time index skips any directory whose
+name starts with `_`, so the template never ships as a prototype itself.
+
 ## Hard rules
 
 - Self-contained HTML only: a single file at `prototypes/<slug>/index.html`,
   inline `<style>` and `<script>`, no CDN, no external assets, no build step.
+- Start from `prototypes/_template/index.html` (see above) — don't reinvent
+  the phone frame or viewport per prototype.
 - No imports from `src/`. Copy tokens/snippets inline; let them drift.
-- iPhone frame: wrap in a 390x844 phone frame with a scrollable inner
-  viewport.
+- iPhone frame: 390x844, scrollable inner viewport (the template provides this).
 - Mock data inline. No fetches. Relative-to-today dates.
 - Interactions illustrative, not real (tap a row -> toast "would open X").
 - No build, no package.json, no framework under `prototypes/`.

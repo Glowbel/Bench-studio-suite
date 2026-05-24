@@ -12,16 +12,38 @@ minute.
 ```
 prototypes/
   README.md
-  CLAUDE.md          short pointer at the studio-prototype skill
-  <slug>/index.html  the prototype (single self-contained file)
+  CLAUDE.md            short pointer at the prototype skill
+  _template/index.html the shared starter (phone frame, viewport, fonts);
+                       directories prefixed with `_` are skipped by the
+                       build-time index, so the template never ships as a
+                       prototype itself.
+  <slug>/index.html    a prototype (single self-contained file)
 ```
+
+## Usage — the `prototype` skill
+
+The workflow is owned by the **`prototype`** skill
+(`.claude/skills/prototype/SKILL.md`). Invoke it on the phone or from a
+session:
+
+```
+/prototype <slug>     create or work on prototypes/<slug>/index.html
+/prototype            general guidance (when you don't have a slug yet)
+```
+
+The skill loads the rules below, copies the starter template into the new
+slug, opens it for editing, and at the end gives you the commit + push
+instructions plus where to read the preview URL.
 
 ## Hard rules
 
 - Self-contained HTML only: a single file at `prototypes/<slug>/index.html`,
   inline `<style>` and `<script>`, no CDN, no external assets, no build step.
+- **Start from the template:** `cp -r prototypes/_template prototypes/<slug>`
+  so every prototype shares the same phone frame, viewport, and fonts.
 - Don't import from `src/`. Copy tokens/snippets inline; let them drift.
-- iPhone frame: wrap in a 390x844 phone frame with a scrollable inner viewport.
+- iPhone frame: 390x844 with a scrollable inner viewport (the template
+  provides this).
 - Mock data inline. No fetches. Use relative-to-today dates.
 - Interactions illustrative, not real (tap a row -> toast "would open X").
 - No build, no package.json, no framework under `prototypes/`.
