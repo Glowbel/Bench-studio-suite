@@ -4517,6 +4517,10 @@ var state = {
   orbitSpeed: 0.0014
 };
 
+// Multi-parent gravity: a bubble may orbit multiple parents simultaneously.
+// orbitParents: array of { id, radius, angle } — one entry per gravitational parent.
+// orbitOf remains for single-parent backward compat (used by physics pass check).
+
 /* === END STATE === */
 /* === BEGIN ORBIT-CONSTANTS === */
 // ── ORBIT SPEED CONSTANTS ─────────────────────────────────
