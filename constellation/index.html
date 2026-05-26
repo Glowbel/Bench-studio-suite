@@ -4779,12 +4779,17 @@ function updateBubblePhysics() {
 
     // ── ORBITAL MOON ──
     if (b.orbitOf) {
-      var planet = getBubbleById(b.orbitOf);
-      if (planet) {
-        // Single source of truth: state.orbitSpeed × per-tier multiplier.
-        // Tier multipliers alternate sign so adjacent tiers counter-rotate.
-        var depth = orbitDepth(b);
-        var orbitSpd = state.orbitSpeed * orbitTierMultiplier(depth);
+      // Multi-parent gravity: if orbitParents has entries, compute weighted average position.
+      if (b.orbitParents && b.orbitParents.length > 1) {
+        var totalMass = 0;
+        var wx = 0, wy = 0;
+        var allPresent = true;
+        for (var pi = 0; pi < b.orbitParents.length; pi++) {
+          var par = getBubbleById(b.orbitParents[pi].id);
+          if (!par) { allPresent = false; break; }
+          var pMass = Math.max((par.mass || 0) + 1, 1);
+          totalMass += pMass;
+          b.orbitParents[pi].angle = (b.orbitParents[pi].angle || 0) + state.orbitSpeed * orbitTierMultiplier(depth);
         b.orbitAngle = (b.orbitAngle || 0) + orbitSpd;
         b.x = planet.x + Math.cos(b.orbitAngle) * b.orbitRadius;
         b.y = planet.y + Math.sin(b.orbitAngle) * b.orbitRadius;
