@@ -488,5 +488,3 @@ phase 4.5 [shipping may-15]:
 - **Hard rules** — see root `CLAUDE.md → HARD RULES`
 - **`product-strategy.md`** (repo root) — when integration or release strategy surfaces
 - **Session close** — delete the auto-created session branch: `git push origin --delete [your claude/* branch name]` (branch name is in your session instructions)
-
-<!-- pipeline-test: bench append confirmed -->
