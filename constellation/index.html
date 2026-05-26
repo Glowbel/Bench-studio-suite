@@ -4789,16 +4789,33 @@ function updateBubblePhysics() {
           if (!par) { allPresent = false; break; }
           var pMass = Math.max((par.mass || 0) + 1, 1);
           totalMass += pMass;
-          b.orbitParents[pi].angle = (b.orbitParents[pi].angle || 0) + state.orbitSpeed * orbitTierMultiplier(depth);
+          b.orbitParents[pi].angle = (b.orbitParents[pi].angle || 0) + state.orbitSpeed * orbitTierMultiplier(1);
+          wx += par.x * pMass;
+          wy += par.y * pMass;
+        }
+        if (allPresent && totalMass > 0) {
+          var cx = wx / totalMass;
+          var cy = wy / totalMass;
+          b.orbitAngle = (b.orbitAngle || 0) + state.orbitSpeed * orbitTierMultiplier(1);
+          b.x = cx + Math.cos(b.orbitAngle) * (b.orbitParents[0].radius || b.orbitRadius);
+          b.y = cy + Math.sin(b.orbitAngle) * (b.orbitParents[0].radius || b.orbitRadius);
+          if (b.el) { b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px'; }
+          if (b.mutualRingEl) { b.mutualRingEl.style.left = b.x + 'px'; b.mutualRingEl.style.top = b.y + 'px'; }
+          continue;
+        }
+      }
+      var planet = getBubbleById(b.orbitOf);
+      if (planet) {
+        var depth = orbitDepth(b);
+        var orbitSpd = state.orbitSpeed * orbitTierMultiplier(depth);
         b.orbitAngle = (b.orbitAngle || 0) + orbitSpd;
         b.x = planet.x + Math.cos(b.orbitAngle) * b.orbitRadius;
         b.y = planet.y + Math.sin(b.orbitAngle) * b.orbitRadius;
         if (b.el) { b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px'; }
         if (b.mutualRingEl) { b.mutualRingEl.style.left = b.x + 'px'; b.mutualRingEl.style.top = b.y + 'px'; }
         if (b.orbitalPathEl) { b.orbitalPathEl.style.left = planet.x + 'px'; b.orbitalPathEl.style.top = planet.y + 'px'; }
-        continue; // skip normal drift for moons
+        continue;
       } else {
-        // Planet gone — release from orbit
         b.orbitOf = null;
         b.homeX = b.x;
         b.homeY = b.y;
