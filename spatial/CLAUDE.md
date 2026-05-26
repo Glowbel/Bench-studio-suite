@@ -235,3 +235,5 @@ phase 5 [active]: see PHASE 5 section above
 - **Hard rules** — see root `CLAUDE.md → HARD RULES`
 - **`bench/CLAUDE.md`** — when Phase 5 design or bench bridge work begins, fetch Bench's events[] data shape and integration flags section
 - **Session close** — delete the auto-created session branch: `git push origin --delete [your claude/* branch name]` (branch name is in your session instructions)
+
+<!-- pipeline-test: spatial append confirmed -->
