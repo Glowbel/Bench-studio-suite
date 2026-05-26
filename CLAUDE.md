@@ -1,6 +1,6 @@
 # BENCH STUDIO SUITE — Session Entry
 *Read first, every session. This is your compass.*
-*Last updated: May 2026*
+*Last updated: May 2026 — Notion-Termux pipeline live*
 
 ---
 
