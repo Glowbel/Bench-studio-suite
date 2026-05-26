@@ -296,5 +296,3 @@ phase 1.5 / 2 [active]: see PHASE 1.5 / 2 section above
 - **External bug list** — Jordan tracks bugs 12, 13, 14 (and others) separately; fetch when ready to address them
 - **`bench/CLAUDE.md`** — when constellation → bench integration design begins, fetch Bench's leads[] data shape and integration flags
 - **Session close** — delete the auto-created session branch: `git push origin --delete [your claude/* branch name]` (branch name is in your session instructions)
-
-<!-- pipeline-test: constellation append confirmed -->
