@@ -256,7 +256,7 @@
     --surface2: rgba(14,36,56,0.7);
     --border: rgba(80,160,200,0.15);
     --border-light: rgba(80,160,200,0.28);
-    --gold: #7ecfea;
+    --gold: #f0a030;
     --gold-dim: #4a9ab8;
     --gold-glow: rgba(126,207,234,0.10);
     --text: #ddf0f8;
