@@ -4,3 +4,4 @@
 [2026-05-27 18:34] FAILED | replace | wizard/test.html | TEST 2 — replace page title | syntax check failed
 [2026-05-27 18:36] FAILED | replace | wizard/test.html | TEST 2 — replace page title | syntax check failed
 [2026-05-27 18:41] APPLIED | replace | wizard/test.html | TEST 2 — replace page title | ok
+[2026-05-27 18:46] APPLIED | replace | wizard/test.html | TEST 3 — change max-width from 900px to 700px | ok
