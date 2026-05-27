@@ -20,3 +20,14 @@
 [2026-05-27 18:55] SKIPPED | replace | wizard/test.html | TEST 6b final — target unique surrounding text | DEV received | target: clarity</span></div>
     </div> | new_code:       <div class="header-title">Find your path</div>
     </div>
+[2026-05-27 18:55] APPLIED | replace | wizard/test.html | TEST 6b final — target unique surrounding text | ok
+[2026-05-27 18:56] SKIPPED | replace | wizard/test.html | TEST 6b cleanup — fix mangled header title | DEV received | target:       <div class="header-title">Navigate with Find your path</div> | new_code:       <div class="header-title">Find your path</div>
+[2026-05-27 18:56] FAILED | replace | wizard/test.html | TEST 6b cleanup — fix mangled header title | pattern not found | received:       <div class="header-title">Navigate with Find your path</div>
+[2026-05-27 18:57] SKIPPED | replace | wizard/test.html | TEST 6b cleanup 2 — remove orphaned line | DEV received | target:       <div class="header-title">Navigate with 
+      <div class="header-title">Find your path</div> | new_code: 
+[2026-05-27 18:57] FAILED | replace | wizard/test.html | TEST 6b cleanup 2 — remove orphaned line | pattern not found | received:       <div class="header-title">Navigate with 
+      <div class="header-title">Find your path</div>
+[2026-05-27 18:58] SKIPPED | replace | wizard/test.html | TEST 6b cleanup 3 — fix merged line | DEV received | target:       <div class="header-title">Navigate with       <div class="header-title">Find your path</div> | new_code:       <div class="header-title">Find your path</div>
+[2026-05-27 18:58] FAILED | replace | wizard/test.html | TEST 6b cleanup 3 — fix merged line | pattern not found | received:       <div class="header-title">Navigate with       <div class="header-title">Find your path</div>
+[2026-05-27 19:53] FAILED | replace | wizard/test.html | QA TEST — span encoding round trip | exception: cannot access local variable 'target' where it is not associated with a value
+[2026-05-27 19:56] SKIPPED | replace | wizard/test.html | QA TEST 2 — span encoding round trip | DEV received | target:       <div class="header-title">Navigate with <span>      <div class="header-title">Find your path</div> | new_code:       <div class="header-title">Find your <span>path</span></div>
