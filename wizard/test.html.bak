@@ -988,7 +988,7 @@
 
   <div class="header">
     <div>
-      <div class="header-label">The Bench — Decision Tool</div>
+      <div class="header-label">Jordan's Studio — Pipeline Test</div>
       <div class="header-title">Navigate with <span>clarity</span></div>
     </div>
     <button class="btn btn-sm" onclick="startOver()" style="align-self:flex-end;margin-bottom:4px;opacity:0.6;">↺ Reset</button>
