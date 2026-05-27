@@ -7,3 +7,4 @@
 [2026-05-27 18:46] APPLIED | replace | wizard/test.html | TEST 3 — change max-width from 900px to 700px | ok
 [2026-05-27 18:47] APPLIED | replace | wizard/test.html | TEST 4 — change background color to warm burgundy | ok
 [2026-05-27 18:48] APPLIED | replace | wizard/test.html | TEST 5a — change gold accent to amber | ok
+[2026-05-27 18:48] APPLIED | replace | wizard/test.html | TEST 5b — change button border radius to pill shape | ok
