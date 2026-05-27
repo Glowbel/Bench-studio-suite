@@ -6,3 +6,4 @@
 [2026-05-27 18:41] APPLIED | replace | wizard/test.html | TEST 2 — replace page title | ok
 [2026-05-27 18:46] APPLIED | replace | wizard/test.html | TEST 3 — change max-width from 900px to 700px | ok
 [2026-05-27 18:47] APPLIED | replace | wizard/test.html | TEST 4 — change background color to warm burgundy | ok
+[2026-05-27 18:48] APPLIED | replace | wizard/test.html | TEST 5a — change gold accent to amber | ok
