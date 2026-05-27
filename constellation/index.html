@@ -4517,10 +4517,6 @@ var state = {
   orbitSpeed: 0.0014
 };
 
-// Multi-parent gravity: a bubble may orbit multiple parents simultaneously.
-// orbitParents: array of { id, radius, angle } — one entry per gravitational parent.
-// orbitOf remains for single-parent backward compat (used by physics pass check).
-
 /* === END STATE === */
 /* === BEGIN ORBIT-CONSTANTS === */
 // ── ORBIT SPEED CONSTANTS ─────────────────────────────────
@@ -4779,33 +4775,10 @@ function updateBubblePhysics() {
 
     // ── ORBITAL MOON ──
     if (b.orbitOf) {
-      // Multi-parent gravity: if orbitParents has entries, compute weighted average position.
-      if (b.orbitParents && b.orbitParents.length > 1) {
-        var totalMass = 0;
-        var wx = 0, wy = 0;
-        var allPresent = true;
-        for (var pi = 0; pi < b.orbitParents.length; pi++) {
-          var par = getBubbleById(b.orbitParents[pi].id);
-          if (!par) { allPresent = false; break; }
-          var pMass = Math.max((par.mass || 0) + 1, 1);
-          totalMass += pMass;
-          b.orbitParents[pi].angle = (b.orbitParents[pi].angle || 0) + state.orbitSpeed * orbitTierMultiplier(1);
-          wx += par.x * pMass;
-          wy += par.y * pMass;
-        }
-        if (allPresent && totalMass > 0) {
-          var cx = wx / totalMass;
-          var cy = wy / totalMass;
-          b.orbitAngle = (b.orbitAngle || 0) + state.orbitSpeed * orbitTierMultiplier(1);
-          b.x = cx + Math.cos(b.orbitAngle) * (b.orbitParents[0].radius || b.orbitRadius);
-          b.y = cy + Math.sin(b.orbitAngle) * (b.orbitParents[0].radius || b.orbitRadius);
-          if (b.el) { b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px'; }
-          if (b.mutualRingEl) { b.mutualRingEl.style.left = b.x + 'px'; b.mutualRingEl.style.top = b.y + 'px'; }
-          continue;
-        }
-      }
       var planet = getBubbleById(b.orbitOf);
       if (planet) {
+        // Single source of truth: state.orbitSpeed × per-tier multiplier.
+        // Tier multipliers alternate sign so adjacent tiers counter-rotate.
         var depth = orbitDepth(b);
         var orbitSpd = state.orbitSpeed * orbitTierMultiplier(depth);
         b.orbitAngle = (b.orbitAngle || 0) + orbitSpd;
@@ -4814,13 +4787,13 @@ function updateBubblePhysics() {
         if (b.el) { b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px'; }
         if (b.mutualRingEl) { b.mutualRingEl.style.left = b.x + 'px'; b.mutualRingEl.style.top = b.y + 'px'; }
         if (b.orbitalPathEl) { b.orbitalPathEl.style.left = planet.x + 'px'; b.orbitalPathEl.style.top = planet.y + 'px'; }
-        continue;
+        continue; // skip normal drift for moons
       } else {
+        // Planet gone — release from orbit
         b.orbitOf = null;
         b.homeX = b.x;
         b.homeY = b.y;
       }
-    }
     }
 
     // ── ANCHORED PLANET — no drift ──
