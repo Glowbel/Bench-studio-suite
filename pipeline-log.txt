@@ -8,3 +8,15 @@
 [2026-05-27 18:47] APPLIED | replace | wizard/test.html | TEST 4 — change background color to warm burgundy | ok
 [2026-05-27 18:48] APPLIED | replace | wizard/test.html | TEST 5a — change gold accent to amber | ok
 [2026-05-27 18:48] APPLIED | replace | wizard/test.html | TEST 5b — change button border radius to pill shape | ok
+[2026-05-27 18:49] APPLIED | replace | wizard/test.html | TEST 6a — change header label text | ok
+[2026-05-27 18:49] FAILED | replace | wizard/test.html | TEST 6b — change header title text | pattern not found | received:       <div class="header-title">Navigate with clarity</div>
+[2026-05-27 18:50] FAILED | replace | wizard/test.html | TEST 6b retry — header title fix | pattern not found | received:       <div class="header-title">Navigate with clarity</div>
+[2026-05-27 18:50] FAILED | replace | wizard/test.html | TEST 6b retry 2 — simpler target | pattern not found | received: Navigate with clarity</div>
+[2026-05-27 18:51] FAILED | replace | notion_pull.py | Enable DEV_MODE | exception: [Errno 2] No such file or directory: '/data/data/com.termux/files/home/Bench-studio-suite/notion_pull.py'
+[2026-05-27 18:52] SKIPPED | replace | wizard/test.html | TEST 6b DEV — span tag debug | DEV received | target: Navigate with clarity</div> | new_code:       <div class="header-title">Find your path</div>
+[2026-05-27 18:52] FAILED | replace | wizard/test.html | TEST 6b DEV — span tag debug | pattern not found | received: Navigate with clarity</div>
+[2026-05-27 18:55] SKIPPED | replace | wizard/test.html | TEST 6b workaround — replace full header-title div | DEV received | target:       <div class="header-title">Navigate with clarity</div> | new_code:       <div class="header-title">Find your path</div>
+[2026-05-27 18:55] FAILED | replace | wizard/test.html | TEST 6b workaround — replace full header-title div | pattern not found | received:       <div class="header-title">Navigate with clarity</div>
+[2026-05-27 18:55] SKIPPED | replace | wizard/test.html | TEST 6b final — target unique surrounding text | DEV received | target: clarity</span></div>
+    </div> | new_code:       <div class="header-title">Find your path</div>
+    </div>
