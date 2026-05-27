@@ -203,7 +203,7 @@ SESSION MID
   → design outputs → commit as named spec files (alongside the app's doc)
 
 SESSION CLOSE
-  → if code changed: commit, push the branch, open a PR (see WORKING MODEL)
+  → if code changed: commit, push to main (see WORKING MODEL)
   → if architecture changed: update the app's CLAUDE.md ARCHITECTURE section
   → if recent entry needed: add one-liner to [recent.entries]
   → if trigger fired: update relevant section
@@ -351,7 +351,7 @@ Most session closes are one or two `[recent]` lines. Larger updates only happen 
 
 ### Closing
 At session close, scan `[recent.upgrade-triggers]` rules. Most sessions update:
-1. App code → commit, push the branch, open a PR (see WORKING MODEL)
+1. App code → commit, push to main (see WORKING MODEL)
 2. The app's `CLAUDE.md` → update `[recent.entries]` (almost always)
 
 Larger updates fire only when triggers tell you to. No handoff file. No session log. No carry-forward narrative.
@@ -483,16 +483,18 @@ designs/                    design-system workspace (registered)
 
 Full tree and per-phase additions are in THE REGISTRY above.
 
-### WORKING MODEL — branch, preview, PR
+### WORKING MODEL — commit to main
 
 ```
-branch  →  commit  →  Cloudflare preview URL  →  test by feel  →  PR  →  main
+commit  →  push to main  →  Cloudflare builds  →  test by feel
 ```
 
-Work happens on a branch, never straight to `main`. Cloudflare Pages builds
-every branch and publishes a preview URL; Jordan tests the preview by feel,
-then the branch merges to `main` via a pull request. This replaces the
-former "everything straight to `main`" rule.
+Work goes straight to `main`. Cloudflare Pages builds every push and the
+live site reflects changes immediately. Jordan tests by feel on the live site.
+
+Branch + PR workflow is NOT used for Claude Code sessions. If an automated
+pipeline (e.g. the Claude-to-terminal bridge) creates branches or PRs, that
+is the pipeline's own behavior — review and merge or close those manually.
 
 ### The working contract
 
