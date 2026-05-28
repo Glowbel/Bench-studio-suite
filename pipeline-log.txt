@@ -49,3 +49,8 @@ notion_ | new_code: ## Tools
 
 notion_
 [2026-05-27 20:55] APPLIED | replace | all-repo-urls.md | DEV TEST — check  | ok
+[2026-05-27 20:58] APPLIED | config | DEV_MODE | CONFIG — DEV_MODE on | DEV_MODE set to True
+[2026-05-27 20:59] SKIPPED | config | DEV_MODE | CONFIG — DEV_MODE off | DEV received | target:  | new_code: false
+[2026-05-27 20:59] APPLIED | config | DEV_MODE | CONFIG — DEV_MODE off | DEV_MODE set to False
+[2026-05-27 20:59] APPLIED | config | DEV_MODE | CONFIG — DEV_MODE off | DEV_MODE set to False
+[2026-05-27 21:01] APPLIED | replace | tools/notion_pull.py | UPDATE tools/notion_ | ok
