@@ -1,3 +1,24 @@
 # pipeline log
 [2026-05-27 20:44] SKIPPED | append | tools/pipeline-test.txt | TEST — create new file via pipeline | DEV received | target:  | new_code: pipeline file creation confirmed working
 [2026-05-27 20:44] APPLIED | append | tools/pipeline-test.txt | TEST — create new file via pipeline | ok
+[2026-05-27 20:52] SKIPPED | append | tools/notion_pull.py | ADD tools/notion_ | DEV received | target:  | new_code: import os
+import httpx
+import subprocess
+import shutil
+
+NOTION_TOKEN = os.environ.get("NOTION_TOKEN")
+DATABASE_ID = "16317b83-2662-4b7a-8980-69fa124784cd"
+LOG_DB_ID = "36da1bf9-758b-81b8-8034-f908057d432a"
+DEV_MODE = False
+
+headers = {
+    "Authorization": "Bearer " + NOTION_TOKEN,
+    "Notion-Version": "2022-06-28",
+    "Content-Type": "application/json"
+}
+
+REPO = os.path.expanduser("~/Bench-studio-suite")
+
+def mark_status(page_id, status):
+    url = "
+[2026-05-27 20:52] APPLIED | append | tools/notion_pull.py | ADD tools/notion_ | ok
