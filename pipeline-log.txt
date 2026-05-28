@@ -54,3 +54,6 @@ notion_
 [2026-05-27 20:59] APPLIED | config | DEV_MODE | CONFIG — DEV_MODE off | DEV_MODE set to False
 [2026-05-27 20:59] APPLIED | config | DEV_MODE | CONFIG — DEV_MODE off | DEV_MODE set to False
 [2026-05-27 21:01] APPLIED | replace | tools/notion_pull.py | UPDATE tools/notion_ | ok
+[2026-05-27 21:03] APPLIED | config | DEV_MODE | CONFIG — DEV_MODE on | DEV_MODE set to True
+[2026-05-27 21:03] SKIPPED | replace | tools/pipeline-test.txt | LOOP TEST — full feedback loop | DEV received | target: pipeline file creation confirmed working | new_code: full loop confirmed
+[2026-05-27 21:03] APPLIED | replace | tools/pipeline-test.txt | LOOP TEST — full feedback loop | ok

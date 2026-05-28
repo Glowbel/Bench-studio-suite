@@ -1,2 +1,2 @@
 
-pipeline file creation confirmed working
+full loop confirmed
