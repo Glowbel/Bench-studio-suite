@@ -94,3 +94,33 @@ u0_a460
 [2026-05-27 21:27] APPLIED | config | DEV_MODE | CONFIG — DEV_MODE off | DEV_MODE set to False
 [2026-05-27 21:31] APPLIED | execute | terminal | PLAIN TEXT TEST 2 — underscore survival | notion_pull_test
 [2026-05-27 21:33] FAILED | execute | terminal | SYNC — copy using find command |  | STDERR: /data/data/com.termux/files/usr/bin/sh: 1: Syntax error: Unterminated quoted string
+[2026-05-27 23:03] FAILED | execute | terminal | SYNC — copy notion[[US]] |  | STDERR: cp: missing destination file operand after '/data/data/com.termux/files/home/notion_'
+Try 'cp --help' for more information.
+[2026-05-27 23:21] FAILED | execute | terminal | SYNC notion_pull.py to tools | On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   pipeline-log.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+[2026-05-27 23:22] APPLIED | execute | terminal | SYNC cp only | (no output)
+[2026-05-27 23:23] FAILED | execute | terminal | SYNC git push | On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   pipeline-log.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+[2026-05-27 23:24] FAILED | execute | terminal | SYNC git push force-add | On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   pipeline-log.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
