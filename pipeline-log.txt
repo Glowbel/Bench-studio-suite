@@ -79,3 +79,18 @@ Try 'cp --help' for more information.
 Try 'cp --help' for more information.
 [2026-05-27 21:25] SKIPPED | append | tools/sync.sh | CREATE sync script | DEV received | target:  | new_code: cp /data/data/com.termux/files/home/notion_
 [2026-05-27 21:25] APPLIED | append | tools/sync.sh | CREATE sync script | ok
+[2026-05-27 21:26] SKIPPED | config | DEV_MODE | CONFIG — DEV_MODE on | DEV received | target:  | new_code: true
+[2026-05-27 21:26] APPLIED | config | DEV_MODE | CONFIG — DEV_MODE on | DEV_MODE set to True
+[2026-05-27 21:26] SKIPPED | execute | terminal | CHAR TEST 1 — asterisks | DEV received | target:  | new_code: echo 
+[2026-05-27 21:26] APPLIED | execute | terminal | CHAR TEST 1 — asterisks | (no output)
+[2026-05-27 21:26] SKIPPED | execute | terminal | CHAR TEST 3 — mixed special | DEV received | target:  | new_code: echo 
+[2026-05-27 21:26] APPLIED | execute | terminal | CHAR TEST 3 — mixed special | (no output)
+[2026-05-27 21:26] SKIPPED | execute | terminal | CHAR TEST 4 — pwd and whoami | DEV received | target:  | new_code: pwd && whoami
+[2026-05-27 21:26] APPLIED | execute | terminal | CHAR TEST 4 — pwd and whoami | /data/data/com.termux/files/home/Bench-studio-suite
+u0_a460
+[2026-05-27 21:26] SKIPPED | execute | terminal | CHAR TEST 2 — tilde | DEV received | target:  | new_code: echo ~hello~world~
+[2026-05-27 21:26] APPLIED | execute | terminal | CHAR TEST 2 — tilde | ~hello~world~
+[2026-05-27 21:27] SKIPPED | config | DEV_MODE | CONFIG — DEV_MODE off | DEV received | target:  | new_code: false
+[2026-05-27 21:27] APPLIED | config | DEV_MODE | CONFIG — DEV_MODE off | DEV_MODE set to False
+[2026-05-27 21:31] APPLIED | execute | terminal | PLAIN TEXT TEST 2 — underscore survival | notion_pull_test
+[2026-05-27 21:33] FAILED | execute | terminal | SYNC — copy using find command |  | STDERR: /data/data/com.termux/files/usr/bin/sh: 1: Syntax error: Unterminated quoted string
