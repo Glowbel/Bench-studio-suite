@@ -9,7 +9,7 @@ import notion_log
 NOTION_TOKEN = os.environ.get("NOTION_TOKEN")
 DATABASE_ID = "16317b83-2662-4b7a-8980-69fa124784cd"
 LOG_DB_ID = "36da1bf9-758b-81ab-9e2a-000b3eafd651"
-DEV_MODE = False
+DEV_MODE = True
 
 headers = {
     "Authorization": "Bearer " + NOTION_TOKEN,
@@ -59,6 +59,8 @@ def decode(text):
     text = text.replace("[[AMP]]", "&amp;")
     text = text.replace("[[NBSP]]", "&nbsp;")
     text = text.replace("[[US]]", "_")
+    text = text.replace("UnDeRsCoRe", "_")
+    text = text.replace("DoTpY", ".py")
     text = text.replace("[[NL]]", "\n")
     return text
 
@@ -138,6 +140,31 @@ def apply_change(page):
                     log_result(title, "failed", action, file_path, "invalid value: " + new_code)
                     mark_status(page["id"], "failed")
             return
+
+        elif action == "queue":
+            ann = {"bold": False, "italic": False, "strikethrough": False, "underline": False, "code": False, "color": "default"}
+            def rt(s): return [{"type": "text", "text": {"content": s}, "annotations": ann}]
+            cmd = new_code
+            body = {
+                "parent": {"database_id": DATABASE_ID},
+                "properties": {
+                    "Change Title": {"title": rt(title + " [queued]")},
+                    "Action": {"select": {"name": "execute"}},
+                    "App": {"select": {"name": "root"}},
+                    "File Path": {"rich_text": rt("terminal")},
+                    "New Code": {"rich_text": rt(cmd)},
+                    "Status": {"select": {"name": "queued"}}
+                }
+            }
+            r = httpx.post("https://api.notion.com/v1/pages", headers=headers, json=body)
+            if r.status_code == 200:
+                log_result(title, "applied", action, file_path, "queued as execute via raw API")
+                mark_status(page["id"], "applied")
+                print("Queued: " + cmd)
+            else:
+                log_result(title, "failed", action, file_path, "raw API post failed: " + str(r.status_code))
+                mark_status(page["id"], "failed")
+            return
         elif action == "execute":
             result = subprocess.run(new_code, shell=True, capture_output=True, text=True, cwd=REPO)
             output = result.stdout.strip()
@@ -189,8 +216,5 @@ def apply_change(page):
 
 
 changes = get_queued_changes()
-if not changes:
-    print("No queued changes found.")
-else:
-    for change in changes:
+for change in changes:
         apply_change(change)
