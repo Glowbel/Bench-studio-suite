@@ -22,3 +22,19 @@ REPO = os.path.expanduser("~/Bench-studio-suite")
 def mark_status(page_id, status):
     url = "
 [2026-05-27 20:52] APPLIED | append | tools/notion_pull.py | ADD tools/notion_ | ok
+[2026-05-27 20:52] SKIPPED | append | tools/notion_log.py | ADD tools/notion_ | DEV received | target:  | new_code: import httpx
+import os
+import datetime
+
+NOTION_TOKEN = os.environ.get("NOTION_TOKEN")
+LOG_DB_ID = "36da1bf9-758b-81b8-8034-f908057d432a"
+
+headers = {
+    "Authorization": "Bearer " + NOTION_TOKEN,
+    "Notion-Version": "2022-06-28",
+    "Content-Type": "application/json"
+}
+
+def write_log(title, status, action, file_path, message):
+    timestamp = 
+[2026-05-27 20:52] APPLIED | append | tools/notion_log.py | ADD tools/notion_ | ok
