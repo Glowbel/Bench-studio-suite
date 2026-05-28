@@ -5,11 +5,13 @@ import shutil
 import sys
 sys.path.insert(0, "/data/data/com.termux/files/home")
 import notion_log
+import commands
+import cyphers
 
 NOTION_TOKEN = os.environ.get("NOTION_TOKEN")
 DATABASE_ID = "16317b83-2662-4b7a-8980-69fa124784cd"
 LOG_DB_ID = "36da1bf9-758b-81ab-9e2a-000b3eafd651"
-DEV_MODE = True
+DEV_MODE = False
 
 headers = {
     "Authorization": "Bearer " + NOTION_TOKEN,
@@ -45,23 +47,8 @@ def git_pull():
 
 
 def decode(text):
-    text = text.replace("[[SPAN]]", "<span>")
-    text = text.replace("[[/SPAN]]", "</span>")
-    text = text.replace("[[EM]]", "<em>")
-    text = text.replace("[[/EM]]", "</em>")
-    text = text.replace("[[STRONG]]", "<strong>")
-    text = text.replace("[[/STRONG]]", "</strong>")
-    text = text.replace("[[B]]", "<b>")
-    text = text.replace("[[/B]]", "</b>")
-    text = text.replace("[[I]]", "<i>")
-    text = text.replace("[[/I]]", "</i>")
-    text = text.replace("[[BR]]", "<br>")
-    text = text.replace("[[AMP]]", "&amp;")
-    text = text.replace("[[NBSP]]", "&nbsp;")
-    text = text.replace("[[US]]", "_")
-    text = text.replace("UnDeRsCoRe", "_")
-    text = text.replace("DoTpY", ".py")
-    text = text.replace("[[NL]]", "\n")
+    for key, val in cyphers.CYPHERS.items():
+        text = text.replace(key, val)
     return text
 
 def syntax_check(full_path):
@@ -91,16 +78,17 @@ def apply_change(page):
     backup_path = full_path + ".bak"
 
     try:
-        new_code = props["New Code"]["rich_text"][0]["plain_text"] if props["New Code"]["rich_text"] else ""
+        mark_status(page["id"], "applied")
+        raw_code = props["New Code"]["rich_text"][0]["plain_text"] if props["New Code"]["rich_text"] else ""
+        raw_target = props["Target Pattern"]["rich_text"][0]["plain_text"] if props["Target Pattern"]["rich_text"] else ""
         commit_msg = props["Commit Message"]["rich_text"][0]["plain_text"] if props["Commit Message"]["rich_text"] else "pipeline commit"
         action = props["Action"]["select"]["name"]
-        new_code = decode(new_code)
-        target = props["Target Pattern"]["rich_text"][0]["plain_text"] if props["Target Pattern"]["rich_text"] else ""
-        target = decode(target)
-        if '`' in new_code or '\\' in new_code or '`' in target or '\\' in target:
+        if '`' in raw_code or '\\' in raw_code or '`' in raw_target or '\\' in raw_target:
             mark_status(page["id"], "failed")
-            log_result(title, "failed", action, file_path, "rejected: contains backtick or backslash")
+            log_result(title, "failed", action, file_path, "rejected: contains literal backtick or backslash")
             return
+        new_code = decode(raw_code)
+        target = decode(raw_target)
         if DEV_MODE:
             log_result(title, "skipped", action, file_path, "DEV received | target: " + target + " | new_code: " + new_code)
 
@@ -166,6 +154,8 @@ def apply_change(page):
                 mark_status(page["id"], "failed")
             return
         elif action == "execute":
+            if new_code.strip() in commands.COMMANDS:
+                new_code = commands.COMMANDS[new_code.strip()]
             result = subprocess.run(new_code, shell=True, capture_output=True, text=True, cwd=REPO)
             output = result.stdout.strip()
             errors = result.stderr.strip()
