@@ -989,7 +989,7 @@
   <div class="header">
     <div>
       <div class="header-label">Jordan's Studio — Pipeline Test</div>
-      <div class="header-title">Navigate with <span>      <div class="header-title">Find your path</div>
+      <div class="header-title">Find your <span>path</span></div>
     </div>
     <button class="btn btn-sm" onclick="startOver()" style="align-self:flex-end;margin-bottom:4px;opacity:0.6;">↺ Reset</button>
   </div>
