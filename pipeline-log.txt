@@ -962,3 +962,13 @@ wizard-suite-architecture.md
 [2026-05-29 18:53] APPLIED | replace | wizard/test.html | AUDIT-4-revert deletion | ok
 [2026-05-29 18:53] SKIPPED | replace | wizard/test.html | AUDIT-1 multi-occurrence target | DEV received | target: ZONE | new_code: ZONE_AUDIT
 [2026-05-29 18:53] APPLIED | replace | wizard/test.html | AUDIT-1 multi-occurrence target | ok
+[2026-05-29 18:54] SKIPPED | execute | terminal | AUDIT-1-check count ZONE_AUDIT | DEV received | target:  | new_code: grep -c ZONE_AUDIT /data/data/com.termux/files/home/Bench-studio-suite/wizard/test.html && grep -c 'bZONEb' /data/data/com.termux/files/home/Bench-studio-suite/wizard/test.html
+[2026-05-29 18:54] FAILED | execute | terminal | AUDIT-1-check count ZONE_AUDIT | 1
+0
+[2026-05-29 18:56] SKIPPED | execute | terminal | AUDIT-1R-check count | DEV received | target:  | new_code: echo ZONE_AUDIT_count: && grep -o ZONE_AUDIT /data/data/com.termux/files/home/Bench-studio-suite/wizard/test.html | wc -l && echo plain_ZONE_count: && grep -o 'bZONEb' /data/data/com.termux/files/home/Bench-studio-suite/wizard/test.html | wc -l
+[2026-05-29 18:56] APPLIED | execute | terminal | AUDIT-1R-check count | ZONE_AUDIT_count:
+1
+plain_ZONE_count:
+0
+[2026-05-29 18:56] SKIPPED | replace | wizard/test.html | AUDIT-4R empty New Code (deletion) | DEV received | target: PHASE-BAR | new_code: 
+[2026-05-29 18:56] APPLIED | replace | wizard/test.html | AUDIT-4R empty New Code (deletion) | ok
