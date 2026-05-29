@@ -124,3 +124,813 @@ Changes not staged for commit:
 	modified:   pipeline-log.txt
 
 no changes added to commit (use "git add" and/or "git commit -a")
+[2026-05-28 01:08] APPLIED | queue | terminal | TEST queue action | queued as execute via raw API
+[2026-05-28 01:08] APPLIED | execute | terminal | TEST queue action [queued] | hello from queue
+[2026-05-28 01:11] APPLIED | queue | terminal | SYNC notion_ | queued as execute via raw API
+[2026-05-28 01:11] FAILED | execute | terminal | SYNC notion_ [queued] |  | STDERR: cp: missing destination file operand after '/data/data/com.termux/files/home/notion_'
+Try 'cp --help' for more information.
+[2026-05-28 01:14] APPLIED | config | DEV_MODE | DEV_MODE on | DEV_MODE set to True
+[2026-05-28 01:14] SKIPPED | execute | terminal | TEST underscore decode | DEV received | target:  | new_code: echo notion_
+[2026-05-28 01:14] APPLIED | execute | terminal | TEST underscore decode | notion_
+[2026-05-28 01:38] SKIPPED | execute | terminal | TEST chars batch 1 | DEV received | target:  | new_code: echo notion^
+[2026-05-28 01:38] APPLIED | execute | terminal | TEST chars batch 1 | notion^
+[2026-05-28 01:38] SKIPPED | execute | terminal | TEST chars batch 2 | DEV received | target:  | new_code: echo 
+[2026-05-28 01:38] APPLIED | execute | terminal | TEST chars batch 2 | (no output)
+[2026-05-28 01:38] SKIPPED | execute | terminal | TEST chars batch 3 | DEV received | target:  | new_code: echo notion==
+[2026-05-28 01:38] APPLIED | execute | terminal | TEST chars batch 3 | notion==
+[2026-05-28 01:43] SKIPPED | execute | terminal | TEST cypher underscore | DEV received | target:  | new_code: echo 
+[2026-05-28 01:43] APPLIED | execute | terminal | TEST cypher underscore | (no output)
+[2026-05-28 01:44] SKIPPED | execute | terminal | TEST cypher in real path | DEV received | target:  | new_code: cp /data/data/com.termux/files/home/notionUnDeRsCoRepull /data/data/com.termux/files/home/Bench-studio-suite/tools/notionUnDeRsCoRepull
+[2026-05-28 01:44] FAILED | execute | terminal | TEST cypher in real path |  | STDERR: cp: cannot stat '/data/data/com.termux/files/home/notionUnDeRsCoRepull': No such file or directory
+[2026-05-28 01:48] SKIPPED | execute | terminal | SYNC  | DEV received | target:  | new_code: cp /data/data/com.termux/files/home/
+[2026-05-28 01:48] FAILED | execute | terminal | SYNC  |  | STDERR: cp: missing destination file operand after '/data/data/com.termux/files/home/'
+Try 'cp --help' for more information.
+[2026-05-28 01:48] SKIPPED | execute | terminal | SYNC  | DEV received | target:  | new_code: cp /data/data/com.termux/files/home/
+[2026-05-28 01:48] FAILED | execute | terminal | SYNC  |  | STDERR: cp: missing destination file operand after '/data/data/com.termux/files/home/'
+Try 'cp --help' for more information.
+[2026-05-28 01:51] SKIPPED | execute | terminal | SYNC notion pull to tools | DEV received | target:  | new_code: cp /data/data/com.termux/files/home/notion_pull.py /data/data/com.termux/files/home/Bench-studio-suite/tools/notion_pull.py && cd /data/data/com.termux/files/home/Bench-studio-suite && git add -f tools/ && git commit -m chore:sync && git push
+[2026-05-28 01:51] APPLIED | execute | terminal | SYNC notion pull to tools | [main afe0b7e] chore:sync
+ 1 file changed, 29 insertions(+), 5 deletions(-) | STDERR: To https://github.com/Glowbel/Bench-studio-suite.git
+   32ed4e0..afe0b7e  main -> main
+[2026-05-28 01:51] SKIPPED | config | DEV_MODE | DEV_MODE off | DEV received | target:  | new_code: false
+[2026-05-28 01:51] APPLIED | config | DEV_MODE | DEV_MODE off | DEV_MODE set to False
+[2026-05-28 13:45] APPLIED | execute | terminal | TEST backtick and backslash chars | helloXXXworld and helloYYYworld
+[2026-05-28 14:03] APPLIED | execute | terminal | TEST BaCkTiCk cypher | helloworld and
+[2026-05-28 14:03] APPLIED | execute | terminal | TEST BaCkSlAsH cypher | helloworld
+[2026-05-28 14:04] APPLIED | config | DEV_MODE | DEV_MODE off | DEV_MODE set to False
+[2026-05-28 14:05] APPLIED | execute | terminal | READ notion pull | import os
+import httpx
+import subprocess
+import shutil
+import sys
+sys.path.insert(0, "/data/data/com.termux/files/home")
+import notion_log
+
+NOTION_TOKEN = os.environ.get("NOTION_TOKEN")
+DATABASE_ID = "16317b83-2662-4b7a-8980-69fa124784cd"
+LOG_DB_ID = "36da1bf9-758b-81ab-9e2a-000b3eafd651"
+DEV_MODE = False
+
+headers = {
+    "Authorization": "Bearer " + NOTION_TOKEN,
+    "Notion-Version": "2022-06-28",
+    "Content-Type": "application/json"
+}
+
+REPO = os.path.expanduser("~/Bench-studio-suite")
+
+def mark_status(page_id, status):
+    url = "https://api.notion.com/v1/pages/" + page_id
+    httpx.patch(url, headers=headers, json={"properties": {"Status": {"select": {"name": status}}}})
+
+def log_result(title, status, action, file_path, message):
+    import datetime
+    line = "[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "] " + status.upper() + " | " + action + " | " + file_path + " | " + title + " | " + message + "\n"
+    with open(os.path.join(REPO, "pipeline-log.txt"), "a") as f:
+        f.write(line)
+    if DEV_MODE or status in ("failed", "applied"):
+        notion_log.write_log(title, status, action, file_path, message)
+
+def get_queued_changes():
+    url = "https://api.notion.com/v1/databases/" + DATABASE_ID + "/query"
+    body = {"filter": {"property": "Status", "select": {"equals": "queued"}}}
+    r = httpx.post(url, headers=headers, json=body)
+    return r.json()["results"]
+
+def git_pull():
+    result = subprocess.run("cd " + REPO + " && git pull", shell=True, capture_output=True, text=True)
+    print("git pull: " + result.stdout.strip())
+
+
+
+
+def decode(text):
+    text = text.replace("[[SPAN]]", "<span>")
+    text = text.replace("[[/SPAN]]", "</span>")
+    text = text.replace("[[EM]]", "<em>")
+    text = text.replace("[[/EM]]", "</em>")
+    text = text.replace("[[STRONG]]", "<strong>")
+    text = text.replace("[[/STRONG]]", "</strong>")
+    text = text.replace("[[B]]", "<b>")
+    text = text.replace("[[/B]]", "</b>")
+    text = text.replace("[[I]]", "<i>")
+    text = text.replace("[[/I]]", "</i>")
+    text = text.replace("[[BR]]", "<br>")
+    text = text.replace("[[AMP]]", "&amp;")
+    text = text.replace("[[NBSP]]", "&nbsp;")
+    text = text.replace("[[US]]", "_")
+    text = text.replace("UnDeRsCoRe", "_")
+    text = text.replace("DoTpY", ".py")
+    text = text.replace("BaCkTiCk", "`")
+    text = text.replace("BaCkSlAsH", "\\")
+    text = text.replace("[[NL]]", "\n")
+    return text
+
+def syntax_check(full_path):
+    if not full_path.endswith(".html"):
+        return True
+    with open(full_path, "r") as f:
+        content = f.read()
+    start = content.find("\n<script>")
+    end = content.find("</script>")
+    if start == -1 or end == -1:
+        return True
+    js = content[start + 8:end]
+    with open("/data/data/com.termux/files/home/tmp/syntax_check.js", "w") as f:
+        f.write(js)
+    result = subprocess.run("node --check /data/data/com.termux/files/home/tmp/syntax_check.js", shell=True, capture_output=True, text=True)
+    if result.returncode != 0:
+        print("Syntax error: " + result.stdout.strip())
+        return False
+    return True
+
+def apply_change(page):
+    props = page["properties"]
+    title = props["Change Title"]["title"][0]["plain_text"] if props["Change Title"]["title"] else "untitled"
+    file_path = "".join([block["plain_text"] for block in props["File Path"]["rich_text"]])
+    full_path = os.path.expanduser("~/Bench-studio-suite/" + file_path)
+    path = "/data/data/com.termux/files/home/notion_pull.py"
+    backup_path = full_path + ".bak"
+
+    try:
+        raw_code = props["New Code"]["rich_text"][0]["plain_text"] if props["New Code"]["rich_text"] else ""
+        raw_target = props["Target Pattern"]["rich_text"][0]["plain_text"] if props["Target Pattern"]["rich_text"] else ""
+        commit_msg = props["Commit Message"]["rich_text"][0]["plain_text"] if props["Commit Message"]["rich_text"] else "pipeline commit"
+        action = props["Action"]["select"]["name"]
+        if '`' in raw_code or '\\' in raw_code or '`' in raw_target or '\\' in raw_target:
+            mark_status(page["id"], "failed")
+            log_result(title, "failed", action, file_path, "rejected: contains literal backtick or backslash")
+            return
+        new_code = decode(raw_code)
+        target = decode(raw_target)
+        if DEV_MODE:
+            log_result(title, "skipped", action, file_path, "DEV received | target: " + target + " | new_code: " + new_code)
+
+        if os.path.exists(full_path):
+            shutil.copy2(full_path, backup_path)
+
+        if action == "append":
+            os.makedirs(os.path.dirname(full_path), exist_ok=True)
+            with open(full_path, "a") as f:
+                f.write("\n" + new_code)
+
+        elif action == "replace":
+            with open(full_path, "r") as f:
+                existing = f.read()
+            if target not in existing:
+                print("Pattern not found in " + file_path)
+                mark_status(page["id"], "failed")
+                log_result(title, "failed", action, file_path, "pattern not found | received: " + target)
+                return
+            with open(full_path, "w") as f:
+                f.write(existing.replace(target, new_code, 1))
+
+        elif action == "config":
+            if file_path == "DEV_MODE":
+                new_val = new_code.strip().lower()
+                if new_val in ("true", "false"):
+                    import re
+                    with open(path, "r") as f:
+                        src = f.read()
+                    src = re.sub(r"DEV_MODE = (True|False)", "DEV_MODE = " + new_val.capitalize(), src)
+                    with open(path, "w") as f:
+                        f.write(src)
+                    log_result(title, "applied", action, file_path, "DEV_MODE set to " + new_val.capitalize())
+                    mark_status(page["id"], "applied")
+                    print("DEV_MODE set to " + new_val.capitalize())
+                else:
+                    log_result(title, "failed", action, file_path, "invalid value: " + new_code)
+                    mark_status(page["id"], "failed")
+            return
+
+        elif action == "queue":
+            ann = {"bold": False, "italic": False, "strikethrough": False, "underline": False, "code": False, "color": "default"}
+            def rt(s): return [{"type": "text", "text": {"content": s}, "annotations": ann}]
+            cmd = new_code
+            body = {
+                "parent": {"database_id": DATABASE_ID},
+                "properties": {
+                    "Change Title": {"title": rt(title + " [queued]")},
+                    "Action": {"select": {"name": "execute"}},
+                    "App": {"select": {"name": "root"}},
+                    "File Path": {"rich_text": rt("terminal")},
+                    "New Code": {"rich_text": rt(cmd)},
+                    "Status": {"select": {"name": "queued"}}
+                }
+            }
+            r = httpx.post("https://api.notion.com/v1/pages", headers=headers, json=body)
+            if r.status_code == 200:
+                log_result(title, "applied", action, file_path, "queued as execute via raw API")
+                mark_status(page["id"], "applied")
+                print("Queued: " + cmd)
+            else:
+                log_result(title, "failed", action, file_path, "raw API post failed: " + str(r.status_code))
+                mark_status(page["id"], "failed")
+            return
+        elif action == "execute":
+            result = subprocess.run(new_code, shell=True, capture_output=True, text=True, cwd=REPO)
+            output = result.stdout.strip()
+            errors = result.stderr.strip()
+            full_output = output
+            if errors:
+                full_output = full_output + " | STDERR: " + errors
+            if not full_output:
+                full_output = "(no output)"
+            if result.returncode == 0:
+                log_result(title, "applied", action, file_path, full_output)
+                mark_status(page["id"], "applied")
+                print("Executed: " + new_code)
+            else:
+                log_result(title, "failed", action, file_path, full_output)
+                mark_status(page["id"], "failed")
+                print("Execute failed: " + new_code)
+            return
+        elif action == "delete":
+            with open(full_path, "r") as f:
+                existing = f.read()
+            with open(full_path, "w") as f:
+                f.write(existing.replace(target, "", 1))
+
+        if not syntax_check(full_path):
+            print("Syntax check failed - restoring " + file_path)
+            if os.path.exists(backup_path):
+                shutil.copy2(backup_path, full_path)
+            mark_status(page["id"], "failed")
+            log_result(title, "failed", action, file_path, "syntax check failed")
+            return
+
+        log_result(title, "applied", action, file_path, "ok")
+        commit_cmd = "cd " + REPO + " && git add -A && git add -f pipeline-log.txt && git commit -m '" + commit_msg + "' && git push"
+        os.system(commit_cmd)
+        mark_status(page["id"], "applied")
+        print("Applied: " + action + " on " + file_path)
+
+    except Exception as e:
+        print("Failed: " + str(e))
+        if os.path.exists(backup_path):
+            shutil.copy2(backup_path, full_path)
+        mark_status(page["id"], "failed")
+        log_result(title, "failed", action, file_path, "exception: " + str(e))
+
+    finally:
+        if os.path.exists(backup_path):
+            os.remove(backup_path)
+
+
+changes = get_queued_changes()
+for change in changes:
+        apply_change(change)
+[2026-05-28 14:05] FAILED | replace | notionUnDeRsCoRepullDoTpY | ADD revert and refresh commands to COMMANDS table | exception: [Errno 2] No such file or directory: '/data/data/com.termux/files/home/Bench-studio-suite/notionUnDeRsCoRepullDoTpY'
+[2026-05-28 14:05] APPLIED | queue | terminal | ADD revert commands via raw API | queued as execute via raw API
+[2026-05-28 14:05] FAILED | execute | terminal | ADD revert commands via raw API [queued] |  | STDERR: /data/data/com.termux/files/usr/bin/sh: 1: Syntax error: Unterminated quoted string
+[2026-05-28 14:10] FAILED | replace | notionUnDeRsCoRepullDoTpY | ADD revert and refresh to COMMANDS table | exception: [Errno 2] No such file or directory: '/data/data/com.termux/files/home/Bench-studio-suite/notionUnDeRsCoRepullDoTpY'
+[2026-05-28 14:16] APPLIED | execute | terminal | CAT notion pull | import os
+import httpx
+import subprocess
+import shutil
+import sys
+sys.path.insert(0, "/data/data/com.termux/files/home")
+import notion_log
+
+NOTION_TOKEN = os.environ.get("NOTION_TOKEN")
+DATABASE_ID = "16317b83-2662-4b7a-8980-69fa124784cd"
+LOG_DB_ID = "36da1bf9-758b-81ab-9e2a-000b3eafd651"
+DEV_MODE = False
+
+headers = {
+    "Authorization": "Bearer " + NOTION_TOKEN,
+    "Notion-Version": "2022-06-28",
+    "Content-Type": "application/json"
+}
+
+REPO = os.path.expanduser("~/Bench-studio-suite")
+
+def mark_status(page_id, status):
+    url = "https://api.notion.com/v1/pages/" + page_id
+    httpx.patch(url, headers=headers, json={"properties": {"Status": {"select": {"name": status}}}})
+
+def log_result(title, status, action, file_path, message):
+    import datetime
+    line = "[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "] " + status.upper() + " | " + action + " | " + file_path + " | " + title + " | " + message + "\n"
+    with open(os.path.join(REPO, "pipeline-log.txt"), "a") as f:
+        f.write(line)
+    if DEV_MODE or status in ("failed", "applied"):
+        notion_log.write_log(title, status, action, file_path, message)
+
+def get_queued_changes():
+    url = "https://api.notion.com/v1/databases/" + DATABASE_ID + "/query"
+    body = {"filter": {"property": "Status", "select": {"equals": "queued"}}}
+    r = httpx.post(url, headers=headers, json=body)
+    return r.json()["results"]
+
+def git_pull():
+    result = subprocess.run("cd " + REPO + " && git pull", shell=True, capture_output=True, text=True)
+    print("git pull: " + result.stdout.strip())
+
+
+
+
+def decode(text):
+    text = text.replace("[[SPAN]]", "<span>")
+    text = text.replace("[[/SPAN]]", "</span>")
+    text = text.replace("[[EM]]", "<em>")
+    text = text.replace("[[/EM]]", "</em>")
+    text = text.replace("[[STRONG]]", "<strong>")
+    text = text.replace("[[/STRONG]]", "</strong>")
+    text = text.replace("[[B]]", "<b>")
+    text = text.replace("[[/B]]", "</b>")
+    text = text.replace("[[I]]", "<i>")
+    text = text.replace("[[/I]]", "</i>")
+    text = text.replace("[[BR]]", "<br>")
+    text = text.replace("[[AMP]]", "&amp;")
+    text = text.replace("[[NBSP]]", "&nbsp;")
+    text = text.replace("[[US]]", "_")
+    text = text.replace("UnDeRsCoRe", "_")
+    text = text.replace("DoTpY", ".py")
+    text = text.replace("DoTsH", ".sh")
+    text = text.replace("DoThTmL", ".html")
+    text = text.replace("DoTjS", ".js")
+    text = text.replace("BaCkTiCk", "`")
+    text = text.replace("BaCkSlAsH", "\\")
+    text = text.replace("[[NL]]", "\n")
+    return text
+
+def syntax_check(full_path):
+    if not full_path.endswith(".html"):
+        return True
+    with open(full_path, "r") as f:
+        content = f.read()
+    start = content.find("\n<script>")
+    end = content.find("</script>")
+    if start == -1 or end == -1:
+        return True
+    js = content[start + 8:end]
+    with open("/data/data/com.termux/files/home/tmp/syntax_check.js", "w") as f:
+        f.write(js)
+    result = subprocess.run("node --check /data/data/com.termux/files/home/tmp/syntax_check.js", shell=True, capture_output=True, text=True)
+    if result.returncode != 0:
+        print("Syntax error: " + result.stdout.strip())
+        return False
+    return True
+
+def apply_change(page):
+    props = page["properties"]
+    title = props["Change Title"]["title"][0]["plain_text"] if props["Change Title"]["title"] else "untitled"
+    file_path = "".join([block["plain_text"] for block in props["File Path"]["rich_text"]])
+    full_path = os.path.expanduser("~/Bench-studio-suite/" + file_path)
+    path = "/data/data/com.termux/files/home/notion_pull.py"
+    backup_path = full_path + ".bak"
+
+    try:
+        raw_code = props["New Code"]["rich_text"][0]["plain_text"] if props["New Code"]["rich_text"] else ""
+        raw_target = props["Target Pattern"]["rich_text"][0]["plain_text"] if props["Target Pattern"]["rich_text"] else ""
+        commit_msg = props["Commit Message"]["rich_text"][0]["plain_text"] if props["Commit Message"]["rich_text"] else "pipeline commit"
+        action = props["Action"]["select"]["name"]
+        if '`' in raw_code or '\\' in raw_code or '`' in raw_target or '\\' in raw_target:
+            mark_status(page["id"], "failed")
+            log_result(title, "failed", action, file_path, "rejected: contains literal backtick or backslash")
+            return
+        new_code = decode(raw_code)
+        target = decode(raw_target)
+        if DEV_MODE:
+            log_result(title, "skipped", action, file_path, "DEV received | target: " + target + " | new_code: " + new_code)
+
+        if os.path.exists(full_path):
+            shutil.copy2(full_path, backup_path)
+
+        if action == "append":
+            os.makedirs(os.path.dirname(full_path), exist_ok=True)
+            with open(full_path, "a") as f:
+                f.write("\n" + new_code)
+
+        elif action == "replace":
+            with open(full_path, "r") as f:
+                existing = f.read()
+            if target not in existing:
+                print("Pattern not found in " + file_path)
+                mark_status(page["id"], "failed")
+                log_result(title, "failed", action, file_path, "pattern not found | received: " + target)
+                return
+            with open(full_path, "w") as f:
+                f.write(existing.replace(target, new_code, 1))
+
+        elif action == "config":
+            if file_path == "DEV_MODE":
+                new_val = new_code.strip().lower()
+                if new_val in ("true", "false"):
+                    import re
+                    with open(path, "r") as f:
+                        src = f.read()
+                    src = re.sub(r"DEV_MODE = (True|False)", "DEV_MODE = " + new_val.capitalize(), src)
+                    with open(path, "w") as f:
+                        f.write(src)
+                    log_result(title, "applied", action, file_path, "DEV_MODE set to " + new_val.capitalize())
+                    mark_status(page["id"], "applied")
+                    print("DEV_MODE set to " + new_val.capitalize())
+                else:
+                    log_result(title, "failed", action, file_path, "invalid value: " + new_code)
+                    mark_status(page["id"], "failed")
+            return
+
+        elif action == "queue":
+            ann = {"bold": False, "italic": False, "strikethrough": False, "underline": False, "code": False, "color": "default"}
+            def rt(s): return [{"type": "text", "text": {"content": s}, "annotations": ann}]
+            cmd = new_code
+            body = {
+                "parent": {"database_id": DATABASE_ID},
+                "properties": {
+                    "Change Title": {"title": rt(title + " [queued]")},
+                    "Action": {"select": {"name": "execute"}},
+                    "App": {"select": {"name": "root"}},
+                    "File Path": {"rich_text": rt("terminal")},
+                    "New Code": {"rich_text": rt(cmd)},
+                    "Status": {"select": {"name": "queued"}}
+                }
+            }
+            r = httpx.post("https://api.notion.com/v1/pages", headers=headers, json=body)
+            if r.status_code == 200:
+                log_result(title, "applied", action, file_path, "queued as execute via raw API")
+                mark_status(page["id"], "applied")
+                print("Queued: " + cmd)
+            else:
+                log_result(title, "failed", action, file_path, "raw API post failed: " + str(r.status_code))
+                mark_status(page["id"], "failed")
+            return
+        elif action == "execute":
+            result = subprocess.run(new_code, shell=True, capture_output=True, text=True, cwd=REPO)
+            output = result.stdout.strip()
+            errors = result.stderr.strip()
+            full_output = output
+            if errors:
+                full_output = full_output + " | STDERR: " + errors
+            if not full_output:
+                full_output = "(no output)"
+            if result.returncode == 0:
+                log_result(title, "applied", action, file_path, full_output)
+                mark_status(page["id"], "applied")
+                print("Executed: " + new_code)
+            else:
+                log_result(title, "failed", action, file_path, full_output)
+                mark_status(page["id"], "failed")
+                print("Execute failed: " + new_code)
+            return
+        elif action == "delete":
+            with open(full_path, "r") as f:
+                existing = f.read()
+            with open(full_path, "w") as f:
+                f.write(existing.replace(target, "", 1))
+
+        if not syntax_check(full_path):
+            print("Syntax check failed - restoring " + file_path)
+            if os.path.exists(backup_path):
+                shutil.copy2(backup_path, full_path)
+            mark_status(page["id"], "failed")
+            log_result(title, "failed", action, file_path, "syntax check failed")
+            return
+
+        log_result(title, "applied", action, file_path, "ok")
+        commit_cmd = "cd " + REPO + " && git add -A && git add -f pipeline-log.txt && git commit -m '" + commit_msg + "' && git push"
+        os.system(commit_cmd)
+        mark_status(page["id"], "applied")
+        print("Applied: " + action + " on " + file_path)
+
+    except Exception as e:
+        print("Failed: " + str(e))
+        if os.path.exists(backup_path):
+            shutil.copy2(backup_path, full_path)
+        mark_status(page["id"], "failed")
+        log_result(title, "failed", action, file_path, "exception: " + str(e))
+
+    finally:
+        if os.path.exists(backup_path):
+            os.remove(backup_path)
+
+
+changes = get_queued_changes()
+for change in changes:
+        apply_change(change)
+[2026-05-28 14:16] APPLIED | config | DEV_MODE | DEV_MODE on | DEV_MODE set to True
+[2026-05-28 14:28] SKIPPED | execute | terminal | TEST import check | DEV received | target:  | new_code: echo imports working
+[2026-05-28 14:28] APPLIED | execute | terminal | TEST import check | imports working
+[2026-05-28 14:28] SKIPPED | execute | terminal | TEST import check | DEV received | target:  | new_code: echo imports working
+[2026-05-28 14:28] APPLIED | execute | terminal | TEST import check | imports working
+[2026-05-28 14:29] SKIPPED | execute | terminal | TEST REVERT002 git log | DEV received | target:  | new_code: REVERT002
+[2026-05-28 14:29] SKIPPED | execute | terminal | TEST REVERT002 git log | DEV received | target:  | new_code: REVERT002
+[2026-05-28 14:29] APPLIED | execute | terminal | TEST REVERT002 git log | afe0b7e chore:sync
+32ed4e0 chore:sync-tools
+182f9c7 chore: sync log
+c6ba9df chore: sync final notion_pull.py
+b7fd419 chore: add sync script
+a7e5df0 feat: wire notion_log into notion_
+f8b8ce3 test: full notion feedback loop
+4d6966b chore: update notion_
+abf7766 test: dev mode verification
+e8473ca chore: add tools URLs to repo urls doc
+[2026-05-28 14:29] APPLIED | execute | terminal | TEST REVERT002 git log | afe0b7e chore:sync
+32ed4e0 chore:sync-tools
+182f9c7 chore: sync log
+c6ba9df chore: sync final notion_pull.py
+b7fd419 chore: add sync script
+a7e5df0 feat: wire notion_log into notion_
+f8b8ce3 test: full notion feedback loop
+4d6966b chore: update notion_
+abf7766 test: dev mode verification
+e8473ca chore: add tools URLs to repo urls doc
+[2026-05-28 14:29] SKIPPED | config | DEV_MODE | DEV_MODE off | DEV received | target:  | new_code: false
+[2026-05-28 14:29] SKIPPED | config | DEV_MODE | DEV_MODE off | DEV received | target:  | new_code: false
+[2026-05-28 14:29] APPLIED | config | DEV_MODE | DEV_MODE off | DEV_MODE set to False
+[2026-05-28 14:29] APPLIED | config | DEV_MODE | DEV_MODE off | DEV_MODE set to False
+[2026-05-28 14:34] APPLIED | execute | terminal | TEST no duplicate | single fire test
+[2026-05-28 14:34] APPLIED | execute | terminal | TEST no duplicate | single fire test
+[2026-05-28 14:38] APPLIED | execute | terminal | SYNC cp watch to tools | (no output)
+[2026-05-28 14:38] APPLIED | execute | terminal | SYNC cp cyphers to tools | (no output)
+[2026-05-28 14:38] APPLIED | execute | terminal | SYNC cp commands to tools | (no output)
+[2026-05-28 14:38] APPLIED | execute | terminal | SYNC cp notion pull to tools | (no output)
+[2026-05-28 14:39] APPLIED | execute | terminal | SYNC git push all tools | [main a906e88] chore:sync
+ 4 files changed, 59 insertions(+), 24 deletions(-)
+ create mode 100644 tools/commands.py
+ create mode 100644 tools/cyphers.py
+ create mode 100755 tools/watch.sh | STDERR: To https://github.com/Glowbel/Bench-studio-suite.git
+   afe0b7e..a906e88  main -> main
+[2026-05-28 14:47] APPLIED | config | DEV_MODE | DEV_MODE on | DEV_MODE set to True
+[2026-05-28 14:49] SKIPPED | execute | terminal | CREATE sandbox directory | DEV received | target:  | new_code: mkdir -p /data/data/com.termux/files/home/sandbox && echo sandbox ready
+[2026-05-28 14:49] APPLIED | execute | terminal | CREATE sandbox directory | sandbox ready
+[2026-05-28 14:49] SKIPPED | execute | terminal | TEST write file to sandbox | DEV received | target:  | new_code: echo hello from claude > /data/data/com.termux/files/home/sandbox/helloDoTtxt && cat /data/data/com.termux/files/home/sandbox/helloDoTtxt
+[2026-05-28 14:49] APPLIED | execute | terminal | TEST write file to sandbox | hello from claude
+[2026-05-28 14:49] SKIPPED | execute | terminal | TEST python script in sandbox | DEV received | target:  | new_code: echo "print('hello from python')" > /data/data/com.termux/files/home/sandbox/test.py && python3 /data/data/com.termux/files/home/sandbox/test.py
+[2026-05-28 14:49] APPLIED | execute | terminal | TEST python script in sandbox | hello from python
+[2026-05-28 14:49] SKIPPED | execute | terminal | TEST system info | DEV received | target:  | new_code: uname -a && python3 --version && node --version && git --version
+[2026-05-28 14:49] APPLIED | execute | terminal | TEST system info | Linux localhost 4.19.157-perf+ #1 SMP PREEMPT Wed Aug 31 09:04:16 JST 2022 aarch64 Android
+Python 3.13.13
+v24.15.0
+git version 2.54.0
+[2026-05-28 14:49] SKIPPED | execute | terminal | TEST chained output capture | DEV received | target:  | new_code: date && whoami && pwd && ls /data/data/com.termux/files/home/sandbox/
+[2026-05-28 14:49] APPLIED | execute | terminal | TEST chained output capture | Thu May 28 14:49:48 EDT 2026
+u0_a460
+/data/data/com.termux/files/home/Bench-studio-suite
+helloDoTtxt
+test.py
+[2026-05-28 14:51] SKIPPED | execute | terminal | TEST pipe and grep | DEV received | target:  | new_code: ls /data/data/com.termux/files/home/ | grep notion
+[2026-05-28 14:51] APPLIED | execute | terminal | TEST pipe and grep | notion_log.py
+notion_pull.py
+[2026-05-28 14:51] SKIPPED | execute | terminal | TEST curl network request | DEV received | target:  | new_code: curl -s 
+[2026-05-28 14:51] FAILED | execute | terminal | TEST curl network request |  | STDERR: curl: (2) no URL specified
+curl: try 'curl --help' or 'curl --manual' for more information
+[2026-05-28 14:51] SKIPPED | execute | terminal | TEST env variables | DEV received | target:  | new_code: echo NOTION_TOKEN is set: $NOTION_TOKEN | cut -c1-40
+[2026-05-28 14:51] APPLIED | execute | terminal | TEST env variables | NOTION_TOKEN is set: ntn_4341900634757of
+[2026-05-28 14:51] SKIPPED | execute | terminal | TEST append to file | DEV received | target:  | new_code: echo line one >> /data/data/com.termux/files/home/sandbox/appendDoTtXt && echo line two >> /data/data/com.termux/files/home/sandbox/appendDoTtXt && cat /data/data/com.termux/files/home/sandbox/appendDoTtXt
+[2026-05-28 14:51] APPLIED | execute | terminal | TEST append to file | line one
+line two
+[2026-05-28 14:51] SKIPPED | execute | terminal | TEST move and rename | DEV received | target:  | new_code: cp /data/data/com.termux/files/home/sandbox/helloDoTtxt /data/data/com.termux/files/home/sandbox/renamedDoTtxt && ls /data/data/com.termux/files/home/sandbox/
+[2026-05-28 14:51] APPLIED | execute | terminal | TEST move and rename | appendDoTtXt
+helloDoTtxt
+renamedDoTtxt
+test.py
+[2026-05-28 14:53] SKIPPED | execute | terminal | TEST curl download file | DEV received | target:  | new_code: curl -s -o /data/data/com.termux/files/home/sandbox/downloadedDoTtxt 
+[2026-05-28 14:53] FAILED | execute | terminal | TEST curl download file |  | STDERR: curl: (2) no URL specified
+curl: try 'curl --help' or 'curl --manual' for more information
+[2026-05-28 14:53] SKIPPED | execute | terminal | TEST find files on phone | DEV received | target:  | new_code: find /data/data/com.termux/files/home -name "
+[2026-05-28 14:53] FAILED | execute | terminal | TEST find files on phone |  | STDERR: /data/data/com.termux/files/usr/bin/sh: 1: Syntax error: Unterminated quoted string
+[2026-05-28 14:53] SKIPPED | execute | terminal | TEST pkg list installed | DEV received | target:  | new_code: pkg list-installed 2>/dev/null
+[2026-05-28 14:53] APPLIED | execute | terminal | TEST pkg list installed | Listing...
+apt/now 2.8.1-1 aarch64 [installed,upgradable to: 2.8.1-2]
+bash/now 5.2.37-2 aarch64 [installed,upgradable to: 5.3.9]
+bzip2/now 1.0.8-6 aarch64 [installed,upgradable to: 1.0.8-8]
+c-ares/stable,now 1.34.6 aarch64 [installed,automatic]
+ca-certificates/now 1:2025.02.25 all [installed,upgradable to: 1:2026.03.19]
+clang/stable,now 21.1.8-2 aarch64 [installed,automatic]
+command-not-found/now 2.4.0-68 aarch64 [installed,upgradable to: 3.4.1-11]
+coreutils/now 9.6-1 aarch64 [installed,upgradable to: 9.11]
+curl/now 8.12.1 aarch64 [installed,upgradable to: 8.20.0]
+dash/now 0.5.12 aarch64 [installed,upgradable to: 0.5.12-2]
+debianutils/now 5.21 aarch64 [installed,upgradable to: 5.23.2-1]
+dialog/now 1.3-20240307-0 aarch64 [installed,upgradable to: 1.3-20260107-1]
+diffutils/now 3.11 aarch64 [installed,upgradable to: 3.12-2]
+dos2unix/now 7.5.2 aarch64 [installed,upgradable to: 7.5.5]
+dpkg/now 1.22.6-1 aarch64 [installed,upgradable to: 1.22.6-5]
+ed/now 1.21.1 aarch64 [installed,upgradable to: 1.22.5]
+findutils/now 4.10.0 aarch64 [installed,upgradable to: 4.10.0-1]
+gawk/now 5.3.0 aarch64 [installed,upgradable to: 5.3.2]
+gdbm/stable,now 1.26-1 aarch64 [installed,automatic]
+git/stable,now 2.54.0 aarch64 [installed]
+glib/stable,now 2.88.1 aarch64 [installed,automatic]
+gpgv/now 2.4.5-3 aarch64 [installed,upgradable to: 2.5.17]
+grep/now 3.11 aarch64 [installed,upgradable to: 3.12-3]
+gzip/now 1.13 aarch64 [installed,upgradable to: 1.14-1]
+inetutils/now 2.6 aarch64 [installed,upgradable to: 2.7]
+krb5/stable,now 1.22.2 aarch64 [installed,automatic]
+ldns/stable,now 1.8.4-1 aarch64 [installed,automatic]
+less/now 668 aarch64 [installed,upgradable to: 702]
+libandroid-glob/now 0.6-2 aarch64 [installed,upgradable to: 0.6-3]
+libandroid-posix-semaphore/stable,now 0.1-4 aarch64 [installed,automatic]
+libandroid-selinux/now 14.0.0.11 aarch64 [installed,upgradable to: 14.0.0.11-1]
+libandroid-support/now 29 aarch64 [installed,upgradable to: 29-1]
+libassuan/now 3.0.1-2 aarch64 [installed,upgradable to: 3.0.2-1]
+libbz2/now 1.0.8-6 aarch64 [installed,upgradable to: 1.0.8-8]
+libc++/now 27c aarch64 [installed,upgradable to: 29]
+libcap-ng/now 2:0.8.5 aarch64 [installed,upgradable to: 2:0.9.3]
+libcompiler-rt/stable,now 21.1.8-2 aarch64 [installed,automatic]
+libcrypt/stable,now 0.2-6 aarch64 [installed,automatic]
+libcurl/now 8.12.1 aarch64 [installed,upgradable to: 8.20.0]
+libdb/stable,now 18.1.40-5 aarch64 [installed,automatic]
+libedit/stable,now 20240517-3.1-1 aarch64 [installed,automatic]
+libevent/now 2.1.12-2 aarch64 [installed,upgradable to: 2.1.12-3]
+libexpat/stable,now 2.8.1 aarch64 [installed,automatic]
+libffi/stable,now 3.5.2 aarch64 [installed,automatic]
+libgcrypt/now 1.11.0 aarch64 [installed,upgradable to: 1.11.2-1]
+libgmp/now 6.3.0-1 aarch64 [installed,upgradable to: 6.3.0-2]
+libgnutls/now 3.8.9 aarch64 [installed,upgradable to: 3.8.11]
+libgpg-error/now 1.50 aarch64 [installed,upgradable to: 1.58]
+libiconv/now 1.18 aarch64 [installed,upgradable to: 1.18-1]
+libicu/stable,now 78.3 aarch64 [installed,automatic]
+libidn2/now 2.3.7 aarch64 [installed,upgradable to: 2.3.8-1]
+libllvm/stable,now 21.1.8-2 aarch64 [installed,automatic]
+liblz4/now 1.10.0 aarch64 [installed,upgradable to: 1.10.0-1]
+liblzma/now 5.8.0 aarch64 [installed,upgradable to: 5.8.3]
+libmd/now 1.1.0 aarch64 [installed,upgradable to: 1.1.0-1]
+libmpfr/now 4.2.1 aarch64 [installed,upgradable to: 4.2.1-1]
+libnettle/now 3.10.1 aarch64 [installed,upgradable to: 4.0+really3.10.2]
+libnghttp2/now 1.65.0 aarch64 [installed,upgradable to: 1.69.0]
+libnghttp3/now 1.8.0 aarch64 [installed,upgradable to: 1.15.0]
+libnpth/now 1.6-2 aarch64 [installed,upgradable to: 1.6-3]
+libresolv-wrapper/stable,now 1.1.7-6 aarch64 [installed,automatic]
+libsmartcols/now 2.40.2-3 aarch64 [installed,upgradable to: 2.42.1]
+libsqlite/stable,now 3.53.1 aarch64 [installed,automatic]
+libssh2/now 1.11.1 aarch64 [installed,upgradable to: 1.11.1-1]
+libtirpc/now 1.3.6 aarch64 [installed,upgradable to: 1.3.7-1]
+libunbound/now 1.22.0 aarch64 [installed,upgradable to: 1.25.1]
+libunistring/now 1.3 aarch64 [installed,upgradable to: 1.3-1]
+libxml2/stable,now 2.15.3 aarch64 [installed,automatic]
+lld/stable,now 21.1.8-2 aarch64 [installed,automatic]
+llvm/stable,now 21.1.8-2 aarch64 [installed,automatic]
+lsof/now 4.99.4 aarch64 [installed,upgradable to: 4.99.6]
+make/stable,now 4.4.1-1 aarch64 [installed,automatic]
+nano/now 8.3 aarch64 [installed,upgradable to: 9.0]
+ncurses-ui-libs/stable,now 6.6.20260307+really6.5.20250830 aarch64 [installed,automatic]
+ncurses/stable,now 6.6.20260307+really6.5.20250830 aarch64 [installed]
+ndk-sysroot/stable,now 29-2 aarch64 [installed,automatic]
+net-tools/now 2.10.0 aarch64 [installed,upgradable to: 2.10.0-1]
+nodejs-lts/stable,now 24.15.0 aarch64 [installed]
+npm/stable,now 11.15.0 all [installed,automatic]
+openssh-sftp-server/stable,now 10.3p1-1 aarch64 [installed,automatic]
+openssh/stable,now 10.3p1-1 aarch64 [installed,automatic]
+openssl/now 1:3.4.1 aarch64 [installed,upgradable to: 1:3.6.2]
+patch/now 2.7.6-4 aarch64 [installed,upgradable to: 2.8-1]
+pcre2/now 10.45 aarch64 [installed,upgradable to: 10.47]
+pkg-config/stable,now 0.29.2-3 aarch64 [installed,automatic]
+procps/now 3.3.17-5 aarch64 [installed,upgradable to: 3.3.17-6]
+psmisc/now 23.7 aarch64 [installed,upgradable to: 23.7-1]
+python-ensurepip-wheels/stable,now 3.13.13-1 all [installed,automatic]
+python-pip/stable,now 26.1.1 all [installed,automatic]
+python/stable,now 3.13.13-1 aarch64 [installed]
+readline/now 8.2.13 aarch64 [installed,upgradable to: 8.3.3]
+resolv-conf/stable,now 1.3 aarch64 [installed]
+runit/stable,now 2.1.2-4 aarch64 [installed,automatic]
+sed/now 4.9-1 aarch64 [installed,upgradable to: 4.9-2]
+tar/now 1.35 aarch64 [installed,upgradable to: 1.35-2]
+termux-am-socket/now 1.5.0 aarch64 [installed,upgradable to: 1.5.0-1]
+termux-am/now 0.8.0-1 all [installed,upgradable to: 0.8.0-2]
+termux-auth/stable,now 1.5.0-1 aarch64 [installed,automatic]
+termux-core/now 0.3.0 aarch64 [installed,upgradable to: 0.4.0-1]
+termux-exec/now 1:2.3.0 aarch64 [installed,upgradable to: 1:2.4.0-1]
+termux-keyring/now 3.12-1 all [installed,upgradable to: 3.13]
+termux-licenses/stable,now 2.1 all [installed]
+termux-services/stable,now 0.13-1 all [installed]
+termux-tools/now 1.45.0 aarch64 [installed,upgradable to: 1.46.0+really1.45.0-1]
+unzip/now 6.0-9 aarch64 [installed,upgradable to: 6.0-10]
+util-linux/now 2.40.2-3 aarch64 [installed,upgradable to: 2.42.1]
+xxhash/now 0.8.3 aarch64 [installed,upgradable to: 0.8.3-1]
+xz-utils/now 5.8.0 aarch64 [installed,upgradable to: 5.8.3]
+zlib/now 1.3.1 aarch64 [installed,upgradable to: 1.3.2]
+zstd/now 1.5.7 aarch64 [installed,upgradable to: 1.5.7-1]
+[2026-05-28 14:53] SKIPPED | execute | terminal | TEST python write file | DEV received | target:  | new_code: python3 -c "f=open('/data/data/com.termux/files/home/sandbox/writtenDoTtxt','w');f.write('line onenline twonline three');f.close()" && cat /data/data/com.termux/files/home/sandbox/writtenDoTtxt
+[2026-05-28 14:53] APPLIED | execute | terminal | TEST python write file | line onenline twonline three
+[2026-05-28 14:53] SKIPPED | execute | terminal | TEST reorganize sandbox dirs | DEV received | target:  | new_code: mkdir -p /data/data/com.termux/files/home/sandbox/subdir && cp /data/data/com.termux/files/home/sandbox/renamedDoTtxt /data/data/com.termux/files/home/sandbox/subdir/ && find /data/data/com.termux/files/home/sandbox -type f
+[2026-05-28 14:53] APPLIED | execute | terminal | TEST reorganize sandbox dirs | /data/data/com.termux/files/home/sandbox/helloDoTtxt
+/data/data/com.termux/files/home/sandbox/test.py
+/data/data/com.termux/files/home/sandbox/appendDoTtXt
+/data/data/com.termux/files/home/sandbox/renamedDoTtxt
+/data/data/com.termux/files/home/sandbox/writtenDoTtxt
+/data/data/com.termux/files/home/sandbox/subdir/renamedDoTtxt
+[2026-05-28 14:53] SKIPPED | execute | terminal | TEST pip install package | DEV received | target:  | new_code: pip install requests --break-system-packages -q && python3 -c "import requests; print(requests.
+[2026-05-28 14:53] FAILED | execute | terminal | TEST pip install package |  | STDERR: /data/data/com.termux/files/usr/bin/sh: 1: Syntax error: Unterminated quoted string
+[2026-05-28 14:55] FAILED | replace | cyphersDoTpY | ADD new cyphers to  | rejected: contains literal backtick or backslash
+[2026-05-28 14:57] SKIPPED | execute | terminal | TEST pipe and grep v2 | DEV received | target:  | new_code: ls /data/data/com.termux/files/home/ | grep notion
+[2026-05-28 14:57] APPLIED | execute | terminal | TEST pipe and grep v2 | notion_log.py
+notion_pull.py
+[2026-05-28 14:57] SKIPPED | execute | terminal | TEST redirect v2 | DEV received | target:  | new_code: echo hello from redirect >> /data/data/com.termux/files/home/sandbox/redirectDoTtxt && cat /data/data/com.termux/files/home/sandbox/redirectDoTtxt
+[2026-05-28 14:57] APPLIED | execute | terminal | TEST redirect v2 | hello from redirect
+[2026-05-28 14:57] SKIPPED | execute | terminal | TEST find with quotes v2 | DEV received | target:  | new_code: find /data/data/com.termux/files/home -name "
+[2026-05-28 14:57] FAILED | execute | terminal | TEST find with quotes v2 |  | STDERR: /data/data/com.termux/files/usr/bin/sh: 1: Syntax error: Unterminated quoted string
+[2026-05-28 14:57] SKIPPED | execute | terminal | TEST curl download v2 | DEV received | target:  | new_code: curl -s -o /data/data/com.termux/files/home/sandbox/readmeDoTtxt 
+[2026-05-28 14:57] FAILED | execute | terminal | TEST curl download v2 |  | STDERR: curl: (2) no URL specified
+curl: try 'curl --help' or 'curl --manual' for more information
+[2026-05-28 14:57] SKIPPED | config | DEV_MODE | DEV_MODE off | DEV received | target:  | new_code: false
+[2026-05-28 14:57] APPLIED | config | DEV_MODE | DEV_MODE off | DEV_MODE set to False
+[2026-05-28 14:57] APPLIED | execute | terminal | TEST pipe grep final | notion_log.py
+notion_pull.py
+[2026-05-28 14:58] APPLIED | execute | terminal | TEST redirect final | hello from redirect
+[2026-05-28 14:59] APPLIED | execute | terminal | SYNC cyphers to repo | [main b75fe32] chore:sync-cyphers
+ 1 file changed, 5 insertions(+) | STDERR: To https://github.com/Glowbel/Bench-studio-suite.git
+   a906e88..b75fe32  main -> main
+[2026-05-28 15:01] APPLIED | config | DEV_MODE | DEV_MODE on | DEV_MODE set to True
+[2026-05-28 15:01] SKIPPED | execute | terminal | MANGLE quotes and angles | DEV received | target:  | new_code: START ' < << 2>&1 END
+[2026-05-28 15:01] FAILED | execute | terminal | MANGLE quotes and angles |  | STDERR: /data/data/com.termux/files/usr/bin/sh: 1: Syntax error: Unterminated quoted string
+[2026-05-28 15:01] SKIPPED | execute | terminal | MANGLE punctuation cluster | DEV received | target:  | new_code: START ; : ! ? # @ % ^ + = END
+[2026-05-28 15:01] APPLIED | execute | terminal | MANGLE punctuation cluster |  | STDERR: /data/data/com.termux/files/usr/bin/sh: 1: START: not found
+[2026-05-28 15:01] SKIPPED | execute | terminal | MANGLE brackets braces parens | DEV received | target:  | new_code: START [ ] { } ( ) END
+[2026-05-28 15:01] FAILED | execute | terminal | MANGLE brackets braces parens |  | STDERR: /data/data/com.termux/files/usr/bin/sh: 1: Syntax error: "(" unexpected
+[2026-05-28 15:01] SKIPPED | execute | terminal | MANGLE file extensions | DEV received | target:  | new_code: START config.json style.css 
+[2026-05-28 15:01] FAILED | execute | terminal | MANGLE file extensions |  | STDERR: /data/data/com.termux/files/usr/bin/sh: 1: START: not found
+[2026-05-28 15:01] SKIPPED | execute | terminal | MANGLE glob and format chars | DEV received | target:  | new_code: START aaa*bbb a~b a-b a+b a=b END
+[2026-05-28 15:01] FAILED | execute | terminal | MANGLE glob and format chars |  | STDERR: /data/data/com.termux/files/usr/bin/sh: 1: START: not found
+[2026-05-28 15:01] SKIPPED | execute | terminal | MANGLE markdown linestart patterns | DEV received | target:  | new_code: START # heading - item > quote 
+[2026-05-28 15:01] FAILED | execute | terminal | MANGLE markdown linestart patterns |  | STDERR: /data/data/com.termux/files/usr/bin/sh: 1: START: not found
+[2026-05-28 15:06] SKIPPED | execute | terminal | TEST new cyphers decode | DEV received | target:  | new_code: START [ ] { } ^ < * ~ readme.md END
+[2026-05-28 15:06] FAILED | execute | terminal | TEST new cyphers decode |  | STDERR: /data/data/com.termux/files/usr/bin/sh: 1: cannot open *: No such file
+[2026-05-28 15:06] SKIPPED | execute | terminal | TEST cyphers quoted decode | DEV received | target:  | new_code: echo "START [ ] { } ^ < * ~ END"
+[2026-05-28 15:06] APPLIED | execute | terminal | TEST cyphers quoted decode | START [ ] { } ^ < * ~ END
+[2026-05-28 15:06] SKIPPED | config | DEV_MODE | DEV_MODE off | DEV received | target:  | new_code: false
+[2026-05-28 15:06] APPLIED | config | DEV_MODE | DEV_MODE off | DEV_MODE set to False
+[2026-05-28 15:06] APPLIED | execute | terminal | SYNC cyphers final | [main 973fd7c] chore:cyphers-complete
+ 1 file changed, 9 insertions(+) | STDERR: To https://github.com/Glowbel/Bench-studio-suite.git
+   b75fe32..973fd7c  main -> main
+[2026-05-29 11:32] FAILED | replace | wizard/testDoThTmL | test.html — background to deep forest green | exception: [Errno 2] No such file or directory: '/data/data/com.termux/files/home/Bench-studio-suite/wizard/testDoThTmL'
+[2026-05-29 11:33] FAILED | replace | wizard/testDoThTmL | test.html — background green (fix whitespace) | exception: [Errno 2] No such file or directory: '/data/data/com.termux/files/home/Bench-studio-suite/wizard/testDoThTmL'
+[2026-05-29 11:35] APPLIED | execute | terminal | ls wizard folder | CLAUDE.md
+index.html
+test.html
+wizard-suite-architecture.md
+[2026-05-29 11:36] APPLIED | execute | terminal | test.html — background green via sed | [main f786c1d] test: background green on test.html
+ 1 file changed, 1 insertion(+), 1 deletion(-) | STDERR: To https://github.com/Glowbel/Bench-studio-suite.git
+   973fd7c..f786c1d  main -> main
+[2026-05-29 11:43] APPLIED | execute | terminal | test.html — poodle text + WTF tab | [main cbea4e9] test: poodle text and WTF tab
+ 1 file changed, 5 insertions(+), 1 deletion(-) | STDERR: To https://github.com/Glowbel/Bench-studio-suite.git
+   f786c1d..cbea4e9  main -> main
+[2026-05-29 11:44] FAILED | execute | terminal | cat header line test.html | (no output)
+[2026-05-29 11:45] FAILED | execute | terminal | grep Navigate in test.html | (no output)
+[2026-05-29 12:04] APPLIED | execute | terminal | sed header area test.html | <body>
+<!-- === BEGIN SHELL === -->
+<div class="app">
+
+  <div class="header">
+    <div>
+      <div class="header-label">Jordan's Studio — Pipeline Test</div>
+      <div class="header-title">Find your <span>path</span></div>
+    </div>
+    <button class="btn btn-sm" onclick="startOver()" style="align-self:flex-end;margin-bottom:4px;opacity:0.6;">↺ Reset</button>
+  </div>
+
+  <div class="phase-bar" id="phaseBar">
+    <div class="phase-step" id="phaseStageWTF">
+      <div class="phase-step-track"><div class="phase-step-fill"></div></div>
+      <div class="phase-step-label">WTF?</div>
+    </div>
+        <div class="phase-step active" id="phaseStageA">
+      <div class="phase-step-track"><div class="phase-step-fill"></div></div>
+      <div class="phase-step-label">Discover</div>
+    </div>
+    <div class="phase-step" id="phaseStageB">
+      <div class="phase-step-track"><div class="phase-step-fill"></div></div>
+      <div class="phase-step-label">Align</div>
+    </div>
+    <div class="phase-step" id="phaseStageC">
+      <div class="phase-step-track"><div class="phase-step-fill"></div></div>
+      <div class="phase-step-label">Choose</div>
+    </div>
+  </div>
+<!-- === END SHELL === -->
+[2026-05-29 12:06] FAILED | execute | terminal | test.html — path to poodle |  | STDERR: sed: -e expression #1, char 25: unknown option to `s'
+[2026-05-29 12:37] APPLIED | execute | terminal | AUDIT cat test header 1236 | <!DOCTYPE html>
+<!--
+  ════════════════════════════════════════════════════════════════════
+  ZONE REGISTRY — decision wizard  (added May 2026)
+  ════════════════════════════════════════════════════════════════════
+  Grep CSS/JS:  /* === BEGIN <NAME> === */  ...  /* === END <NAME> === */
+  Grep HTML:    same shape, HTML-comment delimiters.
+  Sub-zones use NAME:CHILD (e.g. MAPPER:BUILD) and are excluded
+  from this registry. Find them by grep.
+  Line numbers are post-marker. Rebuild script lives below this block.
+
+    TOKENS                       250 — 293  
+    PHASE-BAR                    295 — 368  
+    SHARED-COMPONENTS            370 — 499  
+    DECISION-LIST                501 — 538  
+    MAPPER (CSS)                 540 — 650  
+    RESULTS (CSS)                652 — 727  
+    VALUE-ROWS                   729 — 811  
+    FEASIBILITY (CSS)            813 — 982  
+    SHELL                        986 — 1011 
+    SCREEN-DISCOVER             1013 — 1066 
+    SCREEN-ALIGN                1068 — 1113 
+    SCREEN-MAPPER               1115 — 1144 
+    SCREEN-CHOOSE               1146 — 1183 
+    STATE                       1185 — 1251 
+    DECISION-ENTRY              1253 — 1299 
+    VALUES                      1301 — 1395 
+    MAPPER (JS)                 1397 — 1755 
+    RESULTS (JS)                1757 — 1834 
+    FEASIBILITY (JS)            1836 — 2029
+[2026-05-29 14:12] APPLIED | config | DEV_MODE | AUDIT enable DEV_MODE | DEV_MODE set to True
+[2026-05-29 14:15] SKIPPED | replace | wizard/test.html | AUDIT-A clean replace TOKENS test | DEV received | target: TOKENS                       250 | new_code: TOKENS-AUDIT
+[2026-05-29 14:15] APPLIED | replace | wizard/test.html | AUDIT-A clean replace TOKENS test | ok
