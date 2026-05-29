@@ -972,3 +972,5 @@ plain_ZONE_count:
 0
 [2026-05-29 18:56] SKIPPED | replace | wizard/test.html | AUDIT-4R empty New Code (deletion) | DEV received | target: PHASE-BAR | new_code: 
 [2026-05-29 18:56] APPLIED | replace | wizard/test.html | AUDIT-4R empty New Code (deletion) | ok
+[2026-05-29 18:56] SKIPPED | replace | wizard/test.html | AUDIT-1R multi-occurrence ZONE | DEV received | target: ZONE | new_code: ZONE_AUDIT
+[2026-05-29 18:56] APPLIED | replace | wizard/test.html | AUDIT-1R multi-occurrence ZONE | ok
