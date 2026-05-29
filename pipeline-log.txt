@@ -934,3 +934,5 @@ wizard-suite-architecture.md
 [2026-05-29 14:12] APPLIED | config | DEV_MODE | AUDIT enable DEV_MODE | DEV_MODE set to True
 [2026-05-29 14:15] SKIPPED | replace | wizard/test.html | AUDIT-A clean replace TOKENS test | DEV received | target: TOKENS                       250 | new_code: TOKENS-AUDIT
 [2026-05-29 14:15] APPLIED | replace | wizard/test.html | AUDIT-A clean replace TOKENS test | ok
+[2026-05-29 14:16] SKIPPED | replace | wizard/test.html | AUDIT-A revert TOKENS marker | DEV received | target: TOKENS-AUDIT | new_code: TOKENS                       250
+[2026-05-29 14:16] APPLIED | replace | wizard/test.html | AUDIT-A revert TOKENS marker | ok
