@@ -980,3 +980,5 @@ plain_ZONE_count:
   ════════════════════════════════════════════════════════════════════
 [2026-05-29 18:56] SKIPPED | replace | wizard/test.html | AUDIT-4R-revert deletion | DEV received | target:  | new_code: PHASE-BAR
 [2026-05-29 18:56] APPLIED | replace | wizard/test.html | AUDIT-4R-revert deletion | ok
+[2026-05-29 18:56] SKIPPED | replace | wizard/test.html | AUDIT-3R-revert special chars | DEV received | target: TOKENS<>&"$250 | new_code: TOKENS                       250
+[2026-05-29 18:56] APPLIED | replace | wizard/test.html | AUDIT-3R-revert special chars | ok
