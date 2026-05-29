@@ -9,7 +9,7 @@
   from this registry. Find them by grep.
   Line numbers are post-marker. Rebuild script lives below this block.
 
-    TOKENS                       250 — 293  
+    TOKENS<>&"$250 — 293  
                         295 — 368  
     SHARED-COMPONENTS            370 — 499  
     DECISION-LIST                501 — 538  
