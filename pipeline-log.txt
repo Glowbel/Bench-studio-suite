@@ -991,3 +991,9 @@ plain_ZONE_count:
 [2026-05-29 18:56] SKIPPED | config | DEV_MODE | AUDIT disable DEV_MODE for real tests | DEV received | target:  | new_code: false
 [2026-05-29 18:56] APPLIED | config | DEV_MODE | AUDIT disable DEV_MODE for real tests | DEV_MODE set to False
 [2026-05-29 18:58] APPLIED | replace | wizard/test.html | EMERGENCY restore DOCTYPE 1 | ok
+[2026-05-29 18:58] APPLIED | execute | terminal | RECOVER-1-check head | PHASE-BAR<!DOCTYPE html>
+<!--
+  ════════════════════════════════════════════════════════════════════
+  ZONE_AUDIT REGISTRY — decision wizard  (added May 2026)
+  ════════════════════════════════════════════════════════════════════
+[2026-05-29 18:58] FAILED | replace | wizard/test.html | RECOVER-1 restore DOCTYPE from AUDIT-5 corruption | pattern not found | received: <<<BROKEN_HTML_NO_CLOSING_TAGS<<<<
