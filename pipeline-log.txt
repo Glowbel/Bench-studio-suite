@@ -974,3 +974,9 @@ plain_ZONE_count:
 [2026-05-29 18:56] APPLIED | replace | wizard/test.html | AUDIT-4R empty New Code (deletion) | ok
 [2026-05-29 18:56] SKIPPED | replace | wizard/test.html | AUDIT-1R multi-occurrence ZONE | DEV received | target: ZONE | new_code: ZONE_AUDIT
 [2026-05-29 18:56] APPLIED | replace | wizard/test.html | AUDIT-1R multi-occurrence ZONE | ok
+[2026-05-29 18:56] SKIPPED | execute | terminal | AUDIT-5R-check doctype intact | DEV received | target:  | new_code: head -3 /data/data/com.termux/files/home/Bench-studio-suite/wizard/test.html
+[2026-05-29 18:56] APPLIED | execute | terminal | AUDIT-5R-check doctype intact | <<<BROKEN_HTML_NO_CLOSING_TAGS<<<<
+<!--
+  ════════════════════════════════════════════════════════════════════
+[2026-05-29 18:56] SKIPPED | replace | wizard/test.html | AUDIT-4R-revert deletion | DEV received | target:  | new_code: PHASE-BAR
+[2026-05-29 18:56] APPLIED | replace | wizard/test.html | AUDIT-4R-revert deletion | ok
