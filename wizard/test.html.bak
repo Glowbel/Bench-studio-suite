@@ -10,7 +10,7 @@
   Line numbers are post-marker. Rebuild script lives below this block.
 
     TOKENS                       250 — 293  
-    PHASE-BAR                    295 — 368  
+                        295 — 368  
     SHARED-COMPONENTS            370 — 499  
     DECISION-LIST                501 — 538  
     MAPPER (CSS)                 540 — 650  
