@@ -960,3 +960,5 @@ wizard-suite-architecture.md
 [2026-05-29 18:53] FAILED | replace | wizard/test.html | AUDIT-2 whitespace mismatch (single space) | pattern not found | received: TOKENS 250
 [2026-05-29 18:53] SKIPPED | replace | wizard/test.html | AUDIT-4-revert deletion | DEV received | target:  | new_code: PHASE-BAR
 [2026-05-29 18:53] APPLIED | replace | wizard/test.html | AUDIT-4-revert deletion | ok
+[2026-05-29 18:53] SKIPPED | replace | wizard/test.html | AUDIT-1 multi-occurrence target | DEV received | target: ZONE | new_code: ZONE_AUDIT
+[2026-05-29 18:53] APPLIED | replace | wizard/test.html | AUDIT-1 multi-occurrence target | ok
