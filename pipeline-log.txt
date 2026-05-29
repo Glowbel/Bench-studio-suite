@@ -948,3 +948,5 @@ wizard-suite-architecture.md
 [2026-05-29 17:57] APPLIED | replace | wizard/test.html | AUDIT-A2 timing test clean replace | ok
 [2026-05-29 18:03] SKIPPED | replace | wizard/test.html | AUDIT-A2 revert TOKENS marker | DEV received | target: TOKENS-AUDIT2 | new_code: TOKENS                       250
 [2026-05-29 18:03] APPLIED | replace | wizard/test.html | AUDIT-A2 revert TOKENS marker | ok
+[2026-05-29 18:52] SKIPPED | replace | wizard/test.html | AUDIT-5 syntax check rollback | DEV received | target: <!DOCTYPE html> | new_code: <<<BROKEN_HTML_NO_CLOSING_TAGS<<<<
+[2026-05-29 18:52] APPLIED | replace | wizard/test.html | AUDIT-5 syntax check rollback | ok
