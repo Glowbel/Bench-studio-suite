@@ -952,3 +952,7 @@ wizard-suite-architecture.md
 [2026-05-29 18:52] APPLIED | replace | wizard/test.html | AUDIT-5 syntax check rollback | ok
 [2026-05-29 18:53] SKIPPED | replace | wizard/test.html | AUDIT-4 empty New Code (deletion) | DEV received | target: PHASE-BAR | new_code: 
 [2026-05-29 18:53] APPLIED | replace | wizard/test.html | AUDIT-4 empty New Code (deletion) | ok
+[2026-05-29 18:53] SKIPPED | replace | wizard/test.html | AUDIT-3-revert special chars | DEV received | target: TOKENS<>&"$250 | new_code: TOKENS                       250
+[2026-05-29 18:53] FAILED | replace | wizard/test.html | AUDIT-3-revert special chars | pattern not found | received: TOKENS<>&"$250
+[2026-05-29 18:53] SKIPPED | replace | wizard/test.html | AUDIT-3 special chars in New Code | DEV received | target: TOKENS                       250 | new_code: TOKENS<>&"$250
+[2026-05-29 18:53] APPLIED | replace | wizard/test.html | AUDIT-3 special chars in New Code | ok
