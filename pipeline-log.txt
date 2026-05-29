@@ -986,3 +986,8 @@ plain_ZONE_count:
 [2026-05-29 18:56] APPLIED | replace | wizard/test.html | AUDIT-3R special chars in New Code | ok
 [2026-05-29 18:56] SKIPPED | replace | wizard/test.html | AUDIT-1R-revert ZONE_AUDIT to ZONE | DEV received | target: ZONE_AUDIT | new_code: ZONE
 [2026-05-29 18:56] APPLIED | replace | wizard/test.html | AUDIT-1R-revert ZONE_AUDIT to ZONE | ok
+[2026-05-29 18:56] SKIPPED | replace | wizard/test.html | AUDIT-5R syntax check rollback | DEV received | target: <!DOCTYPE html> | new_code: <<<BROKEN_HTML_AUDIT_5R<<<<
+[2026-05-29 18:56] FAILED | replace | wizard/test.html | AUDIT-5R syntax check rollback | pattern not found | received: <!DOCTYPE html>
+[2026-05-29 18:56] SKIPPED | config | DEV_MODE | AUDIT disable DEV_MODE for real tests | DEV received | target:  | new_code: false
+[2026-05-29 18:56] APPLIED | config | DEV_MODE | AUDIT disable DEV_MODE for real tests | DEV_MODE set to False
+[2026-05-29 18:58] APPLIED | replace | wizard/test.html | EMERGENCY restore DOCTYPE 1 | ok
