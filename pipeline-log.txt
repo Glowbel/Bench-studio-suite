@@ -984,3 +984,5 @@ plain_ZONE_count:
 [2026-05-29 18:56] APPLIED | replace | wizard/test.html | AUDIT-3R-revert special chars | ok
 [2026-05-29 18:56] SKIPPED | replace | wizard/test.html | AUDIT-3R special chars in New Code | DEV received | target: TOKENS                       250 | new_code: TOKENS<>&"$250
 [2026-05-29 18:56] APPLIED | replace | wizard/test.html | AUDIT-3R special chars in New Code | ok
+[2026-05-29 18:56] SKIPPED | replace | wizard/test.html | AUDIT-1R-revert ZONE_AUDIT to ZONE | DEV received | target: ZONE_AUDIT | new_code: ZONE
+[2026-05-29 18:56] APPLIED | replace | wizard/test.html | AUDIT-1R-revert ZONE_AUDIT to ZONE | ok
