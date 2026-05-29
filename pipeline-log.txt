@@ -936,3 +936,13 @@ wizard-suite-architecture.md
 [2026-05-29 14:15] APPLIED | replace | wizard/test.html | AUDIT-A clean replace TOKENS test | ok
 [2026-05-29 14:16] SKIPPED | replace | wizard/test.html | AUDIT-A revert TOKENS marker | DEV received | target: TOKENS-AUDIT | new_code: TOKENS                       250
 [2026-05-29 14:16] APPLIED | replace | wizard/test.html | AUDIT-A revert TOKENS marker | ok
+[2026-05-29 14:17] SKIPPED | replace | wizard/testDoThTmL | AUDIT-C DoThTmL in File Path | DEV received | target: TOKENS                       250 | new_code: TOKENS-AUDIT-C
+[2026-05-29 14:17] FAILED | replace | wizard/testDoThTmL | AUDIT-C DoThTmL in File Path | exception: [Errno 2] No such file or directory: '/data/data/com.termux/files/home/Bench-studio-suite/wizard/testDoThTmL'
+[2026-05-29 14:17] SKIPPED | replace | wizard/test.html | AUDIT-B wrong target string | DEV received | target: THIS_STRING_DOES_NOT_EXIST_IN_THE_FILE_AUDIT_2026 | new_code: anything
+[2026-05-29 14:17] FAILED | replace | wizard/test.html | AUDIT-B wrong target string | pattern not found | received: THIS_STRING_DOES_NOT_EXIST_IN_THE_FILE_AUDIT_2026
+[2026-05-29 17:57] SKIPPED | replace | wizard/test.html | AUDIT-B2 timing test wrong target | DEV received | target: THIS_STRING_DOES_NOT_EXIST_AUDIT2_2026 | new_code: anything
+[2026-05-29 17:57] FAILED | replace | wizard/test.html | AUDIT-B2 timing test wrong target | pattern not found | received: THIS_STRING_DOES_NOT_EXIST_AUDIT2_2026
+[2026-05-29 17:57] SKIPPED | replace | wizard/testDoThTmL | AUDIT-C2 timing test DoThTmL path | DEV received | target: TOKENS                       250 | new_code: x
+[2026-05-29 17:57] FAILED | replace | wizard/testDoThTmL | AUDIT-C2 timing test DoThTmL path | exception: [Errno 2] No such file or directory: '/data/data/com.termux/files/home/Bench-studio-suite/wizard/testDoThTmL'
+[2026-05-29 17:57] SKIPPED | replace | wizard/test.html | AUDIT-A2 timing test clean replace | DEV received | target: TOKENS                       250 | new_code: TOKENS-AUDIT2
+[2026-05-29 17:57] APPLIED | replace | wizard/test.html | AUDIT-A2 timing test clean replace | ok
