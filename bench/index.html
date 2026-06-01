@@ -2532,28 +2532,7 @@ body { font-family:'DM Mono',monospace; color:var(--c-text); -webkit-font-smooth
 </style>
 </head>
 <body>
-<div id="portal-splash" style="position:fixed;inset:0;z-index:9999;background:#04060c;display:flex;align-items:center;justify-content:center;">
-  <canvas id="portal-canvas"></canvas>
-</div>
-<div id="app" style="opacity:0;transition:opacity 0.6s ease;"></div>
-<script src="portal-dive.js"></script>
-<script>
-(function () {
-  "use strict";
-  var canvas = document.getElementById('portal-canvas');
-  var ctx = canvas.getContext('2d');
-  var splash = document.getElementById('portal-splash');
-  var app = document.getElementById('app');
-  var DPR = Math.min(window.devicePixelRatio || 1, 2);
-  var cssW = 0, cssH = 0;
-  var mouse = { x: 0, y: 0, inside: false };
-  var energy = 0, target = 0;
-  var mode = 'idle';
-  var diveStart = 0;
-  var DIVE_MS = 2700, BLACK_MS = 650, REVEAL_MS = 600;
-
-  function fit() {
-    var s = Math.min(window.innerWidth, window.innerHeight) 
+<div id="app"></div>
 <script>
 // ════════════════════════════════════════════════════════════════════
 // THE BENCH — Classic  |  Phase 2
