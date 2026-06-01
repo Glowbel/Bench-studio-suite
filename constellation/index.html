@@ -5010,6 +5010,48 @@ function renderBubble(b) {
   // Paint the swirl canvas with wispy nebula arcs
   setTimeout(function() { paintSwirl(b); }, 0);
 
+  // ── MASS BUTTONS (outside bubble, bottom-right) ──
+  var massBtns = document.createElement('div');
+  massBtns.className = 'bubble-mass-btns';
+
+  var massPlus = document.createElement('div');
+  massPlus.className = 'bubble-mass-btn';
+  massPlus.textContent = '＋';
+  massPlus.addEventListener('click', function(e) {
+    e.stopPropagation();
+    addMass(b.id, 1);
+    updateZoomMassLabel(b.id);
+  });
+  massPlus.addEventListener('touchend', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    addMass(b.id, 1);
+    updateZoomMassLabel(b.id);
+  });
+
+  var massMinus = document.createElement('div');
+  massMinus.className = 'bubble-mass-btn';
+  massMinus.textContent = '－';
+  massMinus.addEventListener('click', function(e) {
+    e.stopPropagation();
+    b.mass = Math.max((b.mass || 0) - 1, 0);
+    updateBubbleVisualMass(b);
+    updateBubbleStaleness(b);
+    updateZoomMassLabel(b.id);
+  });
+  massMinus.addEventListener('touchend', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    b.mass = Math.max((b.mass || 0) - 1, 0);
+    updateBubbleVisualMass(b);
+    updateBubbleStaleness(b);
+    updateZoomMassLabel(b.id);
+  });
+
+  massBtns.appendChild(massPlus);
+  massBtns.appendChild(massMinus);
+  el.appendChild(massBtns);
+
   // ── GESTURE MODEL ──────────────────────────────────────
   // Tap (< 300ms, no move)     → zoom / preview
   // Hold + drag (300ms+, move) → move mode activates, drag freely
