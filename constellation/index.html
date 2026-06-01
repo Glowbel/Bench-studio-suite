@@ -7021,7 +7021,6 @@ function updateZoomMassLabel(bubbleId) {
   zoomMassLabel.textContent = 'weight · ' + Math.round((b.mass || 0) * 10) / 10;
 }
 
-document.getElementById('zoom-exit').addEventListener('click', closeZoom);
 document.getElementById('zoom-bg').addEventListener('click', closeZoom);
 
 function closeZoom() {
