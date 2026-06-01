@@ -631,6 +631,38 @@
   }
 
 /* === END BUBBLES === */
+
+  /* Mass buttons — outside bubble, bottom-right */
+  .bubble-mass-btns {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    z-index: 20;
+    pointer-events: auto;
+  }
+  .bubble-mass-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid rgba(100,130,220,0.35);
+    background: rgba(10,14,40,0.85);
+    color: rgba(180,200,240,0.7);
+    font-size: 13px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .bubble-mass-btn:hover {
+    border-color: var(--gold);
+    box-shadow: 0 0 8px rgba(201,168,76,0.35);
+    color: var(--gold);
+  }
 /* === BEGIN COMPASS === */
   /* ── COMPASS — RADIAL SLIDE MENU ─────────────────────── */
 
