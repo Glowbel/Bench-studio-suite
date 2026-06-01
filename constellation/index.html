@@ -7047,24 +7047,6 @@ function submitWhisper() {
   zoomWhisperInput.value = '';
 }
 
-document.getElementById('zoom-mass-plus').addEventListener('click', function() {
-  if (state.zoomTargetId !== null) {
-    addMass(state.zoomTargetId, 1);
-    updateZoomMassLabel(state.zoomTargetId);
-  }
-});
-document.getElementById('zoom-mass-minus').addEventListener('click', function() {
-  if (state.zoomTargetId !== null) {
-    var b = getBubbleById(state.zoomTargetId);
-    if (b) {
-      b.mass = Math.max((b.mass || 0) - 1, 0);
-      updateBubbleVisualMass(b);
-      updateBubbleStaleness(b);
-      updateZoomMassLabel(b.id);
-    }
-  }
-});
-
 /* === END ZOOM-VIEW === */
 /* === BEGIN PREVIEW-BRIDGE === */
 // ── PREVIEW (BRIDGE) ──────────────────────────────────────
