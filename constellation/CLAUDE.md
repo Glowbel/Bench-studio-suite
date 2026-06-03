@@ -66,6 +66,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-03] fix  | swirl canvas bleed removed; paintCrystalSwirl on-demand; starDefaults moved to VISUAL-SETTINGS-STATE; dial 320→420px full-size preview | touches: BUBBLES, CRYSTAL-SWIRL, VISUAL-SETTINGS-STATE, STAR-DIAL
 [2026-06-03] feat | gaseous-star system — SVG renderer replaces swirl canvas; 8 movements × 8 palettes × 5 edges | touches: BUBBLES, COMPASS, PERSISTENCE, VISUAL-SETTINGS-STATE
 [2026-06-03] fix  | mass scale extended 0-3 → 0-10; bubbleRadius normalized; --bubble-mass-t CSS var added | touches: BUBBLE-DATA, BUBBLES
 [2026-06-03] feat | per-bubble star dial (compass customize); global modal in visual settings; override confirm | touches: COMPASS, SETTINGS-PANEL
