@@ -10152,7 +10152,7 @@ function _renderStarDialRing(stage) {
 
   var center = document.createElement('div');
   center.className = 'dial-center';
-  center.innerHTML = _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, bubbleMassToStarMass({ mass: starDialDraft.mass }), 'center-' + starDialOriginalId, 1.6);
+  center.innerHTML = _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, 0.75, 'center-' + starDialOriginalId, 1.6);
   var nameLabel = document.createElement('div');
   nameLabel.className = 'dial-center-name';
   var mv = STAR_MOVEMENTS_BY_ID[starDialDraft.starMovement] || STAR_MOVEMENTS[0];
@@ -10166,6 +10166,15 @@ function _renderStarDialMass(stage) {
   var mass01 = bubbleMassToStarMass({ mass: starDialDraft.mass });
   var phase = bubbleStarPhase({ mass: starDialDraft.mass });
 
+  var existingRange = stage.querySelector('input[type="range"]');
+  if (existingRange) {
+    var previewEl = stage.querySelector('.dial-mass-preview');
+    var phaseEl   = stage.querySelector('.dial-mass-phase');
+    if (previewEl) previewEl.innerHTML = _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, mass01, 'mass-' + starDialOriginalId, 1.6);
+    if (phaseEl)   phaseEl.innerHTML   = 'phase &middot; ' + phase.name;
+    return;
+  }
+
   var wrap = document.createElement('div');
   wrap.className = 'dial-mass-wrap';
   wrap.innerHTML =
@@ -10174,13 +10183,13 @@ function _renderStarDialMass(stage) {
     '</div>' +
     '<div class="dial-mass-controls">' +
       '<div class="dial-mass-phase">phase &middot; ' + phase.name + '</div>' +
-      '<input type="range" min="0" max="' + (visualSettings.starMassCap || 10) + '" step="1" value="' + (starDialDraft.mass || 0) + '" />' +
+      '<input type="range" min="0" max="' + (visualSettings.starMassCap || 10) + '" step="any" value="' + (starDialDraft.mass || 0) + '" />' +
       '<div class="dial-mass-ticks"><span>I</span><span>II</span><span>III</span><span>IV</span></div>' +
     '</div>';
 
   var range = wrap.querySelector('input[type="range"]');
   range.addEventListener('input', function (e) {
-    starDialDraft.mass = parseInt(e.target.value, 10);
+    starDialDraft.mass = parseFloat(e.target.value);
     _renderStarDialMass(stage);
   });
   stage.innerHTML = '';
