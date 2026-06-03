@@ -66,6 +66,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-03] fix  | star dial center — scale 1.0→1.6; transform centering; mass tab parity | touches: COMPASS, VISUAL-SETTINGS-STATE
 [2026-06-03] fix  | bubble-star body missing — renderBubbleStar moved after appendChild so getElementById finds el | touches: BUBBLES
 [2026-06-03] fix  | swirl canvas bleed removed; paintCrystalSwirl on-demand; starDefaults moved to VISUAL-SETTINGS-STATE; dial 320→420px full-size preview | touches: BUBBLES, CRYSTAL-SWIRL, VISUAL-SETTINGS-STATE, STAR-DIAL
 [2026-06-03] feat | gaseous-star system — SVG renderer replaces swirl canvas; 8 movements × 8 palettes × 5 edges | touches: BUBBLES, COMPASS, PERSISTENCE, VISUAL-SETTINGS-STATE
