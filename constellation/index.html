@@ -457,7 +457,8 @@
     overflow: visible;
   }
 
-  /* legacy bubble-bg, rim, rune-ring removed — new star system only */
+  /* bubble-bg: kept in DOM for structural stability, hidden in favour of bubble-star */
+  .bubble-bg { display: none; }
 
   /* Label floats below the bubble — outside, not inside */
   .bubble-label {
@@ -5429,9 +5430,8 @@ function renderBubble(b) {
     '<div class="bubble-inner">' +
       '<div class="bubble-label">' + b.label + '</div>' +
       '<div class="portal-icon">· portal ·</div>' +
-    '</div>';
-
-  renderBubbleStar(b);
+    '</div>' +
+    '<div class="bubble-bg"></div>';
 
   // ── GESTURE MODEL ──────────────────────────────────────
   // Tap (< 300ms, no move)     → zoom / preview
@@ -5613,6 +5613,7 @@ function renderBubble(b) {
   bubbleLayer.appendChild(el);
   el.style.zIndex = '2'; // explicit base — prevents DOM-order event theft
   b.el = el; // cache ref — avoids getElementById every frame
+  renderBubbleStar(b);
 }
 
 /* === END CREATE-BUBBLE === */
