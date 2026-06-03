@@ -8317,18 +8317,24 @@ function spOnDragEnd() {
 var spDragHandle = document.getElementById('sp-drag-handle');
 
 spDragHandle.addEventListener('mousedown', function(e) {
-  // Don't intercept close button
+  // Don't intercept close button or collapse target (each has its own handler)
   if (e.target.closest && e.target.closest('#sp-close')) return;
+  if (e.target.closest && e.target.closest('#sp-collapse-target')) return;
   spOnDragStart(e.clientX, e.clientY);
   e.preventDefault();
   e.stopPropagation();
 });
 spDragHandle.addEventListener('touchstart', function(e) {
   if (e.target.closest && e.target.closest('#sp-close')) return;
+  if (e.target.closest && e.target.closest('#sp-collapse-target')) return;
   var t = e.touches[0];
   spOnDragStart(t.clientX, t.clientY);
   e.stopPropagation();
 }, { passive: true });
+// Safety: if a touch is cancelled (e.g. system overlay), clear drag state
+document.addEventListener('touchcancel', function() {
+  if (spDragging) { spDragging = false; spDragMoved = false; }
+});
 
 // Document move/end — ONLY act when spDragging is true (set by handle only)
 document.addEventListener('mousemove', function(e) {
@@ -10152,7 +10158,7 @@ function _renderStarDialRing(stage) {
 
   var center = document.createElement('div');
   center.className = 'dial-center';
-  center.innerHTML = _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, 0.75, 'center-' + starDialOriginalId, 1.6);
+  center.innerHTML = _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, 0.75, 'center-' + starDialOriginalId, 1.2);
   var nameLabel = document.createElement('div');
   nameLabel.className = 'dial-center-name';
   var mv = STAR_MOVEMENTS_BY_ID[starDialDraft.starMovement] || STAR_MOVEMENTS[0];
@@ -10170,7 +10176,7 @@ function _renderStarDialMass(stage) {
   if (existingRange) {
     var previewEl = stage.querySelector('.dial-mass-preview');
     var phaseEl   = stage.querySelector('.dial-mass-phase');
-    if (previewEl) previewEl.innerHTML = _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, mass01, 'mass-' + starDialOriginalId, 1.6);
+    if (previewEl) previewEl.innerHTML = _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, mass01, 'mass-' + starDialOriginalId, 1.2);
     if (phaseEl)   phaseEl.innerHTML   = 'phase &middot; ' + phase.name;
     return;
   }
@@ -10179,7 +10185,7 @@ function _renderStarDialMass(stage) {
   wrap.className = 'dial-mass-wrap';
   wrap.innerHTML =
     '<div class="dial-mass-preview">' +
-      _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, mass01, 'mass-' + starDialOriginalId, 1.6) +
+      _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, mass01, 'mass-' + starDialOriginalId, 1.2) +
     '</div>' +
     '<div class="dial-mass-controls">' +
       '<div class="dial-mass-phase">phase &middot; ' + phase.name + '</div>' +
