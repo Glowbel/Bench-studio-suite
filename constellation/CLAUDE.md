@@ -36,7 +36,7 @@ Ideas are minerals. Interaction is pressure. Crystallization is commitment. The 
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~9,450
+lines: ~10,678
 state: mid-build | stable but finding unusual bugs | hardcore audit underway
 phase: 1 shipped | 1.5/2 active (bug fixes + core audit + phase-change rethink)
 external-work: file split in progress (developer friend, testing in Claude artifacts)
@@ -66,7 +66,9 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
-(empty — populate as fixes/features ship)
+[2026-06-03] feat | gaseous-star system — SVG renderer replaces swirl canvas; 8 movements × 8 palettes × 5 edges | touches: BUBBLES, COMPASS, PERSISTENCE, VISUAL-SETTINGS-STATE
+[2026-06-03] fix  | mass scale extended 0-3 → 0-10; bubbleRadius normalized; --bubble-mass-t CSS var added | touches: BUBBLE-DATA, BUBBLES
+[2026-06-03] feat | per-bubble star dial (compass customize); global modal in visual settings; override confirm | touches: COMPASS, SETTINGS-PANEL
 ```
 
 ---
@@ -121,7 +123,16 @@ visual prominence: weight, mass, tier — not arbitrary styling
 
 [bubble-tools] (kept specific — design depth lives in constellation-bubble-tools.md)
 core interface for bubble interaction
-visual embellishment deferred until geometry + core functions are locked
+
+[star-system] (locked patterns — as of 2026-06-03)
+per-bubble: starMovement / starPalette / starBorder (null = global default)
+global defaults: visualSettings.starDefaults {movement, palette, border}
+mass scale: 0-10 (starMassCap=10) → 0..1 via bubbleMassToStarMass()
+phase thresholds: 3=Main Sequence, 6=Giant, 10=Supergiant
+renderer: renderBubbleStar(b) — idempotent, fingerprint-gated SVG rebuild
+compass 'customize' direction → openStarDial(b) — per-bubble dial
+settings panel 'customize stars' row → openGlobalStarsModal() — field defaults
+override confirm: 'unstyled' (default) | 'all' — only shown if any bubble customized
 fetch: constellation-bubble-tools.md when working on bubble tool design
 ```
 

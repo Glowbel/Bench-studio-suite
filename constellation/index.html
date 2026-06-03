@@ -511,13 +511,24 @@
 
   .bubble-mass-arc { display: none; }
 
-  /* Mass state — nebula deepens with weight */
+  /* Mass state — nebula deepens with weight (0–10 scale) */
   .bubble[data-mass="0"] .bubble-bg { opacity: 0.55; }
   .bubble[data-mass="1"] .bubble-bg {
+    opacity: 0.62;
+    box-shadow: 0 0 10px 5px rgba(60,180,110,0.12), inset 0 0 10px rgba(80,200,130,0.07);
+  }
+  .bubble[data-mass="2"] .bubble-bg {
     opacity: 0.68;
     box-shadow: 0 0 14px 7px rgba(60,180,110,0.16), 0 0 32px 10px rgba(40,160,90,0.07), inset 0 0 14px rgba(80,200,130,0.09);
   }
-  .bubble[data-mass="2"] .bubble-bg {
+  .bubble[data-mass="3"] .bubble-bg {
+    opacity: 0.74;
+    background:
+      radial-gradient(ellipse at 42% 38%, rgba(100,220,165,0.45) 0%, rgba(65,185,125,0.30) 28%, rgba(35,130,85,0.16) 52%, transparent 72%),
+      radial-gradient(circle at 50% 50%, rgba(60,190,125,0.22) 0%, transparent 70%);
+    box-shadow: 0 0 16px 8px rgba(65,185,120,0.16), inset 0 0 14px rgba(85,205,140,0.09);
+  }
+  .bubble[data-mass="4"] .bubble-bg {
     opacity: 0.80;
     background:
       radial-gradient(ellipse at 42% 38%, rgba(100,220,165,0.58) 0%, rgba(65,185,125,0.40) 28%, rgba(35,130,85,0.22) 52%, transparent 72%),
@@ -525,13 +536,53 @@
       radial-gradient(circle at 50% 50%, rgba(60,190,125,0.30) 0%, transparent 70%);
     box-shadow: 0 0 18px 9px rgba(65,185,120,0.20), 0 0 40px 12px rgba(45,160,100,0.09), inset 0 0 18px rgba(85,205,140,0.11);
   }
-  .bubble[data-mass="3"] .bubble-bg {
+  .bubble[data-mass="5"] .bubble-bg {
+    opacity: 0.85;
+    background:
+      radial-gradient(ellipse at 42% 38%, rgba(100,220,165,0.62) 0%, rgba(65,185,125,0.44) 28%, rgba(35,130,85,0.24) 52%, transparent 72%),
+      radial-gradient(ellipse at 67% 62%, rgba(80,210,150,0.46) 0%, rgba(50,170,108,0.24) 38%, transparent 65%),
+      radial-gradient(circle at 50% 50%, rgba(60,190,125,0.33) 0%, transparent 70%);
+    box-shadow: 0 0 20px 10px rgba(65,185,120,0.22), 0 0 46px 14px rgba(45,160,100,0.10), inset 0 0 20px rgba(85,205,140,0.12);
+  }
+  .bubble[data-mass="6"] .bubble-bg {
+    opacity: 0.88;
+    background:
+      radial-gradient(ellipse at 40% 36%, rgba(110,230,175,0.65) 0%, rgba(70,195,135,0.46) 26%, rgba(40,140,90,0.24) 50%, transparent 72%),
+      radial-gradient(ellipse at 70% 65%, rgba(90,220,155,0.48) 0%, rgba(55,180,115,0.24) 38%, transparent 66%),
+      radial-gradient(circle at 50% 50%, rgba(65,200,135,0.33) 0%, transparent 70%);
+    box-shadow: 0 0 22px 11px rgba(70,195,130,0.24), 0 0 50px 16px rgba(50,170,108,0.10), inset 0 0 22px rgba(90,215,145,0.13);
+  }
+  .bubble[data-mass="7"] .bubble-bg {
+    opacity: 0.90;
+    background:
+      radial-gradient(ellipse at 40% 36%, rgba(110,230,175,0.66) 0%, rgba(70,195,135,0.47) 26%, rgba(40,140,90,0.25) 50%, transparent 72%),
+      radial-gradient(ellipse at 70% 65%, rgba(90,220,155,0.49) 0%, rgba(55,180,115,0.25) 38%, transparent 66%),
+      radial-gradient(circle at 50% 50%, rgba(65,200,135,0.34) 0%, transparent 70%);
+    box-shadow: 0 0 23px 11px rgba(70,195,130,0.25), 0 0 52px 17px rgba(50,170,108,0.11), inset 0 0 23px rgba(90,215,145,0.14);
+  }
+  .bubble[data-mass="8"] .bubble-bg {
+    opacity: 0.91;
+    background:
+      radial-gradient(ellipse at 40% 36%, rgba(110,230,175,0.67) 0%, rgba(70,195,135,0.48) 26%, rgba(40,140,90,0.26) 50%, transparent 72%),
+      radial-gradient(ellipse at 70% 65%, rgba(90,220,155,0.50) 0%, rgba(55,180,115,0.26) 38%, transparent 66%),
+      radial-gradient(circle at 50% 50%, rgba(65,200,135,0.35) 0%, transparent 70%);
+    box-shadow: 0 0 24px 12px rgba(70,195,130,0.26), 0 0 54px 17px rgba(50,170,108,0.11), inset 0 0 24px rgba(90,215,145,0.14);
+  }
+  .bubble[data-mass="9"] .bubble-bg {
     opacity: 0.92;
     background:
       radial-gradient(ellipse at 40% 36%, rgba(110,230,175,0.68) 0%, rgba(70,195,135,0.48) 26%, rgba(40,140,90,0.26) 50%, transparent 72%),
       radial-gradient(ellipse at 70% 65%, rgba(90,220,155,0.50) 0%, rgba(55,180,115,0.26) 38%, transparent 66%),
       radial-gradient(circle at 50% 50%, rgba(65,200,135,0.36) 0%, transparent 70%);
     box-shadow: 0 0 24px 12px rgba(70,195,130,0.26), 0 0 54px 18px rgba(50,170,108,0.11), inset 0 0 24px rgba(90,215,145,0.14);
+  }
+  .bubble[data-mass="10"] .bubble-bg {
+    opacity: 0.96;
+    background:
+      radial-gradient(ellipse at 40% 36%, rgba(120,240,185,0.72) 0%, rgba(75,205,140,0.52) 26%, rgba(44,148,96,0.28) 50%, transparent 72%),
+      radial-gradient(ellipse at 70% 65%, rgba(95,228,162,0.54) 0%, rgba(58,188,120,0.28) 38%, transparent 66%),
+      radial-gradient(circle at 50% 50%, rgba(68,210,140,0.40) 0%, transparent 70%);
+    box-shadow: 0 0 28px 14px rgba(72,200,135,0.30), 0 0 60px 20px rgba(52,176,112,0.13), inset 0 0 28px rgba(94,222,150,0.16);
   }
 
   /* Stale — desaturate and dim the nebula */
@@ -611,10 +662,6 @@
     opacity: 0.45;
     mix-blend-mode: screen;
   }
-  .bubble[data-mass="0"] .bubble-swirl { opacity: 0.30; }
-  .bubble[data-mass="1"] .bubble-swirl { opacity: 0.42; }
-  .bubble[data-mass="2"] .bubble-swirl { opacity: 0.54; }
-  .bubble[data-mass="3"] .bubble-swirl { opacity: 0.68; }
   .bubble.crystallized  .bubble-swirl { opacity: 0.60; }
 
   @keyframes swirl-cw  { from { transform: rotate(0deg);   } to { transform: rotate(360deg);  } }
@@ -632,37 +679,6 @@
 
 /* === END BUBBLES === */
 
-  /* Mass buttons — outside bubble, bottom-right */
-  .bubble-mass-btns {
-    position: absolute;
-    bottom: -8px;
-    right: -8px;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    z-index: 20;
-    pointer-events: auto;
-  }
-  .bubble-mass-btn {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 1px solid rgba(100,130,220,0.35);
-    background: rgba(10,14,40,0.85);
-    color: rgba(180,200,240,0.7);
-    font-size: 13px;
-    line-height: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
-    user-select: none;
-    -webkit-user-select: none;
-  }
-  .bubble-mass-btn:hover {
-    border-color: var(--gold);
-    box-shadow: 0 0 8px rgba(201,168,76,0.35);
-    color: var(--gold);
-  }
 /* === BEGIN COMPASS === */
   /* ── COMPASS — RADIAL SLIDE MENU ─────────────────────── */
 
@@ -3610,9 +3626,434 @@
   .si-box.temporary .si-confirm-note { color: rgba(180,130,80,0.50); }
 
 /* === END SESSION-INIT === */
+
+/* === BEGIN STAR-STYLES === */
+/* Gaseous-star visual system — movement animations + halo/aura/borders. */
+
+.bubble-star {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: min(var(--star-size, 120px), 100%);
+  aspect-ratio: 1 / 1;
+  pointer-events: none;
+  transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bubble-star > * { grid-area: 1 / 1; }
+.bubble-star .halo {
+  width: 240%; height: 240%;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    var(--halo-color, #9b8aff) 0%,
+    var(--halo-color, #9b8aff) 4%,
+    transparent 55%);
+  opacity: var(--halo-opacity, 0.32);
+  filter: blur(18px);
+  pointer-events: none;
+  transition: opacity 0.7s ease;
+}
+.bubble-star .aura {
+  width: 130%; height: 130%;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    transparent 38%,
+    var(--halo-color, #9b8aff) 49%,
+    transparent 56%);
+  opacity: var(--aura-opacity, 0.22);
+  filter: blur(6px);
+  pointer-events: none;
+}
+.bubble-star .sphere { width: 100%; height: 100%; position: relative; }
+.bubble-star .sphere svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.bubble-star .gas-layer,
+.bubble-star .gas-anim { transform-origin: 50% 50%; transform-box: fill-box; }
+.bubble-star .core-glow {
+  transform-origin: 50% 50%; transform-box: fill-box;
+  animation: bs-core-pulse 3.4s ease-in-out infinite;
+}
+.bubble-star .corona-ring {
+  transform-origin: 50% 50%; transform-box: fill-box;
+  animation:
+    bs-corona-flicker calc(2.4s / var(--spd, 1)) ease-in-out infinite,
+    bs-corona-spin    calc(60s  / var(--spd, 1)) linear infinite;
+}
+.bubble-star .dashed-ring {
+  transform-origin: 50% 50%; transform-box: fill-box;
+  animation: bs-corona-spin calc(120s / var(--spd, 1)) linear infinite;
+}
+.bubble-star .binary-orbit-a {
+  transform-origin: 50% 50%; transform-box: fill-box;
+  animation: bs-binary-orbit-a calc(8s / var(--spd, 1)) linear infinite;
+}
+.bubble-star .binary-orbit-b {
+  transform-origin: 50% 50%; transform-box: fill-box;
+  animation: bs-binary-orbit-b calc(8s / var(--spd, 1)) linear infinite;
+}
+
+@keyframes bs-rot-cw       { from { rotate: 0deg; } to { rotate:  360deg; } }
+@keyframes bs-rot-ccw      { from { rotate: 0deg; } to { rotate: -360deg; } }
+@keyframes bs-breathe      { 0%, 100% { scale: 1;    } 50% { scale: 1.14; } }
+@keyframes bs-breathe-2    { 0%, 100% { scale: 0.92; } 50% { scale: 1.08; } }
+@keyframes bs-wobble       { 0%, 100% { translate: -2px 0; } 50% { translate: 2px 0; } }
+@keyframes bs-core-pulse   { 0%, 100% { opacity: 0.88; scale: 1; } 50% { opacity: 1; scale: 1.18; } }
+@keyframes bs-vortex-pulse { 0%, 100% { scale: 1; } 50% { scale: 1.04; } }
+@keyframes bs-pulse-ring {
+  0%, 100% { scale: 0.88; opacity: var(--lo, 0.7); }
+  45%      { scale: 1.10; opacity: calc(var(--lo, 0.7) * 1.2); }
+  65%      { scale: 1.10; opacity: calc(var(--lo, 0.7) * 0.6); }
+}
+@keyframes bs-core-pulsar {
+  0%, 100% { opacity: 0.85; scale: 1; }
+  45%      { opacity: 1;    scale: 1.35; }
+}
+@keyframes bs-flare-burst {
+  0%, 88%, 100% { opacity: var(--lo, 0.7); scale: 1; }
+  92%           { opacity: calc(var(--lo, 0.7) * 1.6); scale: 1.08; }
+  96%           { opacity: calc(var(--lo, 0.7) * 0.85); scale: 1.02; }
+}
+@keyframes bs-flare-burst-2 {
+  0%, 76%, 100% { opacity: var(--lo, 0.7); scale: 1; }
+  82%           { opacity: calc(var(--lo, 0.7) * 1.8); scale: 1.10; }
+  88%           { opacity: calc(var(--lo, 0.7) * 0.7); scale: 1.0; }
+}
+@keyframes bs-binary-orbit-a { from { rotate:   0deg; } to { rotate: 360deg; } }
+@keyframes bs-binary-orbit-b { from { rotate: 180deg; } to { rotate: 540deg; } }
+@keyframes bs-drift-a { 0%, 100% { translate: -4px -3px; } 50% { translate:  4px  3px; } }
+@keyframes bs-drift-b { 0%, 100% { translate:  3px -4px; } 50% { translate: -3px  4px; } }
+@keyframes bs-drift-c { 0%, 100% { translate: -2px  4px; } 50% { translate:  2px -4px; } }
+@keyframes bs-drift-d { 0%, 100% { translate:  4px  2px; } 50% { translate: -4px -2px; } }
+@keyframes bs-corona-flicker { 0%, 100% { opacity: 0.75; } 50% { opacity: 1.0; } }
+@keyframes bs-corona-spin    { from { rotate: 0deg; } to { rotate: 360deg; } }
+
+.bubble-star[data-movement="vortex"] .gas-1 .gas-anim { animation: bs-rot-cw  calc(34s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="vortex"] .gas-2 .gas-anim { animation: bs-rot-ccw calc(54s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="vortex"] .gas-3 .gas-anim { animation: bs-rot-cw  calc(20s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="vortex"] .gas-4 .gas-anim { animation: bs-rot-ccw calc(78s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="vortex"] .sphere          { animation: bs-vortex-pulse calc(18s / var(--spd, 1)) ease-in-out infinite; }
+.bubble-star[data-movement="orbital"] .gas-1 { transform: rotate(-18deg) scaleY(0.40); }
+.bubble-star[data-movement="orbital"] .gas-2 { transform: rotate( 28deg) scaleY(0.30); }
+.bubble-star[data-movement="orbital"] .gas-3 { transform: rotate(-58deg) scaleY(0.52); }
+.bubble-star[data-movement="orbital"] .gas-4 { transform: rotate( 72deg) scaleY(0.22); }
+.bubble-star[data-movement="orbital"] .gas-1 .gas-anim { animation: bs-rot-cw  calc(26s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="orbital"] .gas-2 .gas-anim { animation: bs-rot-ccw calc(38s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="orbital"] .gas-3 .gas-anim { animation: bs-rot-cw  calc(48s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="orbital"] .gas-4 .gas-anim { animation: bs-rot-cw  calc(64s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="convection"] .gas-1 .gas-anim { animation: bs-breathe   calc( 8.5s / var(--spd, 1)) ease-in-out infinite,    bs-rot-cw  calc(72s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="convection"] .gas-2 .gas-anim { animation: bs-breathe-2 calc(11s   / var(--spd, 1)) ease-in-out -2s infinite, bs-rot-ccw calc(54s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="convection"] .gas-3 .gas-anim { animation: bs-breathe   calc(13.5s / var(--spd, 1)) ease-in-out -4s infinite, bs-rot-cw  calc(46s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="convection"] .gas-4 .gas-anim { animation: bs-breathe-2 calc(17s   / var(--spd, 1)) ease-in-out -6s infinite, bs-rot-ccw calc(88s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="convection"] .sphere          { animation: bs-wobble    calc(22s   / var(--spd, 1)) ease-in-out infinite; }
+.bubble-star[data-movement="pulsar"] .gas-1 .gas-anim { animation: bs-pulse-ring calc(3.6s / var(--spd, 1)) ease-out infinite,       bs-rot-cw  calc(180s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="pulsar"] .gas-2 .gas-anim { animation: bs-pulse-ring calc(3.6s / var(--spd, 1)) ease-out -0.9s infinite, bs-rot-ccw calc(180s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="pulsar"] .gas-3 .gas-anim { animation: bs-pulse-ring calc(3.6s / var(--spd, 1)) ease-out -1.8s infinite, bs-rot-cw  calc(180s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="pulsar"] .gas-4 .gas-anim { animation: bs-pulse-ring calc(3.6s / var(--spd, 1)) ease-out -2.7s infinite, bs-rot-ccw calc(180s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="pulsar"] .core-glow      { animation: bs-core-pulsar calc(3.6s / var(--spd, 1)) ease-out infinite; }
+.bubble-star[data-movement="spiral"] .gas-1 .gas-anim { animation: bs-rot-cw calc(88s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="spiral"] .gas-2 .gas-anim { animation: bs-rot-cw calc(46s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="spiral"] .gas-3 .gas-anim { animation: bs-rot-cw calc(24s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="spiral"] .gas-4 .gas-anim { animation: bs-rot-cw calc(12s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="flare"] .gas-1 .gas-anim { animation: bs-rot-cw       calc(60s  / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="flare"] .gas-2 .gas-anim { animation: bs-flare-burst   calc(7s   / var(--spd, 1)) ease-in-out infinite,       bs-rot-ccw calc(40s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="flare"] .gas-3 .gas-anim { animation: bs-flare-burst-2 calc(9s   / var(--spd, 1)) ease-in-out -2s infinite,   bs-rot-cw  calc(28s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="flare"] .gas-4 .gas-anim { animation: bs-flare-burst   calc(5.5s / var(--spd, 1)) ease-in-out -1.3s infinite, bs-rot-ccw calc(22s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="binary"] .gas-1 .gas-anim { animation: bs-rot-cw  calc(70s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="binary"] .gas-2 .gas-anim { animation: bs-rot-ccw calc(58s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="binary"] .gas-3 .gas-anim { animation: bs-rot-cw  calc(40s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="binary"] .gas-4 .gas-anim { animation: bs-rot-ccw calc(32s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="drift"] .gas-1 .gas-anim { animation: bs-drift-a calc(14s / var(--spd, 1)) ease-in-out infinite,     bs-rot-cw  calc(220s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="drift"] .gas-2 .gas-anim { animation: bs-drift-b calc(17s / var(--spd, 1)) ease-in-out -3s infinite, bs-rot-ccw calc(280s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="drift"] .gas-3 .gas-anim { animation: bs-drift-c calc(19s / var(--spd, 1)) ease-in-out -5s infinite, bs-rot-cw  calc(320s / var(--spd, 1)) linear infinite; }
+.bubble-star[data-movement="drift"] .gas-4 .gas-anim { animation: bs-drift-d calc(23s / var(--spd, 1)) ease-in-out -7s infinite, bs-rot-ccw calc(360s / var(--spd, 1)) linear infinite; }
+
+/* Compass customize direction */
+.compass-dir.customize .compass-rune { color: #b59aff; }
+.compass-dir.customize.lit .compass-rune {
+  filter: drop-shadow(0 0 8px rgba(181, 154, 255, 0.85));
+}
+.compass-dir.customize .compass-label { color: rgba(181, 154, 255, 0.85); }
+
+/* Settings row preview chip */
+#sp-row-customize-stars .sp-row-action {
+  display: inline-flex; align-items: center; gap: 10px;
+  border: 1px solid rgba(100, 130, 220, 0.30);
+  background: rgba(7, 10, 26, 0.55);
+  color: var(--silver, #c8cfe8);
+  font-family: inherit;
+  font-style: italic;
+  font-size: 13px;
+  padding: 6px 10px 6px 6px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+#sp-row-customize-stars .sp-row-action:hover {
+  border-color: rgba(100, 130, 220, 0.55);
+  background: rgba(14, 18, 38, 0.7);
+}
+#sp-row-customize-stars .sp-row-action-preview {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(100, 130, 220, 0.25);
+  background: rgba(40, 40, 90, 1);
+}
+#sp-row-customize-stars .sp-row-action-caret {
+  color: rgba(106, 114, 152, 0.85);
+  display: inline-flex;
+}
+
+/* Star dial backdrop */
+.star-dial {
+  position: fixed; inset: 0; z-index: 9000;
+  display: grid; place-items: center;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(8, 6, 22, 0.85) 0%, rgba(2, 3, 10, 0.96) 80%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #c8cfe8;
+  animation: dial-bd-in 0.3s ease;
+}
+.star-dial.hidden { display: none; }
+@keyframes dial-bd-in { from { opacity: 0; } to { opacity: 1; } }
+.dial-close {
+  position: absolute; top: 22px; right: 22px;
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid rgba(100, 130, 220, 0.30);
+  background: rgba(7, 10, 26, 0.7);
+  color: #6a7298; display: grid; place-items: center; cursor: pointer;
+}
+.dial-close:hover { color: #c8cfe8; border-color: rgba(100, 130, 220, 0.55); }
+.dial-head { position: absolute; top: 38px; left: 0; right: 0; text-align: center; }
+.dial-eyebrow { font-size: 8px; letter-spacing: 0.30em; text-transform: uppercase; color: #6a7298; }
+.dial-title { font-style: italic; font-size: 18px; letter-spacing: 0.02em; color: #c8cfe8; margin-top: 2px; }
+.dial-modes { position: absolute; top: 100px; left: 0; right: 0; display: flex; justify-content: center; gap: 18px; }
+.dial-mode {
+  border: none; background: transparent; font-size: 9px; letter-spacing: 0.30em;
+  text-transform: uppercase; color: #6a7298; padding: 6px 2px;
+  border-bottom: 1px solid transparent; cursor: pointer; transition: color 0.2s, border-color 0.2s;
+}
+.dial-mode.active { color: #c8cfe8; border-bottom-color: #3a4080; }
+.dial-stage { position: relative; width: 320px; height: 320px; }
+.dial-ring-svg { position: absolute; inset: 0; pointer-events: none; }
+.dial-ring-track { fill: none; stroke: rgba(100, 130, 220, 0.20); stroke-width: 1; }
+.dial-ring-tick  { stroke: rgba(100, 130, 220, 0.35); stroke-width: 1; }
+.dial-ring-arc { fill: none; stroke: rgba(160, 180, 255, 0.85); stroke-width: 1.5;
+  filter: drop-shadow(0 0 6px rgba(160, 180, 255, 0.8)); transition: stroke-dashoffset 0.4s cubic-bezier(0.3, 0, 0.2, 1); }
+.dial-node {
+  position: absolute; width: 56px; height: 56px; border-radius: 50%;
+  border: 1px solid rgba(100, 130, 220, 0.25); background: rgba(7, 10, 26, 0.85);
+  cursor: pointer; display: grid; place-items: center; padding: 4px;
+  transform: translate(-50%, -50%); transition: border-color 0.2s, background 0.2s, scale 0.2s;
+}
+.dial-node:hover { border-color: rgba(100, 130, 220, 0.55); }
+.dial-node.active { border-color: rgba(160, 180, 255, 0.85); background: rgba(20, 28, 60, 0.85);
+  box-shadow: 0 0 18px -2px rgba(160, 180, 255, 0.6); scale: 1.08; }
+.dial-node-tag {
+  position: absolute; bottom: -16px; left: 50%; translate: -50% 0;
+  font-size: 7px; letter-spacing: 0.22em; text-transform: uppercase; color: #6a7298;
+  white-space: nowrap; opacity: 0; transition: opacity 0.2s, color 0.2s;
+}
+.dial-node.active .dial-node-tag { opacity: 1; color: #c8cfe8; }
+.dial-center { position: absolute; left: 50%; top: 50%; translate: -50% -50%;
+  width: 130px; height: 130px; display: grid; place-items: center; pointer-events: none; }
+.dial-center-name { position: absolute; bottom: -28px; left: 50%; translate: -50% 0;
+  font-style: italic; font-size: 16px; letter-spacing: 0.02em; color: #c8cfe8; white-space: nowrap; }
+.dial-mass-wrap { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+.dial-mass-preview { width: 220px; height: 220px; display: grid; place-items: center; }
+.dial-mass-controls { width: 260px; text-align: center; }
+.dial-mass-phase { font-size: 9px; letter-spacing: 0.26em; text-transform: uppercase; color: #6a7298; margin-bottom: 6px; }
+.dial-mass-ticks { display: flex; justify-content: space-between; margin-top: 4px;
+  font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; color: #6a7298; }
+.dial-foot { position: absolute; bottom: 28px; left: 50%; translate: -50% 0; display: flex; gap: 10px; }
+.dial-btn { font-style: italic; font-size: 13px; letter-spacing: 0.06em; border-radius: 12px;
+  padding: 11px 22px; cursor: pointer; background: transparent; transition: background 0.2s, border-color 0.2s, color 0.2s; }
+.dial-cancel { border: 1px solid rgba(100, 130, 220, 0.30); color: #6a7298; }
+.dial-cancel:hover { color: #c8cfe8; border-color: rgba(100, 130, 220, 0.55); }
+.dial-apply { border: 1px solid rgba(160, 180, 255, 0.85); background: rgba(20, 28, 60, 0.85);
+  color: #c8cfe8; box-shadow: 0 0 14px -3px rgba(160, 180, 255, 0.7); }
+.dial-apply:hover { background: rgba(28, 36, 80, 0.92); }
+body.dial-open .field-motion { animation-play-state: paused; }
+
+/* Global stars modal */
+.gsm-backdrop { position: fixed; inset: 0; z-index: 9100; display: grid; place-items: center;
+  background: rgba(2, 3, 10, 0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  color: #c8cfe8; animation: dial-bd-in 0.25s ease; }
+.gsm-backdrop.hidden { display: none; }
+.gsm-card {
+  width: min(420px, calc(100vw - 32px)); max-height: calc(100vh - 60px); overflow-y: auto;
+  background: radial-gradient(ellipse 100% 60% at 50% 0%, rgba(40, 60, 140, 0.45) 0%, transparent 80%), rgba(7, 10, 26, 0.97);
+  border: 1px solid rgba(100, 130, 220, 0.35); border-radius: 16px; padding: 18px 20px 20px;
+  box-shadow: 0 30px 80px -20px rgba(0,0,0,0.7), 0 0 30px -10px rgba(160,180,255,0.4);
+  animation: gsm-in 0.30s cubic-bezier(0.2, 0.85, 0.3, 1);
+}
+@keyframes gsm-in { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.gsm-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 14px; }
+.gsm-eyebrow { font-size: 8px; letter-spacing: 0.30em; text-transform: uppercase; color: #6a7298; }
+.gsm-title { font-style: italic; font-size: 18px; letter-spacing: 0.02em; color: #c8cfe8; margin-top: 2px; }
+.gsm-close { border: none; background: transparent; color: #6a7298; cursor: pointer; padding: 4px; }
+.gsm-close:hover { color: #c8cfe8; }
+.gsm-preview { display: flex; align-items: center; gap: 14px; background: rgba(4,6,16,0.55);
+  border: 1px solid rgba(100,130,220,0.20); border-radius: 12px; padding: 12px; margin-bottom: 14px; }
+.gsm-stage { flex: 0 0 84px; width: 84px; aspect-ratio: 1; display: grid; place-items: center; }
+.gsm-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.gsm-pulse { font-size: 8px; letter-spacing: 0.24em; text-transform: uppercase; color: #6a7298; }
+.gsm-name { font-style: italic; font-size: 16px; letter-spacing: 0.02em; color: #c8cfe8; }
+.gsm-desc { font-style: italic; font-size: 12px; color: #c8cfe8; opacity: 0.78; line-height: 1.4; }
+.gsm-tabs { display: flex; background: rgba(4,6,16,0.7); border: 1px solid rgba(100,130,220,0.25);
+  border-radius: 999px; padding: 3px; gap: 2px; margin-bottom: 16px; }
+.gsm-tab { flex: 1; border: none; background: transparent; font-style: italic; font-size: 12px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: #6a7298; padding: 7px 6px;
+  border-radius: 999px; cursor: pointer; transition: all 0.2s; }
+.gsm-tab.active { background: rgba(24,32,70,0.9); color: #c8cfe8;
+  box-shadow: inset 0 0 0 1px rgba(160,180,255,0.85), 0 0 10px -2px rgba(160,180,255,0.6); }
+.gsm-body { min-height: 130px; }
+.gsm-movement-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.gsm-sample { background: rgba(4,6,16,0.55); border: 1px solid rgba(100,130,220,0.20); border-radius: 12px;
+  padding: 6px 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  transition: border-color 0.2s, background 0.2s; }
+.gsm-sample:hover { border-color: rgba(100,130,220,0.45); }
+.gsm-sample.active { border-color: rgba(160,180,255,0.85); background: rgba(20,28,60,0.6);
+  box-shadow: inset 0 0 0 1px rgba(160,180,255,0.85); }
+.gsm-sample-stage { width: 100%; aspect-ratio: 1; display: grid; place-items: center; overflow: hidden; }
+.gsm-sample-name { font-style: italic; font-size: 10px; color: #c8cfe8; }
+.gsm-swatch-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 6px 0; }
+.gsm-swatch { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(100,130,220,0.25);
+  cursor: pointer; padding: 0; position: relative; transition: transform 0.18s, box-shadow 0.18s; overflow: hidden; }
+.gsm-swatch:hover { transform: scale(1.10); }
+.gsm-swatch.active { box-shadow: 0 0 0 1px #04050f, 0 0 0 2px rgba(160,180,255,0.85), 0 0 16px -2px rgba(160,180,255,0.85); transform: scale(1.10); }
+.gsm-swatch-fill { position: absolute; inset: 0; border-radius: 50%; }
+.gsm-border-row { display: flex; gap: 8px; justify-content: center; padding: 6px 0; }
+.gsm-border-btn { width: 40px; height: 40px; border: 1px solid rgba(100,130,220,0.25);
+  background: rgba(4,6,16,0.55); color: #6a7298; border-radius: 10px;
+  cursor: pointer; padding: 0; display: grid; place-items: center; transition: all 0.2s; }
+.gsm-border-btn:hover { color: #c8cfe8; border-color: rgba(100,130,220,0.55); }
+.gsm-border-btn.active { color: #c8cfe8; border-color: rgba(160,180,255,0.85); background: rgba(24,32,70,0.7);
+  box-shadow: 0 0 10px -2px rgba(160,180,255,0.65); }
+.gsm-border-btn svg { width: 22px; height: 22px; }
+.gsm-foot { display: flex; gap: 8px; margin-top: 16px; }
+.gsm-btn { flex: 1; font-style: italic; font-size: 13px; letter-spacing: 0.04em; border-radius: 12px;
+  padding: 11px 14px; cursor: pointer; background: transparent; transition: background 0.2s, border-color 0.2s, color 0.2s; }
+.gsm-ghost { border: 1px solid rgba(100,130,220,0.30); color: #6a7298; }
+.gsm-ghost:hover { color: #c8cfe8; border-color: rgba(100,130,220,0.55); }
+.gsm-prime { border: 1px solid rgba(160,180,255,0.85); background: rgba(24,32,70,0.85); color: #c8cfe8;
+  box-shadow: 0 0 14px -3px rgba(160,180,255,0.7); }
+.gsm-prime:hover { background: rgba(32,40,90,0.92); }
+
+/* Override confirm sheet */
+.ovc-backdrop { position: fixed; inset: 0; z-index: 9200; display: grid; place-items: center;
+  background: rgba(2,3,10,0.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  color: #c8cfe8; animation: dial-bd-in 0.22s ease; }
+.ovc-backdrop.hidden { display: none; }
+.ovc-card { width: min(360px, calc(100vw - 32px));
+  background: radial-gradient(ellipse 100% 60% at 50% 0%, rgba(60,50,130,0.45) 0%, transparent 80%), rgba(7,10,26,0.97);
+  border: 1px solid rgba(180,150,255,0.40); border-radius: 16px; padding: 18px 20px;
+  box-shadow: 0 30px 80px -20px rgba(0,0,0,0.7), 0 0 30px -10px rgba(180,150,255,0.45);
+  animation: gsm-in 0.28s cubic-bezier(0.2, 0.85, 0.3, 1); }
+.ovc-eyebrow { font-size: 8px; letter-spacing: 0.30em; text-transform: uppercase; color: #6a7298; }
+.ovc-title { font-style: italic; font-size: 17px; margin-top: 4px; color: #c8cfe8; }
+.ovc-body { font-style: italic; font-size: 13px; color: #c8cfe8; opacity: 0.78; margin: 10px 0 14px; line-height: 1.4; }
+.ovc-options { display: flex; flex-direction: column; gap: 8px; }
+.ovc-option { text-align: left; border: 1px solid rgba(100,130,220,0.30); background: rgba(4,6,16,0.6);
+  border-radius: 12px; padding: 11px 14px; cursor: pointer; display: flex; flex-direction: column; gap: 3px;
+  transition: border-color 0.2s, background 0.2s; }
+.ovc-option:hover { border-color: rgba(180,150,255,0.65); background: rgba(14,18,38,0.75); }
+.ovc-option-label { font-style: italic; font-size: 14px; color: #c8cfe8; }
+.ovc-option-help { font-size: 9px; letter-spacing: 0.06em; color: #6a7298; }
+.ovc-option-warn { border-color: rgba(212,98,58,0.35); }
+.ovc-option-warn:hover { border-color: rgba(212,98,58,0.70); }
+.ovc-option-warn .ovc-option-label { color: #e6a08c; }
+.ovc-cancel { width: 100%; border: 1px solid transparent; background: transparent; margin-top: 10px;
+  padding: 8px; font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase; color: #6a7298;
+  cursor: pointer; border-radius: 10px; }
+.ovc-cancel:hover { color: #c8cfe8; background: rgba(14,18,38,0.6); }
+
+/* === END STAR-STYLES === */
 </style>
 </head>
 <body>
+
+<!-- === BEGIN STAR-SVG-DEFS === -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="wisp-A" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.011 0.018" numOctaves="3" seed="2"  stitchTiles="stitch" result="n" />
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.4 0 0 0 -0.85" result="m" />
+      <feComposite in="SourceGraphic" in2="m" operator="in" result="w" />
+      <feGaussianBlur in="w" stdDeviation="0.9" />
+    </filter>
+    <filter id="wisp-B" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018 0.014" numOctaves="3" seed="7"  stitchTiles="stitch" result="n" />
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 -0.95" result="m" />
+      <feComposite in="SourceGraphic" in2="m" operator="in" result="w" />
+      <feGaussianBlur in="w" stdDeviation="0.7" />
+    </filter>
+    <filter id="wisp-C" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.025 0.020" numOctaves="2" seed="13" stitchTiles="stitch" result="n" />
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.2 0 0 0 -0.80" result="m" />
+      <feComposite in="SourceGraphic" in2="m" operator="in" result="w" />
+      <feGaussianBlur in="w" stdDeviation="1.1" />
+    </filter>
+    <filter id="wisp-D" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="4" seed="21" stitchTiles="stitch" result="n" />
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.8 0 0 0 -1.05" result="m" />
+      <feComposite in="SourceGraphic" in2="m" operator="in" result="w" />
+      <feGaussianBlur in="w" stdDeviation="0.6" />
+    </filter>
+    <filter id="wisp-streak" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.005 0.060" numOctaves="2" seed="33" stitchTiles="stitch" result="n" />
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.4 0 0 0 -0.90" result="m" />
+      <feComposite in="SourceGraphic" in2="m" operator="in" result="w" />
+      <feGaussianBlur in="w" stdDeviation="0.5" />
+    </filter>
+    <filter id="wisp-hot" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.030 0.030" numOctaves="2" seed="41" stitchTiles="stitch" result="n" />
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.4 0 0 0 -1.40" result="m" />
+      <feComposite in="SourceGraphic" in2="m" operator="in" result="w" />
+      <feGaussianBlur in="w" stdDeviation="0.8" />
+    </filter>
+    <filter id="wisp-ripple" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feTurbulence type="turbulence" baseFrequency="0.022 0.022" numOctaves="2" seed="55" stitchTiles="stitch" result="n" />
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 -0.95" result="m" />
+      <feComposite in="SourceGraphic" in2="m" operator="in" result="w" />
+      <feGaussianBlur in="w" stdDeviation="0.7" />
+    </filter>
+    <filter id="wisp-bi" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.006 0.006" numOctaves="3" seed="66" stitchTiles="stitch" result="n" />
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 -1.0" result="m" />
+      <feComposite in="SourceGraphic" in2="m" operator="in" result="w" />
+      <feGaussianBlur in="w" stdDeviation="0.6" />
+    </filter>
+    <filter id="corona-fx" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04 0.04" numOctaves="2" seed="77" stitchTiles="stitch" result="n" />
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.0 0 0 0 -1.0" result="m" />
+      <feComposite in="SourceGraphic" in2="m" operator="in" result="w" />
+      <feGaussianBlur in="w" stdDeviation="0.4" />
+    </filter>
+    <radialGradient id="sphere-shade" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="white" stop-opacity="0" />
+      <stop offset="62%"  stop-color="white" stop-opacity="0" />
+      <stop offset="92%"  stop-color="black" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="black" stop-opacity="0.9" />
+    </radialGradient>
+    <radialGradient id="sphere-light" cx="38%" cy="32%" r="50%">
+      <stop offset="0%"   stop-color="white" stop-opacity="0.18" />
+      <stop offset="40%"  stop-color="white" stop-opacity="0.04" />
+      <stop offset="100%" stop-color="white" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="sphere-deep" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="rgb(40,40,90)"  stop-opacity="1" />
+      <stop offset="100%" stop-color="rgb(10,12,32)"  stop-opacity="1" />
+    </radialGradient>
+    <radialGradient id="rim-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="93%"  stop-color="white" stop-opacity="0" />
+      <stop offset="99%"  stop-color="white" stop-opacity="0.32" />
+      <stop offset="100%" stop-color="white" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+</svg>
+<!-- === END STAR-SVG-DEFS === -->
 
 <!-- === BEGIN BACKGROUND-CANVAS === -->
 <!-- Background star canvas -->
@@ -3961,6 +4402,24 @@
         </div>
       </div>
     </div>
+    <!-- === BEGIN VISUAL-STARS-SETTING-DOM === -->
+    <div class="sp-section">
+      <div class="sp-row" id="sp-row-customize-stars">
+        <div class="sp-row-text" style="flex:1">
+          <div class="sp-label">customize stars</div>
+          <div class="sp-sublabel" style="font-size:10px;opacity:0.6">Set gaseous-star defaults for the field.</div>
+        </div>
+        <button class="sp-row-action" type="button" data-action="open-global-stars">
+          <span class="sp-row-action-preview" data-slot="global-preview"></span>
+          <span class="sp-row-action-caret">
+            <svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4">
+              <path d="M4 2 L8 6 L4 10"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+    <!-- === END VISUAL-STARS-SETTING-DOM === -->
   </div>
 
   <!-- DECAY SUB-VIEW -->
@@ -4143,6 +4602,21 @@
     </div>
     <div class="compass-dir-label">Break Link</div>
   </div>
+
+  <!-- === BEGIN COMPASS-CUSTOMIZE-DOM === -->
+  <div class="compass-dir customize" data-dir="customize">
+    <div class="compass-rune">
+      <svg viewBox="0 0 44 44" width="44" height="44" fill="none" stroke="currentColor">
+        <circle cx="22" cy="22" r="10" stroke-width="0.9" opacity="0.65"/>
+        <circle cx="22" cy="22" r="14" stroke-width="0.5" opacity="0.40" stroke-dasharray="1.5 1.5"/>
+        <path d="M22 7 L24 22 L22 37 L20 22 Z"  stroke-width="0.9"/>
+        <path d="M7 22 L22 20 L37 22 L22 24 Z"  stroke-width="0.9"/>
+        <circle cx="22" cy="22" r="1.6" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="compass-label">customize</div>
+  </div>
+  <!-- === END COMPASS-CUSTOMIZE-DOM === -->
 </div>
 
 <!-- === END COMPASS === -->
@@ -4867,7 +5341,8 @@ function updateBubblePhysics() {
 
 function bubbleRadius(b) {
   var base = 22;
-  var massBonus = (b.mass || 0) * 3;
+  var massT = Math.max(0, Math.min(1, (b.mass || 0) / 10));
+  var massBonus = massT * 30;
   var r = base + massBonus;
   if (b.orbitScale) r = Math.round(r * b.orbitScale);
   return r;
@@ -4918,11 +5393,13 @@ function separateOverlaps(dropped) {
 function addMass(bubbleId, amount) {
   var b = getBubbleById(bubbleId);
   if (!b || b.crystallized) return;
-  b.mass = Math.min((b.mass || 0) + amount, 10);
+  var previousMass = b.mass || 0;
+  b.mass = Math.min(previousMass + amount, 10);
   b.staleness = Math.max((b.staleness || 0) - 0.3, 0);
   b.stalenessTick = 0;
   updateBubbleVisualMass(b);
   updateBubbleStaleness(b);
+  if (typeof checkStarPhaseTransition === 'function') checkStarPhaseTransition(b, previousMass);
   autoSave();
 }
 
@@ -4930,12 +5407,15 @@ function updateBubbleVisualMass(b) {
   var el = document.getElementById('bubble-' + b.id);
   if (!el) return;
   var mass = b.mass || 0;
-  var massClamped = Math.min(Math.floor(mass), 3);
+  var massClamped = Math.min(Math.floor(mass), 10);
   el.setAttribute('data-mass', massClamped);
+  var massT = Math.max(0, Math.min(1, (b.mass || 0) / 10));
+  el.style.setProperty('--bubble-mass-t', massT.toFixed(3));
   // Radius update
   var r = bubbleRadius(b);
   el.style.width = (r * 2) + 'px';
   el.style.height = (r * 2) + 'px';
+  if (typeof renderBubbleStar === 'function') renderBubbleStar(b);
 }
 
 /* === END BUBBLE-DATA === */
@@ -4961,6 +5441,9 @@ function createBubble(label, x, y) {
     viewed: false
   };
   state.bubbles.push(bubble);
+  bubble.starMovement = visualSettings.starDefaults ? visualSettings.starDefaults.movement : null;
+  bubble.starPalette  = visualSettings.starDefaults ? visualSettings.starDefaults.palette  : null;
+  bubble.starBorder   = visualSettings.starDefaults ? visualSettings.starDefaults.border   : null;
   renderBubble(bubble);
   hideHint();
   // Self-awareness loop — fires once per session at user-defined threshold
@@ -5007,50 +5490,7 @@ function renderBubble(b) {
       '<canvas class="bubble-swirl" id="swirl-' + b.id + '"></canvas>' +
     '</div>';
 
-  // Paint the swirl canvas with wispy nebula arcs
-  setTimeout(function() { paintSwirl(b); }, 0);
-
-  // ── MASS BUTTONS (outside bubble, bottom-right) ──
-  var massBtns = document.createElement('div');
-  massBtns.className = 'bubble-mass-btns';
-
-  var massPlus = document.createElement('div');
-  massPlus.className = 'bubble-mass-btn';
-  massPlus.textContent = '＋';
-  massPlus.addEventListener('click', function(e) {
-    e.stopPropagation();
-    addMass(b.id, 1);
-    updateZoomMassLabel(b.id);
-  });
-  massPlus.addEventListener('touchend', function(e) {
-    e.stopPropagation();
-    e.preventDefault();
-    addMass(b.id, 1);
-    updateZoomMassLabel(b.id);
-  });
-
-  var massMinus = document.createElement('div');
-  massMinus.className = 'bubble-mass-btn';
-  massMinus.textContent = '－';
-  massMinus.addEventListener('click', function(e) {
-    e.stopPropagation();
-    b.mass = Math.max((b.mass || 0) - 1, 0);
-    updateBubbleVisualMass(b);
-    updateBubbleStaleness(b);
-    updateZoomMassLabel(b.id);
-  });
-  massMinus.addEventListener('touchend', function(e) {
-    e.stopPropagation();
-    e.preventDefault();
-    b.mass = Math.max((b.mass || 0) - 1, 0);
-    updateBubbleVisualMass(b);
-    updateBubbleStaleness(b);
-    updateZoomMassLabel(b.id);
-  });
-
-  massBtns.appendChild(massPlus);
-  massBtns.appendChild(massMinus);
-  el.appendChild(massBtns);
+  renderBubbleStar(b);
 
   // ── GESTURE MODEL ──────────────────────────────────────
   // Tap (< 300ms, no move)     → zoom / preview
@@ -5235,100 +5675,193 @@ function renderBubble(b) {
 }
 
 /* === END CREATE-BUBBLE === */
-/* === BEGIN SWIRL-PAINTER === */
-// ── SWIRL PAINTER ────────────────────────────────────────
-// Paints wispy arc strokes on the bubble's swirl canvas.
-// Called once on creation and again on crystallization.
-function paintSwirl(b) {
-  var canvas = document.getElementById('swirl-' + b.id);
-  if (!canvas) return;
-  var r = bubbleRadius(b);
-  var size = Math.round(r * 2 * 1.24);
-  canvas.width = size;
-  canvas.height = size;
-  var ctx = canvas.getContext('2d');
-  var cx = size / 2;
-  var cy = size / 2;
+/* === BEGIN STAR-RENDERER === */
+// ── STAR RENDERER ────────────────────────────────────────
+// Builds the gaseous-star SVG for a bubble's #bubble-N element.
 
-  ctx.clearRect(0, 0, size, size);
-
-  // Color palette: blues + warm copper + silver — matches reference image
-  var palettes = [
-    [
-      'rgba(100, 220, 160, 0.55)',
-      'rgba(70,  195, 130, 0.38)',
-      'rgba(140, 230, 170, 0.30)',
-      'rgba(85,  210, 145, 0.42)'
-    ],
-    [
-      'rgba(80,  205, 148, 0.50)',
-      'rgba(110, 225, 165, 0.35)',
-      'rgba(60,  185, 120, 0.38)',
-      'rgba(130, 220, 158, 0.28)'
-    ],
-    [
-      'rgba(95,  215, 155, 0.48)',
-      'rgba(75,  200, 138, 0.38)',
-      'rgba(120, 228, 168, 0.32)',
-      'rgba(55,  180, 115, 0.44)'
-    ]
-  ];
-  var pal = palettes[b.id % palettes.length];
-  var seed = b.id * 137.508;
-
-  function rng(n) {
-    seed = (seed * 1.6180339 + n) % 999.0;
-    return (seed % 1.0 + 1.0) % 1.0;
+var STAR_MASS_ANCHORS = [
+  { t: 0.00, size: 86,  halo: 0.12, aura: 0.06, layerOp: [0.42, 0.30, 0.20, 0.12], coreR: 2.2, bloom: 0.78, sat: 0.80 },
+  { t: 0.33, size: 122, halo: 0.30, aura: 0.18, layerOp: [0.62, 0.52, 0.42, 0.32], coreR: 3.6, bloom: 0.96, sat: 0.98 },
+  { t: 0.66, size: 158, halo: 0.50, aura: 0.32, layerOp: [0.78, 0.70, 0.60, 0.50], coreR: 5.8, bloom: 1.18, sat: 1.15 },
+  { t: 1.00, size: 190, halo: 0.72, aura: 0.46, layerOp: [0.92, 0.86, 0.78, 0.70], coreR: 8.4, bloom: 1.36, sat: 1.30 }
+];
+function _starLerp(a, b, t) { return a + (b - a) * t; }
+function starMassProfile(mass01) {
+  var m = Math.max(0, Math.min(1, mass01));
+  var a = STAR_MASS_ANCHORS[0], b = STAR_MASS_ANCHORS[1];
+  for (var i = 0; i < STAR_MASS_ANCHORS.length - 1; i++) {
+    if (m >= STAR_MASS_ANCHORS[i].t && m <= STAR_MASS_ANCHORS[i + 1].t) {
+      a = STAR_MASS_ANCHORS[i]; b = STAR_MASS_ANCHORS[i + 1]; break;
+    }
   }
-
-  // Draw 6-10 wispy curved arcs
-  var arcCount = 6 + Math.floor(rng(1) * 5);
-  for (var i = 0; i < arcCount; i++) {
-    var startAngle = rng(i * 7) * Math.PI * 2;
-    var sweep = (rng(i * 3 + 1) * 0.9 + 0.4) * Math.PI;
-    var arcR = r * (0.25 + rng(i * 5) * 0.65);
-    var lineWidth = 1.5 + rng(i * 11) * 3.5;
-    var colorIdx = i % pal.length;
-
-    var grad = ctx.createLinearGradient(
-      cx + Math.cos(startAngle) * arcR,
-      cy + Math.sin(startAngle) * arcR,
-      cx + Math.cos(startAngle + sweep) * arcR,
-      cy + Math.sin(startAngle + sweep) * arcR
-    );
-    grad.addColorStop(0, 'transparent');
-    grad.addColorStop(0.3, pal[colorIdx]);
-    grad.addColorStop(0.7, pal[(colorIdx + 1) % pal.length]);
-    grad.addColorStop(1, 'transparent');
-
-    ctx.beginPath();
-    ctx.arc(cx, cy, arcR, startAngle, startAngle + sweep);
-    ctx.strokeStyle = grad;
-    ctx.lineWidth = lineWidth;
-    ctx.lineCap = 'round';
-    ctx.globalAlpha = 0.7 + rng(i * 13) * 0.3;
-    ctx.stroke();
-  }
-
-  // Soft central glow blob
-  var glowGrad = ctx.createRadialGradient(
-    cx + (rng(20) - 0.5) * r * 0.5,
-    cy + (rng(21) - 0.5) * r * 0.5,
-    0,
-    cx, cy, r * 0.7
-  );
-  glowGrad.addColorStop(0, 'rgba(90, 210, 148, 0.18)');
-  glowGrad.addColorStop(0.5, 'rgba(65, 185, 120, 0.06)');
-  glowGrad.addColorStop(1, 'transparent');
-  ctx.globalAlpha = 1;
-  ctx.fillStyle = glowGrad;
-  ctx.beginPath();
-  ctx.arc(cx, cy, r * 0.9, 0, Math.PI * 2);
-  ctx.fill();
+  var span = (b.t - a.t) || 1;
+  var k = (m - a.t) / span;
+  return {
+    size:    _starLerp(a.size, b.size, k),
+    halo:    _starLerp(a.halo, b.halo, k),
+    aura:    _starLerp(a.aura, b.aura, k),
+    layerOp: [
+      _starLerp(a.layerOp[0], b.layerOp[0], k),
+      _starLerp(a.layerOp[1], b.layerOp[1], k),
+      _starLerp(a.layerOp[2], b.layerOp[2], k),
+      _starLerp(a.layerOp[3], b.layerOp[3], k)
+    ],
+    coreR:   _starLerp(a.coreR, b.coreR, k),
+    bloom:   _starLerp(a.bloom, b.bloom, k),
+    sat:     _starLerp(a.sat, b.sat, k)
+  };
 }
 
+var STAR_MOVEMENT_PRESETS = {
+  vortex:     { filters: ['wisp-A', 'wisp-B', 'wisp-A', 'wisp-B'], grad: 'default' },
+  orbital:    { filters: ['wisp-C', 'wisp-A', 'wisp-C', 'wisp-A'], grad: 'banded' },
+  convection: { filters: ['wisp-D', 'wisp-B', 'wisp-A', 'wisp-C'], grad: 'cells' },
+  pulsar:     { filters: ['wisp-ripple', 'wisp-ripple', 'wisp-ripple', 'wisp-A'], grad: 'centered' },
+  spiral:     { filters: ['wisp-streak', 'wisp-streak', 'wisp-streak', 'wisp-streak'], grad: 'spiral' },
+  flare:      { filters: ['wisp-A', 'wisp-hot', 'wisp-hot', 'wisp-hot'], grad: 'cells' },
+  binary:     { filters: ['wisp-bi', 'wisp-bi', 'wisp-A', 'wisp-B'], grad: 'bipolar' },
+  drift:      { filters: ['wisp-D', 'wisp-D', 'wisp-A', 'wisp-A'], grad: 'cells' }
+};
+var STAR_GRAD_LAYOUTS = {
+  'default':  [{ cx: 0.40, cy: 0.36, r: 0.62 }, { cx: 0.62, cy: 0.58, r: 0.55 }, { cx: 0.34, cy: 0.66, r: 0.60 }, { cx: 0.66, cy: 0.30, r: 0.50 }],
+  'banded':   [{ cx: 0.50, cy: 0.30, r: 0.55 }, { cx: 0.50, cy: 0.50, r: 0.55 }, { cx: 0.50, cy: 0.70, r: 0.55 }, { cx: 0.50, cy: 0.50, r: 0.65 }],
+  'cells':    [{ cx: 0.30, cy: 0.30, r: 0.48 }, { cx: 0.70, cy: 0.32, r: 0.46 }, { cx: 0.30, cy: 0.70, r: 0.46 }, { cx: 0.70, cy: 0.70, r: 0.48 }],
+  'centered': [{ cx: 0.50, cy: 0.50, r: 0.55 }, { cx: 0.50, cy: 0.50, r: 0.55 }, { cx: 0.50, cy: 0.50, r: 0.55 }, { cx: 0.50, cy: 0.50, r: 0.55 }],
+  'spiral':   [{ cx: 0.35, cy: 0.50, r: 0.60 }, { cx: 0.65, cy: 0.50, r: 0.55 }, { cx: 0.50, cy: 0.35, r: 0.50 }, { cx: 0.50, cy: 0.65, r: 0.45 }],
+  'bipolar':  [{ cx: 0.30, cy: 0.50, r: 0.40 }, { cx: 0.70, cy: 0.50, r: 0.40 }, { cx: 0.50, cy: 0.50, r: 0.55 }, { cx: 0.50, cy: 0.50, r: 0.60 }]
+};
 
-/* === END SWIRL-PAINTER === */
+function buildStarSvg(uid, palette, movement, border, profile) {
+  var preset = STAR_MOVEMENT_PRESETS[movement] || STAR_MOVEMENT_PRESETS.vortex;
+  var gp = STAR_GRAD_LAYOUTS[preset.grad] || STAR_GRAD_LAYOUTS['default'];
+  var colors = palette.colors;
+  var haloColor = palette.halo || colors[0];
+
+  var s = '<defs>';
+  s += '<clipPath id="bs-clip-' + uid + '"><circle cx="100" cy="100" r="94"/></clipPath>';
+  for (var i = 0; i < colors.length; i++) {
+    var g = gp[i] || gp[0];
+    s += '<radialGradient id="bs-grad-' + uid + '-' + i + '" cx="' + g.cx + '" cy="' + g.cy + '" r="' + g.r + '" fx="' + g.cx + '" fy="' + g.cy + '">';
+    s += '<stop offset="0%" stop-color="' + colors[i] + '" stop-opacity="1"/>';
+    s += '<stop offset="55%" stop-color="' + colors[i] + '" stop-opacity="0.85"/>';
+    s += '<stop offset="100%" stop-color="' + colors[i] + '" stop-opacity="0.20"/>';
+    s += '</radialGradient>';
+  }
+  s += '<radialGradient id="bs-core-' + uid + '" cx="50%" cy="50%" r="50%">';
+  s += '<stop offset="0%" stop-color="white" stop-opacity="1"/>';
+  s += '<stop offset="30%" stop-color="' + colors[0] + '" stop-opacity="0.95"/>';
+  s += '<stop offset="70%" stop-color="' + (colors[1] || colors[0]) + '" stop-opacity="0.4"/>';
+  s += '<stop offset="100%" stop-color="' + colors[0] + '" stop-opacity="0"/>';
+  s += '</radialGradient>';
+  s += '<radialGradient id="bs-pin-' + uid + '" cx="50%" cy="50%" r="50%">';
+  s += '<stop offset="0%" stop-color="white" stop-opacity="1"/>';
+  s += '<stop offset="60%" stop-color="white" stop-opacity="0.6"/>';
+  s += '<stop offset="100%" stop-color="white" stop-opacity="0"/>';
+  s += '</radialGradient>';
+  s += '</defs>';
+
+  s += '<g clip-path="url(#bs-clip-' + uid + ')">';
+  s += '<circle cx="100" cy="100" r="94" fill="url(#sphere-deep)"/>';
+  for (var li = 0; li < 4; li++) {
+    s += '<g class="gas-layer gas-' + (li + 1) + '">';
+    s += '<g class="gas-anim" style="--lo:' + profile.layerOp[li] + '">';
+    s += '<circle cx="100" cy="100" r="94"';
+    s += ' fill="url(#bs-grad-' + uid + '-' + li + ')"';
+    s += ' filter="url(#' + preset.filters[li] + ')"';
+    s += ' opacity="' + profile.layerOp[li] + '"';
+    s += ' style="mix-blend-mode:screen"/>';
+    s += '</g></g>';
+  }
+  s += '<circle cx="100" cy="100" r="94" fill="url(#sphere-shade)"/>';
+  s += '<circle cx="100" cy="100" r="94" fill="url(#sphere-light)"/>';
+
+  if (movement === 'binary') {
+    s += '<g class="binary-orbit-a"><g transform="translate(-22 0)">';
+    s += '<circle cx="100" cy="100" r="' + (profile.coreR * 2.4) + '" fill="url(#bs-core-' + uid + ')" opacity="0.85" style="mix-blend-mode:screen"/>';
+    s += '<circle cx="100" cy="100" r="' + (profile.coreR * 1.1) + '" fill="url(#bs-pin-' + uid + ')" style="mix-blend-mode:screen"/>';
+    s += '<circle cx="100" cy="100" r="' + (profile.coreR * 0.45) + '" fill="white" opacity="0.95"/>';
+    s += '</g></g>';
+    s += '<g class="binary-orbit-b"><g transform="translate(-22 0)">';
+    s += '<circle cx="100" cy="100" r="' + (profile.coreR * 2.2) + '" fill="url(#bs-core-' + uid + ')" opacity="0.80" style="mix-blend-mode:screen"/>';
+    s += '<circle cx="100" cy="100" r="' + (profile.coreR * 1.0) + '" fill="url(#bs-pin-' + uid + ')" style="mix-blend-mode:screen"/>';
+    s += '<circle cx="100" cy="100" r="' + (profile.coreR * 0.40) + '" fill="white" opacity="0.95"/>';
+    s += '</g></g>';
+  } else {
+    s += '<g class="core-glow">';
+    s += '<circle cx="100" cy="100" r="' + (profile.coreR * 3.2) + '" fill="url(#bs-core-' + uid + ')" opacity="0.85" style="mix-blend-mode:screen"/>';
+    s += '<circle cx="100" cy="100" r="' + (profile.coreR * 1.6) + '" fill="url(#bs-pin-' + uid + ')" style="mix-blend-mode:screen"/>';
+    s += '<circle cx="100" cy="100" r="' + (profile.coreR * 0.5) + '" fill="white" opacity="0.95"/>';
+    s += '</g>';
+  }
+  s += '</g>';
+
+  if (border === 'soft') {
+    s += '<circle cx="100" cy="100" r="94" fill="url(#rim-glow)"/>';
+  } else if (border === 'crisp') {
+    s += '<circle cx="100" cy="100" r="94" fill="url(#rim-glow)" opacity="0.6"/>';
+    s += '<circle cx="100" cy="100" r="94" fill="none" stroke="' + haloColor + '" stroke-width="1" opacity="0.95"/>';
+  } else if (border === 'halo') {
+    s += '<circle cx="100" cy="100" r="94" fill="url(#rim-glow)"/>';
+    s += '<circle cx="100" cy="100" r="94"  fill="none" stroke="' + haloColor + '" stroke-width="0.8" opacity="0.9"/>';
+    s += '<circle cx="100" cy="100" r="98"  fill="none" stroke="' + haloColor + '" stroke-width="0.5" opacity="0.55"/>';
+    s += '<circle cx="100" cy="100" r="102" fill="none" stroke="' + haloColor + '" stroke-width="0.3" opacity="0.30"/>';
+  } else if (border === 'dashed') {
+    s += '<circle cx="100" cy="100" r="94" fill="url(#rim-glow)" opacity="0.55"/>';
+    s += '<circle class="dashed-ring" cx="100" cy="100" r="95.5" fill="none" stroke="' + haloColor + '" stroke-width="0.9" stroke-dasharray="3 2.5" opacity="0.9"/>';
+  } else if (border === 'corona') {
+    s += '<circle cx="100" cy="100" r="94" fill="url(#rim-glow)"/>';
+    s += '<g class="corona-ring">';
+    s += '<circle cx="100" cy="100" r="96" fill="none" stroke="white" stroke-width="2.2" filter="url(#corona-fx)" opacity="0.95"/>';
+    s += '<circle cx="100" cy="100" r="99" fill="none" stroke="' + haloColor + '" stroke-width="3"   filter="url(#corona-fx)" opacity="0.7"/>';
+    s += '</g>';
+    s += '<circle cx="100" cy="100" r="94" fill="none" stroke="' + haloColor + '" stroke-width="0.4" opacity="0.6"/>';
+  }
+  return s;
+}
+
+function renderBubbleStar(b) {
+  var el = document.getElementById('bubble-' + b.id);
+  if (!el) return;
+  var cfg = getBubbleStar(b);
+  var pal = STAR_PALETTES_BY_ID[cfg.palette] || STAR_PALETTES[0];
+  var profile = starMassProfile(bubbleMassToStarMass(b));
+
+  var starWrap = el.querySelector('.bubble-star');
+  if (!starWrap) {
+    starWrap = document.createElement('div');
+    starWrap.className = 'bubble-star';
+    starWrap.innerHTML =
+      '<div class="halo"></div>' +
+      '<div class="aura"></div>' +
+      '<div class="sphere"></div>';
+    el.appendChild(starWrap);
+  }
+
+  starWrap.setAttribute('data-movement', cfg.movement);
+  starWrap.style.setProperty('--star-size', profile.size + 'px');
+  starWrap.style.setProperty('--halo-color', pal.halo || pal.colors[0]);
+  starWrap.style.setProperty('--halo-opacity', profile.halo);
+  starWrap.style.setProperty('--aura-opacity', profile.aura);
+  starWrap.style.setProperty('--spd', '1');
+  starWrap.style.filter = 'brightness(' + profile.bloom.toFixed(3) + ') saturate(' + profile.sat.toFixed(3) + ')';
+
+  var fingerprint = cfg.movement + '|' + cfg.palette + '|' + cfg.border;
+  if (starWrap.getAttribute('data-fp') !== fingerprint) {
+    starWrap.setAttribute('data-fp', fingerprint);
+    var uid = 'b' + b.id;
+    var sphere = starWrap.querySelector('.sphere');
+    sphere.innerHTML = '<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">' +
+      buildStarSvg(uid, pal, cfg.movement, cfg.border, profile) + '</svg>';
+  } else {
+    var anims = starWrap.querySelectorAll('.gas-anim');
+    for (var ai = 0; ai < anims.length && ai < 4; ai++) {
+      anims[ai].style.setProperty('--lo', profile.layerOp[ai]);
+      var c = anims[ai].querySelector('circle');
+      if (c) c.setAttribute('opacity', profile.layerOp[ai]);
+    }
+  }
+}
+/* === END STAR-RENDERER === */
 /* === BEGIN CRYSTAL-SWIRL === */
 // ── CRYSTAL SWIRL ──────────────────────────────────────────
 function paintCrystalSwirl(b) {
@@ -5414,7 +5947,7 @@ function openCompass(bubbleId, bx, by) {
   }
 
   // Directions: always north (gravity) and south (dissolve); west (break) if linked
-  var activeDirs = ['north', 'south'];
+  var activeDirs = ['north', 'south', 'customize'];
   if (hasLinks) activeDirs.push('west');
 
   // Compute safe angular range — stay PAD pixels from each edge
@@ -5614,6 +6147,14 @@ function closeCompass(fireDir, fireLinkBubbleId) {
   if (fireDir === 'north') openGravitySubmenu(bid);
   if (fireDir === 'south') initiateDissolution(bid);
   if (fireDir === 'link-opt' && fireLinkBubbleId) breakSingleLink(bid, fireLinkBubbleId);
+  if (fireDir === 'customize') openCustomizeDial(bid);
+}
+
+function openCustomizeDial(bubbleId) {
+  if (!bubbleId) return;
+  var b = getBubbleById(bubbleId);
+  if (!b) return;
+  openStarDial(b);
 }
 
 function breakSingleLink(bubbleId, otherBubbleId) {
@@ -7505,6 +8046,130 @@ function refreshSettingsPanel() {
 }
 
 /* === END VISUAL-SETTINGS-STATE === */
+
+/* === BEGIN STAR-DATA-MODEL === */
+// ── STAR DATA MODEL ──────────────────────────────────────
+
+visualSettings.starDefaults = {
+  movement: 'vortex',
+  palette:  'nebula',
+  border:   'soft'
+};
+visualSettings.starOverrideMode = 'unstyled';
+visualSettings.starMassCap = 10;
+
+var STAR_MOVEMENTS = [
+  { id: 'vortex',     code: 'M-01', name: 'Vortex',     pulse: 'Cyclonic Shear',       desc: 'Concentric shear; gas layers spin one axis at varying rates.' },
+  { id: 'orbital',    code: 'M-02', name: 'Orbital',    pulse: 'Banded Rotation',      desc: 'Tilted belts revolve on inclined planes, a gas giant.' },
+  { id: 'convection', code: 'M-03', name: 'Convection', pulse: 'Turbulent Pulse',      desc: 'Cells dilate and counter-drift, never quite in sync.' },
+  { id: 'pulsar',     code: 'M-04', name: 'Pulsar',     pulse: 'Radial Heartbeat',     desc: 'Rings expand outward in rhythmic waves from the core.' },
+  { id: 'spiral',     code: 'M-05', name: 'Spiral',     pulse: 'Differential Winding', desc: 'Inner layers race ahead, winding arms outward.' },
+  { id: 'flare',      code: 'M-06', name: 'Flare',      pulse: 'Surface Eruption',     desc: 'Quiet surface punctuated by bright burst events.' },
+  { id: 'binary',     code: 'M-07', name: 'Binary',     pulse: 'Twin Locked Cores',    desc: 'Two fusion cores orbit each other within shared gas.' },
+  { id: 'drift',      code: 'M-08', name: 'Drift',      pulse: 'Asymmetric Float',     desc: 'Slow, untethered translation, wandering layers.' }
+];
+
+var STAR_PALETTES = [
+  { id: 'nebula',   name: 'Nebula',   colors: ['#7eb6ff', '#a47cff', '#ff8b65', '#ffb097'], halo: '#9b8aff', isMulti: true  },
+  { id: 'aurora',   name: 'Aurora',   colors: ['#5bf2c0', '#5beaff', '#a47cff', '#7eb6ff'], halo: '#5cf0d0', isMulti: true  },
+  { id: 'sunset',   name: 'Sunset',   colors: ['#ffd370', '#ff7a52', '#ff5acf', '#a47cff'], halo: '#ff7a8c', isMulti: true  },
+  { id: 'twilight', name: 'Twilight', colors: ['#5d8bff', '#a47cff', '#ff7ab8', '#ffd370'], halo: '#9b8aff', isMulti: true  },
+  { id: 'solar',    name: 'Solar',    colors: ['#ffd370', '#ffa549', '#ff7140', '#ffe6a8'], halo: '#ffb558', isMulti: false },
+  { id: 'cobalt',   name: 'Cobalt',   colors: ['#79c5ff', '#5d8bff', '#7e6cff', '#b5d3ff'], halo: '#6a9eff', isMulti: false },
+  { id: 'ember',    name: 'Ember',    colors: ['#ff7a52', '#ff4a4a', '#cc2a4a', '#ffa97a'], halo: '#ff5a4a', isMulti: false },
+  { id: 'emerald',  name: 'Emerald',  colors: ['#5bf2a6', '#4ee6c8', '#5beaff', '#a8ffd6'], halo: '#5cf0c0', isMulti: false }
+];
+
+var STAR_BORDERS = [
+  { id: 'soft',   name: 'Soft'   },
+  { id: 'crisp',  name: 'Crisp'  },
+  { id: 'halo',   name: 'Halo'   },
+  { id: 'dashed', name: 'Dashed' },
+  { id: 'corona', name: 'Corona' }
+];
+
+var STAR_MASS_PHASES = [
+  { t: 0.000, name: 'Protostar',     short: 'I'   },
+  { t: 0.333, name: 'Main Sequence', short: 'II'  },
+  { t: 0.666, name: 'Giant',         short: 'III' },
+  { t: 1.000, name: 'Supergiant',    short: 'IV'  }
+];
+
+var STAR_PALETTES_BY_ID = {};
+for (var _sp_i = 0; _sp_i < STAR_PALETTES.length; _sp_i++) {
+  STAR_PALETTES_BY_ID[STAR_PALETTES[_sp_i].id] = STAR_PALETTES[_sp_i];
+}
+var STAR_MOVEMENTS_BY_ID = {};
+for (var _sm_i = 0; _sm_i < STAR_MOVEMENTS.length; _sm_i++) {
+  STAR_MOVEMENTS_BY_ID[STAR_MOVEMENTS[_sm_i].id] = STAR_MOVEMENTS[_sm_i];
+}
+
+function getBubbleStar(b) {
+  return {
+    movement: b.starMovement || visualSettings.starDefaults.movement,
+    palette:  b.starPalette  || visualSettings.starDefaults.palette,
+    border:   b.starBorder   || visualSettings.starDefaults.border
+  };
+}
+
+function isBubbleCustomized(b) {
+  return !!(b.starMovement || b.starPalette || b.starBorder);
+}
+
+function bubbleMassToStarMass(b) {
+  var cap = visualSettings.starMassCap || 10;
+  var raw = b.mass || 0;
+  return Math.max(0, Math.min(1, raw / cap));
+}
+
+function bubbleStarPhase(b) {
+  var m = bubbleMassToStarMass(b);
+  var p = STAR_MASS_PHASES[0];
+  for (var i = 0; i < STAR_MASS_PHASES.length; i++) {
+    if (m >= STAR_MASS_PHASES[i].t) p = STAR_MASS_PHASES[i];
+  }
+  return p;
+}
+
+function setBubbleStar(bubbleId, partial) {
+  var b = getBubbleById(bubbleId);
+  if (!b) return;
+  if (partial.movement) b.starMovement = partial.movement;
+  if (partial.palette)  b.starPalette  = partial.palette;
+  if (partial.border)   b.starBorder   = partial.border;
+  if (typeof partial.mass === 'number') b.mass = partial.mass;
+  if (typeof renderBubbleStar === 'function') renderBubbleStar(b);
+  if (typeof updateBubbleVisualMass === 'function') updateBubbleVisualMass(b);
+  if (typeof autoSave === 'function') autoSave();
+}
+
+function applyGlobalStarConfig(partial, mode) {
+  var which = mode || visualSettings.starOverrideMode;
+  for (var i = 0; i < state.bubbles.length; i++) {
+    var b = state.bubbles[i];
+    if (which === 'unstyled' && isBubbleCustomized(b)) continue;
+    if (partial.movement) b.starMovement = which === 'all' ? partial.movement : b.starMovement || partial.movement;
+    if (partial.palette)  b.starPalette  = which === 'all' ? partial.palette  : b.starPalette  || partial.palette;
+    if (partial.border)   b.starBorder   = which === 'all' ? partial.border   : b.starBorder   || partial.border;
+    if (typeof renderBubbleStar === 'function') renderBubbleStar(b);
+  }
+  if (partial.movement) visualSettings.starDefaults.movement = partial.movement;
+  if (partial.palette)  visualSettings.starDefaults.palette  = partial.palette;
+  if (partial.border)   visualSettings.starDefaults.border   = partial.border;
+  if (typeof autoSave === 'function') autoSave();
+}
+
+function checkStarPhaseTransition(b, previousMass) {
+  var thresholds = [3, 6, 10];
+  var phases = ['Main Sequence', 'Giant', 'Supergiant'];
+  for (var i = 0; i < thresholds.length; i++) {
+    if (!(previousMass >= thresholds[i]) && (b.mass || 0) >= thresholds[i]) {
+      console.log('Star phase transition: bubble ' + b.id + ' reached ' + phases[i]);
+    }
+  }
+}
+/* === END STAR-DATA-MODEL === */
+
 /* === BEGIN TITLE-PILL === */
 // ── TITLE PILL ────────────────────────────────────────────
 var titlePill = document.getElementById('title-pill');
@@ -8209,7 +8874,10 @@ function serializeSession() {
       driftPhaseY:  b.driftPhaseY || 0,
       driftSpeedX:  b.driftSpeedX || 0,
       driftSpeedY:  b.driftSpeedY || 0,
-      moveMode:     false  // never persist move mode
+      moveMode:     false,  // never persist move mode
+      starMovement: b.starMovement || null,
+      starPalette:  b.starPalette  || null,
+      starBorder:   b.starBorder   || null
     });
   }
   return {
@@ -8343,7 +9011,10 @@ function restoreBubble(bd) {
     driftSpeedY:     bd.driftSpeedY || (0.00018 + Math.random() * 0.00012),
     el:              null,
     mutualRingEl:    null,
-    orbitalPathEl:   null
+    orbitalPathEl:   null,
+    starMovement:    bd.starMovement || null,
+    starPalette:     bd.starPalette  || null,
+    starBorder:      bd.starBorder   || null
   };
   state.bubbles.push(b);
   renderBubble(b);
@@ -9394,6 +10065,484 @@ function hideReleaseZone() { releaseZone.classList.remove('visible'); }
 initIndexedDB(function() {});
 
 /* === END RELEASE-ZONE-VIS === */
+
+/* === BEGIN STAR-DIAL === */
+// ── STAR DIAL ────────────────────────────────────────────
+
+var starDialEl = null;
+var starDialDraft = null;
+var starDialOriginalId = null;
+var starDialMode = 'movement';
+
+function _ensureStarDial() {
+  if (!starDialEl) starDialEl = document.getElementById('star-dial');
+  return starDialEl;
+}
+
+function openStarDial(b) {
+  _ensureStarDial();
+  if (!starDialEl || !b) return;
+  starDialOriginalId = b.id;
+  starDialDraft = {
+    starMovement: b.starMovement || visualSettings.starDefaults.movement,
+    starPalette:  b.starPalette  || visualSettings.starDefaults.palette,
+    starBorder:   b.starBorder   || visualSettings.starDefaults.border,
+    mass:         b.mass || 0
+  };
+  starDialMode = 'movement';
+  starDialEl.querySelector('[data-dial-slot="name"]').textContent = b.label || ('Bubble ' + b.id);
+  starDialEl.classList.remove('hidden');
+  starDialEl.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('dial-open');
+  _renderStarDial();
+}
+
+function closeStarDial() {
+  if (!starDialEl) return;
+  starDialEl.classList.add('hidden');
+  starDialEl.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('dial-open');
+  starDialDraft = null;
+  starDialOriginalId = null;
+}
+
+function applyStarDial() {
+  if (!starDialDraft || starDialOriginalId == null) { closeStarDial(); return; }
+  setBubbleStar(starDialOriginalId, {
+    movement: starDialDraft.starMovement,
+    palette:  starDialDraft.starPalette,
+    border:   starDialDraft.starBorder,
+    mass:     starDialDraft.mass
+  });
+  closeStarDial();
+}
+
+function _renderStarDial() {
+  if (!starDialEl || !starDialDraft) return;
+  var tabs = starDialEl.querySelectorAll('.dial-mode');
+  for (var ti = 0; ti < tabs.length; ti++) {
+    tabs[ti].classList.toggle('active', tabs[ti].getAttribute('data-dial-mode') === starDialMode);
+  }
+  var stage = starDialEl.querySelector('[data-dial-slot="stage"]');
+  stage.innerHTML = '';
+  if (starDialMode === 'mass') _renderStarDialMass(stage);
+  else _renderStarDialRing(stage);
+}
+
+function _renderStarDialRing(stage) {
+  var mode = starDialMode;
+  var items = mode === 'movement' ? STAR_MOVEMENTS : mode === 'palette' ? STAR_PALETTES : STAR_BORDERS;
+  var activeId = mode === 'movement' ? starDialDraft.starMovement : mode === 'palette' ? starDialDraft.starPalette : starDialDraft.starBorder;
+  var activeIdx = 0;
+  for (var k = 0; k < items.length; k++) if (items[k].id === activeId) { activeIdx = k; break; }
+
+  var RADIUS = 118;
+  var CENTER = 160;
+  var n = items.length;
+  var arcSweep = 360 / n;
+  var startA = -90 + arcSweep * activeIdx - arcSweep / 2;
+  var endA   = startA + arcSweep;
+  var arcR   = 138;
+  function polar(angDeg, r) {
+    var rad = angDeg * Math.PI / 180;
+    return { x: CENTER + Math.cos(rad) * r, y: CENTER + Math.sin(rad) * r };
+  }
+  var p1 = polar(startA, arcR);
+  var p2 = polar(endA, arcR);
+  var largeArc = arcSweep > 180 ? 1 : 0;
+
+  var svg = '<svg class="dial-ring-svg" viewBox="0 0 320 320">';
+  svg += '<circle class="dial-ring-track" cx="160" cy="160" r="' + RADIUS + '"/>';
+  svg += '<circle class="dial-ring-track" cx="160" cy="160" r="138" opacity="0.4"/>';
+  for (var ti = 0; ti < n; ti++) {
+    var ta = (-90 + arcSweep * ti) * Math.PI / 180;
+    var x1 = CENTER + Math.cos(ta) * (RADIUS - 6);
+    var y1 = CENTER + Math.sin(ta) * (RADIUS - 6);
+    var x2 = CENTER + Math.cos(ta) * (RADIUS + 2);
+    var y2 = CENTER + Math.sin(ta) * (RADIUS + 2);
+    svg += '<line class="dial-ring-tick" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/>';
+  }
+  svg += '<path class="dial-ring-arc" d="M ' + p1.x + ' ' + p1.y +
+         ' A ' + arcR + ' ' + arcR + ' 0 ' + largeArc + ' 1 ' + p2.x + ' ' + p2.y + '"/>';
+  svg += '</svg>';
+  stage.innerHTML = svg;
+
+  var palObj = STAR_PALETTES_BY_ID[starDialDraft.starPalette] || STAR_PALETTES[0];
+  for (var ni = 0; ni < n; ni++) {
+    var ang = (-90 + arcSweep * ni) * Math.PI / 180;
+    var nx = CENTER + Math.cos(ang) * RADIUS;
+    var ny = CENTER + Math.sin(ang) * RADIUS;
+    var item = items[ni];
+
+    var node = document.createElement('button');
+    node.className = 'dial-node' + (ni === activeIdx ? ' active' : '');
+    node.style.left = nx + 'px';
+    node.style.top  = ny + 'px';
+    node.setAttribute('aria-label', item.name);
+
+    if (mode === 'movement') {
+      node.innerHTML = _miniStarMarkup(item.id, palObj, starDialDraft.starBorder, 0.5, 'ring-mv-' + item.id) +
+                       '<span class="dial-node-tag">' + item.name + '</span>';
+    } else if (mode === 'palette') {
+      var fill = item.isMulti
+        ? 'conic-gradient(from 220deg, ' + item.colors[0] + ' 0deg, ' + item.colors[1] + ' 90deg, ' + item.colors[2] + ' 180deg, ' + item.colors[3] + ' 270deg, ' + item.colors[0] + ' 360deg)'
+        : 'radial-gradient(circle at 35% 30%, ' + item.colors[0] + ' 0%, ' + item.colors[1] + ' 55%, ' + item.colors[2] + ' 100%)';
+      node.innerHTML = '<span style="width:70%;aspect-ratio:1;border-radius:50%;background:' + fill + ';border:1px solid rgba(100,130,220,0.30)"></span>' +
+                       '<span class="dial-node-tag">' + item.name + '</span>';
+    } else {
+      node.innerHTML = '<span style="width:60%;height:60%;color:#c8cfe8">' + _borderGlyphSvg(item.id) + '</span>' +
+                       '<span class="dial-node-tag">' + item.name + '</span>';
+    }
+
+    (function (idx) {
+      node.addEventListener('click', function () {
+        if (mode === 'movement') starDialDraft.starMovement = items[idx].id;
+        if (mode === 'palette')  starDialDraft.starPalette  = items[idx].id;
+        if (mode === 'border')   starDialDraft.starBorder   = items[idx].id;
+        _renderStarDial();
+      });
+    })(ni);
+
+    stage.appendChild(node);
+  }
+
+  var center = document.createElement('div');
+  center.className = 'dial-center';
+  center.innerHTML = _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, bubbleMassToStarMass({ mass: starDialDraft.mass }), 'center-' + starDialOriginalId);
+  var nameLabel = document.createElement('div');
+  nameLabel.className = 'dial-center-name';
+  var mv = STAR_MOVEMENTS_BY_ID[starDialDraft.starMovement] || STAR_MOVEMENTS[0];
+  nameLabel.textContent = mv.name;
+  center.appendChild(nameLabel);
+  stage.appendChild(center);
+}
+
+function _renderStarDialMass(stage) {
+  var palObj = STAR_PALETTES_BY_ID[starDialDraft.starPalette] || STAR_PALETTES[0];
+  var mass01 = bubbleMassToStarMass({ mass: starDialDraft.mass });
+  var phase = bubbleStarPhase({ mass: starDialDraft.mass });
+
+  var wrap = document.createElement('div');
+  wrap.className = 'dial-mass-wrap';
+  wrap.innerHTML =
+    '<div class="dial-mass-preview">' +
+      _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, mass01, 'mass-' + starDialOriginalId) +
+    '</div>' +
+    '<div class="dial-mass-controls">' +
+      '<div class="dial-mass-phase">phase &middot; ' + phase.name + '</div>' +
+      '<input type="range" min="0" max="' + (visualSettings.starMassCap || 10) + '" step="1" value="' + (starDialDraft.mass || 0) + '" />' +
+      '<div class="dial-mass-ticks"><span>I</span><span>II</span><span>III</span><span>IV</span></div>' +
+    '</div>';
+
+  var range = wrap.querySelector('input[type="range"]');
+  range.addEventListener('input', function (e) {
+    starDialDraft.mass = parseInt(e.target.value, 10);
+    _renderStarDialMass(stage);
+  });
+  stage.innerHTML = '';
+  stage.appendChild(wrap);
+}
+
+function _miniStarMarkup(movement, palette, border, mass01, idHint) {
+  var profile = starMassProfile(mass01);
+  var uid = 'd' + (idHint || Math.random().toString(36).slice(2, 7));
+  var halo = palette.halo || palette.colors[0];
+  var sizeCss = '--star-size:' + (profile.size * 0.55).toFixed(0) + 'px;' +
+                '--halo-color:' + halo + ';' +
+                '--halo-opacity:' + profile.halo + ';' +
+                '--aura-opacity:' + profile.aura + ';' +
+                '--spd:1.3;' +
+                'filter:brightness(' + profile.bloom.toFixed(3) + ') saturate(' + profile.sat.toFixed(3) + ');';
+  return '<div class="bubble-star" data-movement="' + movement + '" style="position:relative;' + sizeCss + '">' +
+           '<div class="halo"></div>' +
+           '<div class="aura"></div>' +
+           '<div class="sphere">' +
+             '<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">' +
+               buildStarSvg(uid, palette, movement, border, profile) +
+             '</svg>' +
+           '</div>' +
+         '</div>';
+}
+
+function _borderGlyphSvg(kind) {
+  if (kind === 'soft')   return '<svg viewBox="0 0 20 20" fill="currentColor" opacity="0.55"><circle cx="10" cy="10" r="8"/></svg>';
+  if (kind === 'crisp')  return '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.1"><circle cx="10" cy="10" r="6"/></svg>';
+  if (kind === 'halo')   return '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor"><circle cx="10" cy="10" r="5" stroke-width="1"/><circle cx="10" cy="10" r="7.5" stroke-width="0.55" opacity="0.7"/><circle cx="10" cy="10" r="9.4" stroke-width="0.35" opacity="0.4"/></svg>';
+  if (kind === 'dashed') return '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 1.6"><circle cx="10" cy="10" r="6"/></svg>';
+  if (kind === 'corona') {
+    var s = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor"><circle cx="10" cy="10" r="5" stroke-width="0.9"/>';
+    var rays = [0, 45, 90, 135, 180, 225, 270, 315];
+    for (var ri = 0; ri < rays.length; ri++) {
+      var a = rays[ri];
+      var rad = (a - 90) * Math.PI / 180;
+      var r1 = a % 90 === 0 ? 6.4 : 6.0;
+      var r2 = a % 90 === 0 ? 8.6 : 7.8;
+      var x1 = (10 + Math.cos(rad) * r1).toFixed(2);
+      var y1 = (10 + Math.sin(rad) * r1).toFixed(2);
+      var x2 = (10 + Math.cos(rad) * r2).toFixed(2);
+      var y2 = (10 + Math.sin(rad) * r2).toFixed(2);
+      s += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke-width="0.7" opacity="0.85"/>';
+    }
+    return s + '</svg>';
+  }
+  return '';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  _ensureStarDial();
+  if (!starDialEl) return;
+  var tabs = starDialEl.querySelectorAll('.dial-mode');
+  for (var i = 0; i < tabs.length; i++) {
+    (function (btn) {
+      btn.addEventListener('click', function () {
+        starDialMode = btn.getAttribute('data-dial-mode');
+        _renderStarDial();
+      });
+    })(tabs[i]);
+  }
+  starDialEl.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-dial-action]');
+    if (!t) return;
+    var act = t.getAttribute('data-dial-action');
+    if (act === 'close')      closeStarDial();
+    else if (act === 'apply') applyStarDial();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && starDialEl && !starDialEl.classList.contains('hidden')) {
+      closeStarDial();
+    }
+  });
+});
+/* === END STAR-DIAL === */
+
+/* === BEGIN GLOBAL-STARS-MODAL === */
+// ── GLOBAL STARS MODAL ───────────────────────────────────
+
+var gsmEl = null;
+var gsmDraft = null;
+var gsmTab = 'movement';
+
+function _ensureGsm() {
+  if (!gsmEl) gsmEl = document.getElementById('global-stars-modal');
+  return gsmEl;
+}
+
+function openGlobalStarsModal() {
+  _ensureGsm();
+  if (!gsmEl) return;
+  gsmDraft = {
+    starMovement: visualSettings.starDefaults.movement,
+    starPalette:  visualSettings.starDefaults.palette,
+    starBorder:   visualSettings.starDefaults.border
+  };
+  gsmTab = 'movement';
+  gsmEl.classList.remove('hidden');
+  gsmEl.setAttribute('aria-hidden', 'false');
+  _renderGsm();
+}
+
+function closeGlobalStarsModal() {
+  if (!gsmEl) return;
+  gsmEl.classList.add('hidden');
+  gsmEl.setAttribute('aria-hidden', 'true');
+  gsmDraft = null;
+}
+
+function applyGlobalStarsModal() {
+  if (!gsmDraft) { closeGlobalStarsModal(); return; }
+  var payload = {
+    movement: gsmDraft.starMovement,
+    palette:  gsmDraft.starPalette,
+    border:   gsmDraft.starBorder
+  };
+  openOverrideConfirm(payload, function (mode) {
+    if (mode == null) return;
+    applyGlobalStarConfig(payload, mode);
+    _renderGlobalPreviewChip();
+    closeGlobalStarsModal();
+  });
+}
+
+function _renderGsm() {
+  if (!gsmEl || !gsmDraft) return;
+  var tabs = gsmEl.querySelectorAll('.gsm-tab');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.toggle('active', tabs[i].getAttribute('data-gsm-tab') === gsmTab);
+  }
+  var palObj = STAR_PALETTES_BY_ID[gsmDraft.starPalette] || STAR_PALETTES[0];
+  var mv = STAR_MOVEMENTS_BY_ID[gsmDraft.starMovement] || STAR_MOVEMENTS[0];
+  gsmEl.querySelector('[data-gsm-slot="pulse"]').textContent = mv.code + ' - ' + mv.pulse;
+  gsmEl.querySelector('[data-gsm-slot="name"]').textContent  = mv.name;
+  gsmEl.querySelector('[data-gsm-slot="desc"]').textContent  = mv.desc;
+  gsmEl.querySelector('[data-gsm-slot="preview"]').innerHTML =
+    _miniStarMarkup(gsmDraft.starMovement, palObj, gsmDraft.starBorder, 0.6, 'gsm-prev');
+
+  var body = gsmEl.querySelector('[data-gsm-slot="body"]');
+  body.innerHTML = '';
+  if (gsmTab === 'movement') body.appendChild(_gsmBuildMovement(palObj));
+  if (gsmTab === 'palette')  body.appendChild(_gsmBuildPalette());
+  if (gsmTab === 'border')   body.appendChild(_gsmBuildBorder());
+}
+
+function _gsmBuildMovement(palObj) {
+  var wrap = document.createElement('div');
+  wrap.className = 'gsm-movement-grid';
+  for (var i = 0; i < STAR_MOVEMENTS.length; i++) {
+    var mv = STAR_MOVEMENTS[i];
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'gsm-sample' + (mv.id === gsmDraft.starMovement ? ' active' : '');
+    btn.innerHTML =
+      '<span class="gsm-sample-stage">' +
+        _miniStarMarkup(mv.id, palObj, gsmDraft.starBorder, 0.55, 'gsm-mv-' + mv.id) +
+      '</span>' +
+      '<span class="gsm-sample-name">' + mv.name + '</span>';
+    (function (id) {
+      btn.addEventListener('click', function () {
+        gsmDraft.starMovement = id;
+        _renderGsm();
+      });
+    })(mv.id);
+    wrap.appendChild(btn);
+  }
+  return wrap;
+}
+
+function _gsmBuildPalette() {
+  var wrap = document.createElement('div');
+  wrap.className = 'gsm-swatch-row';
+  for (var i = 0; i < STAR_PALETTES.length; i++) {
+    var p = STAR_PALETTES[i];
+    var fill = p.isMulti
+      ? 'conic-gradient(from 220deg, ' + p.colors[0] + ' 0deg, ' + p.colors[1] + ' 90deg, ' + p.colors[2] + ' 180deg, ' + p.colors[3] + ' 270deg, ' + p.colors[0] + ' 360deg)'
+      : 'radial-gradient(circle at 35% 30%, ' + p.colors[0] + ' 0%, ' + p.colors[1] + ' 55%, ' + p.colors[2] + ' 100%)';
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.title = p.name;
+    btn.className = 'gsm-swatch' + (p.id === gsmDraft.starPalette ? ' active' : '');
+    btn.innerHTML = '<span class="gsm-swatch-fill" style="background:' + fill + '"></span>';
+    (function (id) {
+      btn.addEventListener('click', function () {
+        gsmDraft.starPalette = id;
+        _renderGsm();
+      });
+    })(p.id);
+    wrap.appendChild(btn);
+  }
+  return wrap;
+}
+
+function _gsmBuildBorder() {
+  var wrap = document.createElement('div');
+  wrap.className = 'gsm-border-row';
+  for (var i = 0; i < STAR_BORDERS.length; i++) {
+    var b = STAR_BORDERS[i];
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.title = b.name;
+    btn.className = 'gsm-border-btn' + (b.id === gsmDraft.starBorder ? ' active' : '');
+    btn.innerHTML = _borderGlyphSvg(b.id);
+    (function (id) {
+      btn.addEventListener('click', function () {
+        gsmDraft.starBorder = id;
+        _renderGsm();
+      });
+    })(b.id);
+    wrap.appendChild(btn);
+  }
+  return wrap;
+}
+
+function _renderGlobalPreviewChip() {
+  var chip = document.querySelector('#sp-row-customize-stars [data-slot="global-preview"]');
+  if (!chip) return;
+  var p = STAR_PALETTES_BY_ID[visualSettings.starDefaults.palette] || STAR_PALETTES[0];
+  var fill = p.isMulti
+    ? 'conic-gradient(from 220deg, ' + p.colors[0] + ' 0deg, ' + p.colors[1] + ' 90deg, ' + p.colors[2] + ' 180deg, ' + p.colors[3] + ' 270deg, ' + p.colors[0] + ' 360deg)'
+    : 'radial-gradient(circle at 35% 30%, ' + p.colors[0] + ' 0%, ' + p.colors[1] + ' 55%, ' + p.colors[2] + ' 100%)';
+  chip.style.background = fill;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  var rowBtn = document.querySelector('#sp-row-customize-stars [data-action="open-global-stars"]');
+  if (rowBtn) rowBtn.addEventListener('click', openGlobalStarsModal);
+  _renderGlobalPreviewChip();
+
+  _ensureGsm();
+  if (!gsmEl) return;
+  var tabs = gsmEl.querySelectorAll('.gsm-tab');
+  for (var i = 0; i < tabs.length; i++) {
+    (function (btn) {
+      btn.addEventListener('click', function () {
+        gsmTab = btn.getAttribute('data-gsm-tab');
+        _renderGsm();
+      });
+    })(tabs[i]);
+  }
+  gsmEl.addEventListener('click', function (e) {
+    if (e.target === gsmEl) { closeGlobalStarsModal(); return; }
+    var t = e.target.closest('[data-gsm-action]');
+    if (!t) return;
+    var act = t.getAttribute('data-gsm-action');
+    if (act === 'close')      closeGlobalStarsModal();
+    else if (act === 'apply') applyGlobalStarsModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && gsmEl && !gsmEl.classList.contains('hidden')) closeGlobalStarsModal();
+  });
+});
+/* === END GLOBAL-STARS-MODAL === */
+
+/* === BEGIN OVERRIDE-CONFIRM === */
+// ── OVERRIDE CONFIRM ─────────────────────────────────────
+
+var ovcEl = null;
+var ovcCallback = null;
+
+function _ensureOvc() {
+  if (!ovcEl) ovcEl = document.getElementById('override-confirm');
+  return ovcEl;
+}
+
+function openOverrideConfirm(payload, cb) {
+  var anyCustom = false;
+  for (var i = 0; i < state.bubbles.length; i++) {
+    if (isBubbleCustomized(state.bubbles[i])) { anyCustom = true; break; }
+  }
+  if (!anyCustom) { cb('unstyled'); return; }
+
+  _ensureOvc();
+  if (!ovcEl) { cb('unstyled'); return; }
+  ovcCallback = cb;
+  ovcEl.classList.remove('hidden');
+  ovcEl.setAttribute('aria-hidden', 'false');
+}
+
+function _closeOvc(mode) {
+  if (!ovcEl) return;
+  ovcEl.classList.add('hidden');
+  ovcEl.setAttribute('aria-hidden', 'true');
+  var cb = ovcCallback;
+  ovcCallback = null;
+  if (typeof cb === 'function') cb(mode);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  _ensureOvc();
+  if (!ovcEl) return;
+  ovcEl.addEventListener('click', function (e) {
+    if (e.target === ovcEl) { _closeOvc(null); return; }
+    var t = e.target.closest('[data-ovc-mode]');
+    if (!t) return;
+    var mode = t.getAttribute('data-ovc-mode');
+    if (mode === 'cancel') _closeOvc(null);
+    else _closeOvc(mode);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && ovcEl && !ovcEl.classList.contains('hidden')) _closeOvc(null);
+  });
+});
+/* === END OVERRIDE-CONFIRM === */
 </script>
 
 <!-- === BEGIN STAR-TOOLBAR === -->
@@ -9440,5 +10589,90 @@ initIndexedDB(function() {});
   </div>
 </div>
 <!-- === END STAR-TOOLBAR === -->
+
+<!-- === BEGIN STAR-DIAL-DOM === -->
+<div id="star-dial" class="star-dial hidden" aria-hidden="true" role="dialog" aria-label="Customize star">
+  <button class="dial-close" data-dial-action="close" aria-label="Close">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5">
+      <line x1="6" y1="6" x2="18" y2="18"/>
+      <line x1="18" y1="6" x2="6" y2="18"/>
+    </svg>
+  </button>
+  <div class="dial-head">
+    <div class="dial-eyebrow">idea &middot; <span data-dial-slot="name"></span></div>
+    <div class="dial-title">tune this star</div>
+  </div>
+  <div class="dial-modes" role="tablist">
+    <button class="dial-mode active" data-dial-mode="movement">movement</button>
+    <button class="dial-mode"        data-dial-mode="palette">spectrum</button>
+    <button class="dial-mode"        data-dial-mode="border">edge</button>
+    <button class="dial-mode"        data-dial-mode="mass">mass</button>
+  </div>
+  <div class="dial-stage" data-dial-slot="stage"></div>
+  <div class="dial-foot">
+    <button class="dial-btn dial-cancel" data-dial-action="close">cancel</button>
+    <button class="dial-btn dial-apply"  data-dial-action="apply">apply</button>
+  </div>
+</div>
+<!-- === END STAR-DIAL-DOM === -->
+
+<!-- === BEGIN GLOBAL-STARS-MODAL-DOM === -->
+<div id="global-stars-modal" class="gsm-backdrop hidden" aria-hidden="true" role="dialog" aria-label="Customize stars">
+  <div class="gsm-card">
+    <div class="gsm-head">
+      <div>
+        <div class="gsm-eyebrow">Visual &middot; Field defaults</div>
+        <div class="gsm-title">Customize stars</div>
+      </div>
+      <button class="gsm-close" type="button" data-gsm-action="close" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <line x1="6" y1="6" x2="18" y2="18"/>
+          <line x1="18" y1="6" x2="6" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="gsm-preview">
+      <div class="gsm-stage" data-gsm-slot="preview"></div>
+      <div class="gsm-info">
+        <span class="gsm-pulse" data-gsm-slot="pulse"></span>
+        <span class="gsm-name" data-gsm-slot="name"></span>
+        <span class="gsm-desc" data-gsm-slot="desc"></span>
+      </div>
+    </div>
+    <div class="gsm-tabs" role="tablist">
+      <button class="gsm-tab active" data-gsm-tab="movement">movement</button>
+      <button class="gsm-tab"        data-gsm-tab="palette">spectrum</button>
+      <button class="gsm-tab"        data-gsm-tab="border">edge</button>
+    </div>
+    <div class="gsm-body" data-gsm-slot="body"></div>
+    <div class="gsm-foot">
+      <button class="gsm-btn gsm-ghost" type="button" data-gsm-action="close">Cancel</button>
+      <button class="gsm-btn gsm-prime" type="button" data-gsm-action="apply">Save defaults</button>
+    </div>
+  </div>
+</div>
+<!-- === END GLOBAL-STARS-MODAL-DOM === -->
+
+<!-- === BEGIN OVERRIDE-CONFIRM-DOM === -->
+<div id="override-confirm" class="ovc-backdrop hidden" aria-hidden="true" role="dialog" aria-label="Apply defaults">
+  <div class="ovc-card">
+    <div class="ovc-eyebrow">Apply field defaults</div>
+    <div class="ovc-title">Some stars are individually styled.</div>
+    <div class="ovc-body">How should this change apply to bubbles you've already customized?</div>
+    <div class="ovc-options">
+      <button class="ovc-option" type="button" data-ovc-mode="unstyled">
+        <span class="ovc-option-label">Keep customizations</span>
+        <span class="ovc-option-help">Only un-styled stars adopt the new defaults.</span>
+      </button>
+      <button class="ovc-option ovc-option-warn" type="button" data-ovc-mode="all">
+        <span class="ovc-option-label">Overwrite everything</span>
+        <span class="ovc-option-help">Every star in the field is reset to these defaults.</span>
+      </button>
+    </div>
+    <button class="ovc-cancel" type="button" data-ovc-mode="cancel">Cancel</button>
+  </div>
+</div>
+<!-- === END OVERRIDE-CONFIRM-DOM === -->
+
 </body>
 </html>
