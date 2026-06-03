@@ -651,24 +651,6 @@
     pointer-events: none;
   }
 
-  /* Swirl canvas — slow-rotating wispy interior color */
-  .bubble-swirl {
-    position: absolute;
-    inset: -12%;
-    width: 124%;
-    height: 124%;
-    border-radius: 50%;
-    pointer-events: none;
-    opacity: 0.45;
-    mix-blend-mode: screen;
-  }
-  .bubble.crystallized  .bubble-swirl { opacity: 0.60; }
-
-  @keyframes swirl-cw  { from { transform: rotate(0deg);   } to { transform: rotate(360deg);  } }
-  @keyframes swirl-ccw { from { transform: rotate(0deg);   } to { transform: rotate(-360deg); } }
-  .bubble:nth-child(odd)  .bubble-swirl { animation: swirl-cw  36s linear infinite; }
-  .bubble:nth-child(even) .bubble-swirl { animation: swirl-ccw 44s linear infinite; }
-
   /* Orbital tether lines drawn on canvas */
   #tether-canvas {
     position: absolute;
@@ -694,7 +676,6 @@
     z-index: 8;
   }
   /* Freeze all bubble animations */
-  .field-frozen .bubble-swirl,
   .field-frozen .orbital-path,
   .field-frozen .radar-pulse {
     animation-play-state: paused !important;
@@ -3835,7 +3816,7 @@
   border-bottom: 1px solid transparent; cursor: pointer; transition: color 0.2s, border-color 0.2s;
 }
 .dial-mode.active { color: #c8cfe8; border-bottom-color: #3a4080; }
-.dial-stage { position: relative; width: 320px; height: 320px; }
+.dial-stage { position: relative; width: 420px; height: 420px; }
 .dial-ring-svg { position: absolute; inset: 0; pointer-events: none; }
 .dial-ring-track { fill: none; stroke: rgba(100, 130, 220, 0.20); stroke-width: 1; }
 .dial-ring-tick  { stroke: rgba(100, 130, 220, 0.35); stroke-width: 1; }
@@ -3857,7 +3838,7 @@
 }
 .dial-node.active .dial-node-tag { opacity: 1; color: #c8cfe8; }
 .dial-center { position: absolute; left: 50%; top: 50%; translate: -50% -50%;
-  width: 130px; height: 130px; display: grid; place-items: center; pointer-events: none; }
+  width: 220px; height: 220px; display: grid; place-items: center; pointer-events: none; }
 .dial-center-name { position: absolute; bottom: -28px; left: 50%; translate: -50% 0;
   font-style: italic; font-size: 16px; letter-spacing: 0.02em; color: #c8cfe8; white-space: nowrap; }
 .dial-mass-wrap { display: flex; flex-direction: column; align-items: center; gap: 22px; }
@@ -5487,7 +5468,6 @@ function renderBubble(b) {
         '</svg>' +
       '</div>' +
       '<div class="portal-icon">· portal ·</div>' +
-      '<canvas class="bubble-swirl" id="swirl-' + b.id + '"></canvas>' +
     '</div>';
 
   renderBubbleStar(b);
@@ -5866,7 +5846,14 @@ function renderBubbleStar(b) {
 // ── CRYSTAL SWIRL ──────────────────────────────────────────
 function paintCrystalSwirl(b) {
   var canvas = document.getElementById("swirl-" + b.id);
-  if (!canvas) return;
+  if (!canvas) {
+    canvas = document.createElement('canvas');
+    canvas.id = 'swirl-' + b.id;
+    canvas.className = 'bubble-swirl';
+    var el = document.getElementById('bubble-' + b.id);
+    if (!el) return;
+    el.querySelector('.bubble-inner').appendChild(canvas);
+  }
   var r = bubbleRadius(b);
   var size = Math.round(r * 2 * 1.24);
   canvas.width = size; canvas.height = size;
@@ -7992,6 +7979,9 @@ var visualSettings = {
   mutualColor:      'white',
   fieldBrightness:  100
 };
+visualSettings.starDefaults = { movement: 'vortex', palette: 'nebula', border: 'soft' };
+visualSettings.starOverrideMode = 'unstyled';
+visualSettings.starMassCap = 10;
 
 var COLORS = {
   gold:  '201,168,76',
@@ -8049,14 +8039,6 @@ function refreshSettingsPanel() {
 
 /* === BEGIN STAR-DATA-MODEL === */
 // ── STAR DATA MODEL ──────────────────────────────────────
-
-visualSettings.starDefaults = {
-  movement: 'vortex',
-  palette:  'nebula',
-  border:   'soft'
-};
-visualSettings.starOverrideMode = 'unstyled';
-visualSettings.starMassCap = 10;
 
 var STAR_MOVEMENTS = [
   { id: 'vortex',     code: 'M-01', name: 'Vortex',     pulse: 'Cyclonic Shear',       desc: 'Concentric shear; gas layers spin one axis at varying rates.' },
@@ -10136,13 +10118,13 @@ function _renderStarDialRing(stage) {
   var activeIdx = 0;
   for (var k = 0; k < items.length; k++) if (items[k].id === activeId) { activeIdx = k; break; }
 
-  var RADIUS = 118;
-  var CENTER = 160;
+  var RADIUS = 168;
+  var CENTER = 210;
   var n = items.length;
   var arcSweep = 360 / n;
   var startA = -90 + arcSweep * activeIdx - arcSweep / 2;
   var endA   = startA + arcSweep;
-  var arcR   = 138;
+  var arcR   = 188;
   function polar(angDeg, r) {
     var rad = angDeg * Math.PI / 180;
     return { x: CENTER + Math.cos(rad) * r, y: CENTER + Math.sin(rad) * r };
@@ -10151,9 +10133,9 @@ function _renderStarDialRing(stage) {
   var p2 = polar(endA, arcR);
   var largeArc = arcSweep > 180 ? 1 : 0;
 
-  var svg = '<svg class="dial-ring-svg" viewBox="0 0 320 320">';
-  svg += '<circle class="dial-ring-track" cx="160" cy="160" r="' + RADIUS + '"/>';
-  svg += '<circle class="dial-ring-track" cx="160" cy="160" r="138" opacity="0.4"/>';
+  var svg = '<svg class="dial-ring-svg" viewBox="0 0 420 420">';
+  svg += '<circle class="dial-ring-track" cx="210" cy="210" r="' + RADIUS + '"/>';
+  svg += '<circle class="dial-ring-track" cx="210" cy="210" r="188" opacity="0.4"/>';
   for (var ti = 0; ti < n; ti++) {
     var ta = (-90 + arcSweep * ti) * Math.PI / 180;
     var x1 = CENTER + Math.cos(ta) * (RADIUS - 6);
@@ -10208,7 +10190,7 @@ function _renderStarDialRing(stage) {
 
   var center = document.createElement('div');
   center.className = 'dial-center';
-  center.innerHTML = _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, bubbleMassToStarMass({ mass: starDialDraft.mass }), 'center-' + starDialOriginalId);
+  center.innerHTML = _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, bubbleMassToStarMass({ mass: starDialDraft.mass }), 'center-' + starDialOriginalId, 1.0);
   var nameLabel = document.createElement('div');
   nameLabel.className = 'dial-center-name';
   var mv = STAR_MOVEMENTS_BY_ID[starDialDraft.starMovement] || STAR_MOVEMENTS[0];
@@ -10226,7 +10208,7 @@ function _renderStarDialMass(stage) {
   wrap.className = 'dial-mass-wrap';
   wrap.innerHTML =
     '<div class="dial-mass-preview">' +
-      _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, mass01, 'mass-' + starDialOriginalId) +
+      _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, mass01, 'mass-' + starDialOriginalId, 1.0) +
     '</div>' +
     '<div class="dial-mass-controls">' +
       '<div class="dial-mass-phase">phase &middot; ' + phase.name + '</div>' +
@@ -10243,11 +10225,12 @@ function _renderStarDialMass(stage) {
   stage.appendChild(wrap);
 }
 
-function _miniStarMarkup(movement, palette, border, mass01, idHint) {
+function _miniStarMarkup(movement, palette, border, mass01, idHint, scale) {
   var profile = starMassProfile(mass01);
   var uid = 'd' + (idHint || Math.random().toString(36).slice(2, 7));
   var halo = palette.halo || palette.colors[0];
-  var sizeCss = '--star-size:' + (profile.size * 0.55).toFixed(0) + 'px;' +
+  var scaleF = (typeof scale === 'number') ? scale : 0.55;
+  var sizeCss = '--star-size:' + (profile.size * scaleF).toFixed(0) + 'px;' +
                 '--halo-color:' + halo + ';' +
                 '--halo-opacity:' + profile.halo + ';' +
                 '--aura-opacity:' + profile.aura + ';' +
