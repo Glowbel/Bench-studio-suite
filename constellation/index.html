@@ -3810,7 +3810,7 @@
   white-space: nowrap; opacity: 0; transition: opacity 0.2s, color 0.2s;
 }
 .dial-node.active .dial-node-tag { opacity: 1; color: #c8cfe8; }
-.dial-center { position: absolute; left: 50%; top: 50%; translate: -50% -50%;
+.dial-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
   width: 220px; height: 220px; display: grid; place-items: center; pointer-events: none; }
 .dial-center-name { position: absolute; bottom: -28px; left: 50%; translate: -50% 0;
   font-style: italic; font-size: 16px; letter-spacing: 0.02em; color: #c8cfe8; white-space: nowrap; }
@@ -10152,7 +10152,7 @@ function _renderStarDialRing(stage) {
 
   var center = document.createElement('div');
   center.className = 'dial-center';
-  center.innerHTML = _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, bubbleMassToStarMass({ mass: starDialDraft.mass }), 'center-' + starDialOriginalId, 1.0);
+  center.innerHTML = _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, bubbleMassToStarMass({ mass: starDialDraft.mass }), 'center-' + starDialOriginalId, 1.6);
   var nameLabel = document.createElement('div');
   nameLabel.className = 'dial-center-name';
   var mv = STAR_MOVEMENTS_BY_ID[starDialDraft.starMovement] || STAR_MOVEMENTS[0];
@@ -10170,7 +10170,7 @@ function _renderStarDialMass(stage) {
   wrap.className = 'dial-mass-wrap';
   wrap.innerHTML =
     '<div class="dial-mass-preview">' +
-      _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, mass01, 'mass-' + starDialOriginalId, 1.0) +
+      _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, mass01, 'mass-' + starDialOriginalId, 1.6) +
     '</div>' +
     '<div class="dial-mass-controls">' +
       '<div class="dial-mass-phase">phase &middot; ' + phase.name + '</div>' +
