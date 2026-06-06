@@ -1181,71 +1181,149 @@
 
 /* === END WHISPER-INPUT === */
 /* === BEGIN ZOOM-VIEW === */
-  /* ── BUBBLE ZOOM VIEW ── */
+  /* ── BUBBLE ZOOM VIEW — three-zone Open Window interior ── */
   #zoom-overlay {
     display: none;
     position: fixed;
     inset: 0;
     z-index: 150;
-    align-items: center;
-    justify-content: center;
     pointer-events: none;
+    cursor: default;
   }
   #zoom-overlay.active {
-    display: flex;
+    display: block;
     pointer-events: all;
   }
 
-  .zoom-field-bg {
+  /* dim field — opacity animated by JS */
+  #zoom-bg {
     position: fixed;
     inset: 0;
-    background: rgba(4,5,15,0.7);
-    backdrop-filter: blur(2px);
+    background: rgba(4,5,15,0.5);
+    opacity: 0;
     cursor: pointer;
+    z-index: 0;
   }
 
-  .zoom-bubble {
+  /* camera stage — translate+scale animated from tapped star to center */
+  #zoom-stage {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* zone3: atmosphere star, overflows its container (halo extends beyond) */
+  #zoom-zone3 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%);
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  /* zone2: vignette dissolves page into atmosphere */
+  #zoom-zone2 {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 2;
+  }
+
+  /* zone1 wrap: sized by JS from anchor geometry, centered */
+  #zoom-zone1-wrap {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+  #zoom-zone1-wrap.interactive {
+    pointer-events: all;
+  }
+  #zoom-zone1-wrap.zoom-full {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* zone1: the page — feathered luminous field, no hard card edge */
+  .zoom-zone1 {
     position: relative;
-    width: 86vmin;
-    height: 86vmin;
-    border-radius: 50%;
-    z-index: 5;
+    width: 100%;
+    height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    flex-direction: column;
     padding-top: 14%;
-    pointer-events: all;
     overflow: hidden;
+    border-radius: 18px;
   }
 
-  .zoom-bubble-bg {
+  /* zone1 halo: page-color bloom bleeding outward into the gas */
+  .zoom-zone1-halo {
     position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: radial-gradient(circle at 38% 30%,
-      rgba(60, 80, 160, 0.22) 0%,
-      rgba(8, 12, 38, 0.94) 65%,
-      rgba(4, 6, 20, 0.98) 100%);
-  }
-
-  .zoom-rim {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    border: 1.5px solid rgba(100,130,220,0.6);
-    box-shadow:
-      0 0 40px rgba(80,110,200,0.3),
-      0 0 100px rgba(60,90,180,0.12),
-      inset 0 0 40px rgba(60,90,180,0.15);
-  }
-
-  .zoom-rune-ring {
-    position: absolute;
-    inset: -8px;
-    border-radius: 50%;
-    border: 1px solid rgba(100,130,220,0.2);
+    inset: -40%;
     pointer-events: none;
+    z-index: 0;
+  }
+
+  /* expand / collapse toggle */
+  .zoom-full-toggle {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 26px;
+    height: 26px;
+    border: 1px solid rgba(100,130,220,0.25);
+    border-radius: 50%;
+    background: rgba(10,14,40,0.30);
+    color: rgba(160,180,230,0.55);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: border-color 0.15s, color 0.15s;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  .zoom-full-toggle:hover {
+    border-color: rgba(160,185,255,0.55);
+    color: rgba(200,215,255,0.90);
+  }
+
+  /* exit hint */
+  .zoom-hint {
+    position: fixed;
+    bottom: 24px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(100,130,220,0.30);
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.6s ease 0.4s;
+  }
+  #zoom-overlay.active .zoom-hint { opacity: 1; }
+
+  /* reduced motion: no camera transform, just crossfades */
+  @media (prefers-reduced-motion: reduce) {
+    #zoom-stage { transition: none !important; }
+    #zoom-zone1-wrap { transition: none !important; }
+    #zoom-zone2 { transition: none !important; }
   }
 
   .zoom-title {
@@ -4374,6 +4452,81 @@ body.dial-open .field-motion { animation-play-state: paused; }
       </div>
     </div>
     <!-- === END VISUAL-STARS-SETTING-DOM === -->
+    <!-- === BEGIN ZOOM-INTERIOR-SETTINGS-DOM === -->
+    <div class="sp-section">
+      <div class="sp-feature-title">Zoom &amp; Interior</div>
+      <div class="sp-row">
+        <div class="sp-label">Zoom Speed</div>
+        <div class="sp-sublabel" id="sp-zoom-dur-val" style="min-width:42px;text-align:right;color:rgba(201,168,76,0.7);">900ms</div>
+      </div>
+      <div class="sp-subrow">
+        <input type="range" class="sp-slider" id="sp-zoom-duration" min="500" max="1500" step="50" value="900">
+      </div>
+      <div class="sp-subrow" style="margin-top:8px;">
+        <div class="sp-sublabel">Vignette Intensity</div>
+        <div class="sp-sublabel" id="sp-vignette-int-val" style="min-width:32px;text-align:right;">50%</div>
+      </div>
+      <div class="sp-subrow">
+        <input type="range" class="sp-slider" id="sp-vignette-intensity" min="0" max="100" step="1" value="50">
+      </div>
+      <div class="sp-subrow" style="margin-top:8px;">
+        <div class="sp-sublabel">Vignette Start</div>
+        <div class="sp-sublabel" id="sp-vignette-inn-val" style="min-width:32px;text-align:right;">30%</div>
+      </div>
+      <div class="sp-subrow">
+        <input type="range" class="sp-slider" id="sp-vignette-inner" min="5" max="60" step="1" value="30">
+      </div>
+      <div class="sp-subrow" style="margin-top:8px;">
+        <div class="sp-sublabel">Vignette Tone</div>
+        <div class="sp-toggle-group" style="margin-left:auto;">
+          <button class="sp-toggle active" data-zoom-tone="page">Page</button>
+          <button class="sp-toggle" data-zoom-tone="black">Black</button>
+        </div>
+      </div>
+      <div class="sp-subrow" style="margin-top:8px;">
+        <div class="sp-sublabel">Page Melt</div>
+        <div class="sp-sublabel" id="sp-page-feather-val" style="min-width:32px;text-align:right;">62%</div>
+      </div>
+      <div class="sp-subrow">
+        <input type="range" class="sp-slider" id="sp-page-feather" min="30" max="90" step="2" value="62">
+      </div>
+      <div class="sp-subrow" style="margin-top:8px;">
+        <div class="sp-sublabel">Page Translucency</div>
+        <div class="sp-sublabel" id="sp-page-alpha-val" style="min-width:32px;text-align:right;">90%</div>
+      </div>
+      <div class="sp-subrow">
+        <input type="range" class="sp-slider" id="sp-page-alpha" min="30" max="100" step="1" value="90">
+      </div>
+      <div class="sp-subrow" style="margin-top:8px;">
+        <div class="sp-sublabel">Atmosphere Pullback</div>
+        <div class="sp-sublabel" id="sp-atm-scale-val" style="min-width:32px;text-align:right;">1.58</div>
+      </div>
+      <div class="sp-subrow">
+        <input type="range" class="sp-slider" id="sp-atm-scale" min="130" max="200" step="2" value="158">
+      </div>
+      <div class="sp-subrow" style="margin-top:8px;">
+        <div class="sp-sublabel">Atmosphere Sharpness</div>
+        <div class="sp-sublabel" id="sp-atm-sharp-val" style="min-width:32px;text-align:right;">0</div>
+      </div>
+      <div class="sp-subrow">
+        <input type="range" class="sp-slider" id="sp-atm-sharpness" min="-100" max="100" step="5" value="0">
+      </div>
+      <div class="sp-subrow" style="margin-top:8px;">
+        <div class="sp-sublabel">Atmosphere Opacity</div>
+        <div class="sp-sublabel" id="sp-atm-opacity-val" style="min-width:32px;text-align:right;">100%</div>
+      </div>
+      <div class="sp-subrow">
+        <input type="range" class="sp-slider" id="sp-atm-opacity" min="30" max="100" step="1" value="100">
+      </div>
+      <div class="sp-subrow" style="margin-top:8px;">
+        <div class="sp-sublabel">Bubble Anchor</div>
+        <div class="sp-sublabel" id="sp-bubble-anchor-val" style="min-width:32px;text-align:right;">1.00</div>
+      </div>
+      <div class="sp-subrow">
+        <input type="range" class="sp-slider" id="sp-bubble-anchor" min="70" max="115" step="1" value="100">
+      </div>
+    </div>
+    <!-- === END ZOOM-INTERIOR-SETTINGS-DOM === -->
   </div>
 
   <!-- DECAY SUB-VIEW -->
@@ -4800,19 +4953,31 @@ body.dial-open .field-motion { animation-play-state: paused; }
 <!-- === BEGIN ZOOM-VIEW === -->
 <!-- Bubble zoom overlay -->
 <div id="zoom-overlay">
-  <div class="zoom-field-bg" id="zoom-bg"></div>
-  <div class="zoom-bubble" id="zoom-bubble">
-    <div class="zoom-bubble-bg"></div>
-    <div class="zoom-rim"></div>
-    <div class="zoom-rune-ring"></div>
-    <div class="zoom-title" id="zoom-title">—</div>
-    <div class="zoom-mass-label" id="zoom-mass-label">weight · 0</div>
-    <div class="zoom-thoughts" id="zoom-thoughts"></div>
-    <div class="zoom-whisper">
-      <input class="zoom-whisper-input" id="zoom-whisper-input" type="text" placeholder="add a thought…" autocomplete="off"/>
-      <button class="zoom-whisper-submit" id="zoom-whisper-submit">⟡</button>
-    </div>
+  <!-- dim field -->
+  <div id="zoom-bg"></div>
+  <!-- camera stage: translate+scale animated from tapped star -->
+  <div id="zoom-stage">
+    <div id="zoom-zone3"></div>
+  </div>
+  <!-- zone2: vignette, fades in at interiorInPct -->
+  <div id="zoom-zone2"></div>
+  <!-- zone1 wrap: page content, fades in at interiorInPct -->
+  <div id="zoom-zone1-wrap">
+    <div class="zoom-zone1" id="zoom-zone1">
+      <div class="zoom-zone1-halo" id="zoom-zone1-halo"></div>
+      <button class="zoom-full-toggle" id="zoom-full-toggle" type="button" aria-label="Full window">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9 L4 4 L9 4"/><path d="M20 9 L20 4 L15 4"/><path d="M4 15 L4 20 L9 20"/><path d="M20 15 L20 20 L15 20"/></svg>
+      </button>
+      <div class="zoom-title" id="zoom-title">&#8212;</div>
+      <div class="zoom-mass-label" id="zoom-mass-label">weight · 0</div>
+      <div class="zoom-thoughts" id="zoom-thoughts"></div>
+      <div class="zoom-whisper">
+        <input class="zoom-whisper-input" id="zoom-whisper-input" type="text" placeholder="add a thought&#8230;" autocomplete="off"/>
+        <button class="zoom-whisper-submit" id="zoom-whisper-submit">&#10033;</button>
       </div>
+    </div>
+  </div>
+  <div class="zoom-hint">tap the atmosphere to return</div>
 </div>
 
 <!-- === END ZOOM-VIEW === -->
@@ -7331,23 +7496,296 @@ function completeCrystallization(bubbleId) {
 /* === END CRYSTALLIZATION === */
 /* === BEGIN ZOOM-VIEW === */
 // ── ZOOM VIEW ─────────────────────────────────────────────
-var zoomOverlay = document.getElementById('zoom-overlay');
-var zoomTitle = document.getElementById('zoom-title');
-var zoomMassLabel = document.getElementById('zoom-mass-label');
-var zoomThoughts = document.getElementById('zoom-thoughts');
+var zoomOverlay    = document.getElementById('zoom-overlay');
+var zoomBg         = document.getElementById('zoom-bg');
+var zoomStage      = document.getElementById('zoom-stage');
+var zoomZone3      = document.getElementById('zoom-zone3');
+var zoomZone2      = document.getElementById('zoom-zone2');
+var zoomZone1Wrap  = document.getElementById('zoom-zone1-wrap');
+var zoomZone1      = document.getElementById('zoom-zone1');
+var zoomZone1Halo  = document.getElementById('zoom-zone1-halo');
+var zoomFullToggle = document.getElementById('zoom-full-toggle');
+var zoomTitle      = document.getElementById('zoom-title');
+var zoomMassLabel  = document.getElementById('zoom-mass-label');
+var zoomThoughts   = document.getElementById('zoom-thoughts');
 var zoomWhisperInput = document.getElementById('zoom-whisper-input');
+
+// geometry constants (verbatim from interior.jsx)
+var ZOOM_FRAMED_LEVEL = 0.88;
+var ZOOM_FULL_LEVEL   = 1.02;
+var ZOOM_STAR_DISK    = 0.94;
+
+var ZOOM_EXPAND_ICON   = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9 L4 4 L9 4"/><path d="M20 9 L20 4 L15 4"/><path d="M4 15 L4 20 L9 20"/><path d="M20 15 L20 20 L15 20"/></svg>';
+var ZOOM_COLLAPSE_ICON = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 L9 9 L4 9"/><path d="M15 4 L15 9 L20 9"/><path d="M9 20 L9 15 L4 15"/><path d="M15 20 L15 15 L20 15"/></svg>';
+
+function isDesktop() {
+  return window.innerWidth > 600;
+}
+
+function zoomWithAlpha(rgb, a) {
+  var m = rgb.match(/rgba?\(([^)]+)\)/);
+  if (!m) return rgb;
+  var parts = m[1].split(',');
+  return 'rgba(' + parts[0].trim() + ', ' + parts[1].trim() + ', ' + parts[2].trim() + ', ' + a + ')';
+}
+
+// anchoredBubble: page (w,h) whose corners sit at anchor*diskR
+// verbatim from interior.jsx
+function zoomAnchoredBubble(diskR, aspect, anchor) {
+  var diag = Math.sqrt(1 + aspect * aspect);
+  var w = 2 * anchor * diskR / diag;
+  return { w: w, h: w * aspect };
+}
+
+// computeInteriorGeom: framed or maximized page geometry
+// verbatim port of interiorGeom() from interior.jsx
+function computeInteriorGeom(iStage, atm, anchor, full) {
+  var framedDiskR  = iStage * atm * ZOOM_FRAMED_LEVEL / 2 * ZOOM_STAR_DISK;
+  var framedPage   = zoomAnchoredBubble(framedDiskR, 1.40, anchor);
+  if (!full) { return { bubbleW: framedPage.w, bubbleH: framedPage.h, scaleBoost: 1 }; }
+
+  var desktop = isDesktop();
+  var fillW   = desktop ? 0.60 : 0.92;
+  var fillH   = desktop ? 0.84 : 0.90;
+  var maxPW   = desktop ? 760  : 99999;
+  var maxPH   = desktop ? 660  : 99999;
+  var availW  = Math.min(window.innerWidth  * fillW, maxPW);
+  var availH  = Math.min(window.innerHeight * fillH, maxPH);
+  var aspect  = Math.max(1.04, Math.min(2.15, availH / availW));
+  var fw = availW;
+  var fh = fw * aspect;
+  if (fh > availH) { fh = availH; fw = fh / aspect; }
+
+  var halfDiag     = Math.sqrt((fw / 2) * (fw / 2) + (fh / 2) * (fh / 2));
+  var diskR        = halfDiag / Math.max(anchor, 0.3);
+  var framedStarBox = iStage * atm * ZOOM_FRAMED_LEVEL;
+  var maxStarBox   = diskR * 2 / ZOOM_STAR_DISK;
+  return { bubbleW: fw, bubbleH: fh, scaleBoost: maxStarBox / framedStarBox };
+}
+
+// renderZoomAtmosphere: build/update the bubble-star inside #zoom-zone3
+function renderZoomAtmosphere(b, atmosDiam) {
+  var cfg     = getBubbleStar(b);
+  var pal     = STAR_PALETTES_BY_ID[cfg.palette] || STAR_PALETTES[0];
+  var profile = starMassProfile(bubbleMassToStarMass(b));
+
+  zoomZone3.style.width  = atmosDiam + 'px';
+  zoomZone3.style.height = atmosDiam + 'px';
+  zoomZone3.style.opacity = String(visualSettings.zoneAtmosphereOpacity || 1.0);
+
+  var sharp = visualSettings.zoneAtmosphereSharpness || 0;
+  if (sharp < 0) {
+    zoomZone3.style.filter = 'blur(' + ((-sharp / 100) * 3.2).toFixed(2) + 'px)';
+  } else if (sharp > 0) {
+    zoomZone3.style.filter = 'contrast(' + (1 + (sharp / 100) * 0.30).toFixed(3) + ') saturate(' + (1 + (sharp / 100) * 0.24).toFixed(3) + ')';
+  } else {
+    zoomZone3.style.filter = 'none';
+  }
+
+  var starWrap = zoomZone3.querySelector('.bubble-star');
+  if (!starWrap) {
+    starWrap = document.createElement('div');
+    starWrap.className = 'bubble-star';
+    starWrap.innerHTML = '<div class="halo"></div><div class="aura"></div><div class="sphere"></div>';
+    zoomZone3.appendChild(starWrap);
+  }
+  starWrap.setAttribute('data-movement', cfg.movement);
+  starWrap.style.setProperty('--star-size', atmosDiam + 'px');
+  starWrap.style.setProperty('--halo-color', pal.halo || pal.colors[0]);
+  starWrap.style.setProperty('--halo-opacity', String(profile.halo));
+  starWrap.style.setProperty('--aura-opacity', String(profile.aura));
+  starWrap.style.setProperty('--spd', '0.6');
+  starWrap.style.filter = 'brightness(' + profile.bloom.toFixed(3) + ') saturate(' + profile.sat.toFixed(3) + ')';
+
+  var fp = cfg.movement + '|' + cfg.palette + '|' + cfg.border;
+  if (starWrap.getAttribute('data-fp') !== fp) {
+    starWrap.setAttribute('data-fp', fp);
+    var uid    = 'z3-' + b.id;
+    var sphere = starWrap.querySelector('.sphere');
+    sphere.innerHTML = '<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">' +
+      buildStarSvg(uid, pal, cfg.movement, cfg.border, profile) + '</svg>';
+  }
+}
+
+// applyZoomZone2: set the vignette radial gradient
+function applyZoomZone2() {
+  var inner     = visualSettings.zoneVignetteInner     || 0.30;
+  var outer     = 0.60;
+  var intensity = visualSettings.zoneVignetteIntensity || 0.50;
+  var tone      = visualSettings.zoneVignetteTone      || 'page';
+  var vColor = tone === 'black' ? 'rgb(0,0,0)' : 'rgb(252,250,246)';
+  var ip = (inner * 100).toFixed(1);
+  var op = (outer * 100).toFixed(1);
+  var mp = ((inner * 100 + outer * 100) / 2).toFixed(1);
+  zoomZone2.style.background = 'radial-gradient(circle at center, ' +
+    vColor + ' 0%, ' +
+    vColor + ' ' + ip + '%, ' +
+    zoomWithAlpha(vColor, intensity) + ' ' + mp + '%, ' +
+    zoomWithAlpha(vColor, 0) + ' ' + op + ')';
+}
+
+// applyZoomPageStyle: feathered radial gradient page + halo
+function applyZoomPageStyle(b, isFull, geom) {
+  var feather = visualSettings.zonePageFeather || 0.62;
+  var alpha   = visualSettings.zonePageAlpha   || 0.90;
+  var fill    = isFull ? 34 : Math.round(64 - feather * 20);
+  fill = Math.max(5, Math.min(85, fill));
+  var ey = isFull ? 118 : 106;
+  var ex = isFull ? 124 : 110;
+  var pcy = isFull ? 45  : 46;
+  var pa = 'rgba(252,250,246,' + alpha + ')';
+  var pt = 'rgba(252,250,246,0)';
+  zoomZone1.style.background      = 'radial-gradient(ellipse ' + ex + '% ' + ey + '% at 50% ' + pcy + '%, ' + pa + ' 0%, ' + pa + ' ' + fill + '%, ' + pt + ' 100%)';
+  zoomZone1.style.backdropFilter  = 'blur(7px) saturate(116%)';
+  zoomZone1.style.webkitBackdropFilter = 'blur(7px) saturate(116%)';
+  zoomZone1.style.borderRadius    = '18px';
+  var haloAlpha = alpha * 0.5;
+  var haloBlur  = 18 + feather * 36;
+  zoomZone1Halo.style.background  = 'radial-gradient(ellipse 72% 66% at 50% 48%, rgba(252,250,246,' + haloAlpha + ') 0%, rgba(252,250,246,0) 72%)';
+  zoomZone1Halo.style.filter      = 'blur(' + haloBlur.toFixed(1) + 'px)';
+}
+
+// applyZoomZone1Size: resize the page container (animated for full/framed toggle)
+function applyZoomZone1Size(geom, animated) {
+  if (animated) {
+    zoomZone1Wrap.style.transition = 'width 0.42s cubic-bezier(0.25,0.8,0.25,1), height 0.42s cubic-bezier(0.25,0.8,0.25,1)';
+  } else {
+    zoomZone1Wrap.style.transition = 'none';
+  }
+  zoomZone1Wrap.style.width  = Math.round(geom.bubbleW) + 'px';
+  zoomZone1Wrap.style.height = Math.round(geom.bubbleH) + 'px';
+}
+
+// applyZoomFull: toggle full/framed state — sizes page + scales zone3 star
+function applyZoomFull(b, isFull, animated) {
+  var iStage = Math.min(window.innerWidth, window.innerHeight);
+  var atm    = visualSettings.zoneAtmosphereScale || 1.58;
+  var anchor = visualSettings.zoneBubbleAnchor    || 1.00;
+  var geom   = computeInteriorGeom(iStage, atm, anchor, isFull);
+  applyZoomZone1Size(geom, animated);
+  applyZoomPageStyle(b, isFull, geom);
+  var boost = geom.scaleBoost || 1;
+  if (animated) {
+    zoomZone3.style.transition = 'transform 0.42s cubic-bezier(0.25,0.8,0.25,1)';
+  } else {
+    zoomZone3.style.transition = 'none';
+  }
+  zoomZone3.style.transform = 'translate(-50%,-50%) scale(' + boost + ')';
+  if (isFull) {
+    zoomZone1Wrap.classList.add('zoom-full');
+    zoomFullToggle.innerHTML = ZOOM_COLLAPSE_ICON;
+  } else {
+    zoomZone1Wrap.classList.remove('zoom-full');
+    zoomFullToggle.innerHTML = ZOOM_EXPAND_ICON;
+  }
+}
 
 function openZoom(bubbleId) {
   var b = getBubbleById(bubbleId);
-  if (!b) return;
+  if (!b || state.zoomAnimating) return;
   state.zoomTargetId = bubbleId;
   b.viewed = true;
 
+  // populate content
   zoomTitle.textContent = b.label;
-  zoomMassLabel.textContent = 'weight · ' + Math.round((b.mass || 0) * 10) / 10;
+  zoomMassLabel.textContent = 'weight \xb7 ' + Math.round((b.mass || 0) * 10) / 10;
   renderZoomThoughts(b);
   zoomWhisperInput.value = '';
+
+  // read settings
+  var dur    = visualSettings.zoomDuration        || 900;
+  var atm    = visualSettings.zoneAtmosphereScale || 1.58;
+  var anchor = visualSettings.zoneBubbleAnchor    || 1.00;
+  var iStage = Math.min(window.innerWidth, window.innerHeight);
+  var atmosDiam = iStage * atm * ZOOM_FRAMED_LEVEL;
+
+  // build/update zone3 atmosphere star
+  renderZoomAtmosphere(b, atmosDiam);
+  applyZoomZone2();
+
+  // framed geometry for the page
+  var geom = computeInteriorGeom(iStage, atm, anchor, false);
+  applyZoomZone1Size(geom, false);
+  applyZoomPageStyle(b, false, geom);
+
+  // per-bubble full state — restore without animation
+  var isFull = !!b.zoomFull;
+
+  // get bubble screen position for the camera start pose
+  var bEl  = b.el || document.getElementById('bubble-' + bubbleId);
+  var rect = bEl ? bEl.getBoundingClientRect() : null;
+  var sx   = rect ? (rect.left + rect.width  / 2) : (window.innerWidth  / 2);
+  var sy   = rect ? (rect.top  + rect.height / 2) : (window.innerHeight / 2);
+  var D    = bubbleRadius(b) * 2;
+
+  var cx = window.innerWidth  / 2;
+  var cy = window.innerHeight / 2;
+  var dx = sx - cx;
+  var dy = sy - cy;
+  var startScale = Math.max(0.01, D / atmosDiam);
+
+  var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  // show overlay, set hidden state
   zoomOverlay.classList.add('active');
+  zoomZone1Wrap.classList.remove('interactive');
+  zoomBg.style.transition        = 'none';
+  zoomBg.style.opacity           = '0';
+  zoomZone2.style.transition     = 'none';
+  zoomZone2.style.opacity        = '0';
+  zoomZone1Wrap.style.transition = 'none';
+  zoomZone1Wrap.style.opacity    = '0';
+  zoomStage.style.transition     = 'none';
+  zoomStage.style.transform      = 'translate(' + dx + 'px,' + dy + 'px) scale(' + startScale + ')';
+
+  // force reflow so the start pose is painted before transition
+  void zoomStage.offsetWidth;
+
+  if (reducedMotion) {
+    var rmDur = 150;
+    zoomStage.style.transform = 'translate(0,0) scale(1)';
+    zoomBg.style.transition        = 'opacity ' + rmDur + 'ms ease';
+    zoomBg.style.opacity           = '1';
+    zoomZone2.style.transition     = 'opacity ' + rmDur + 'ms ease';
+    zoomZone2.style.opacity        = '1';
+    zoomZone1Wrap.style.transition = 'opacity ' + rmDur + 'ms ease';
+    zoomZone1Wrap.style.opacity    = '1';
+    state.zoomAnimating = true;
+    state.zoomTimerDone = window.setTimeout(function() {
+      state.zoomAnimating = false;
+      zoomZone1Wrap.classList.add('interactive');
+      if (isFull) { applyZoomFull(b, true, false); }
+    }, rmDur + 20);
+    return;
+  }
+
+  // Surgical zoom-in: translate + scale stage to center
+  var easing = 'cubic-bezier(0.45,0.05,0.55,0.95)';
+  zoomStage.style.transition = 'transform ' + dur + 'ms ' + easing;
+  zoomStage.style.transform  = 'translate(0,0) scale(1)';
+
+  // bg field dims: 50% of overlay opacity, delayed 40% into the zoom
+  var bgDelay = Math.round(dur * 0.40);
+  var bgDur   = Math.round(dur * 0.60);
+  zoomBg.style.transition = 'opacity ' + bgDur + 'ms ' + easing + ' ' + bgDelay + 'ms';
+  zoomBg.style.opacity    = '1';
+
+  // interior (zone1+zone2) crossfades in at 76% of duration
+  var intDelay = Math.round(dur * 0.76);
+  var intDur   = Math.round(dur * 0.45);
+  state.zoomAnimating      = true;
+  state.zoomTimerInterior  = window.setTimeout(function() {
+    zoomZone2.style.transition     = 'opacity ' + intDur + 'ms ' + easing;
+    zoomZone2.style.opacity        = '1';
+    zoomZone1Wrap.style.transition = 'opacity ' + intDur + 'ms ' + easing;
+    zoomZone1Wrap.style.opacity    = '1';
+  }, intDelay);
+
+  state.zoomTimerDone = window.setTimeout(function() {
+    state.zoomAnimating = false;
+    zoomZone1Wrap.classList.add('interactive');
+    if (isFull) { applyZoomFull(b, true, false); }
+  }, dur + 20);
 }
 
 function renderZoomThoughts(b) {
@@ -7511,11 +7949,114 @@ function updateZoomMassLabel(bubbleId) {
   zoomMassLabel.textContent = 'weight · ' + Math.round((b.mass || 0) * 10) / 10;
 }
 
-document.getElementById('zoom-bg').addEventListener('click', closeZoom);
+// overlay click (not zone1) closes zoom; zone1 stops propagation
+zoomOverlay.addEventListener('click', function() {
+  if (state.zoomTargetId && !state.zoomAnimating) { closeZoom(); }
+});
+zoomOverlay.addEventListener('touchend', function() {
+  if (state.zoomTargetId && !state.zoomAnimating) { closeZoom(); }
+});
+zoomZone1.addEventListener('click',    function(e) { e.stopPropagation(); });
+zoomZone1.addEventListener('touchend', function(e) { e.stopPropagation(); });
+
+// full/framed toggle
+zoomFullToggle.addEventListener('click', function(e) {
+  e.stopPropagation();
+  if (!state.zoomTargetId) return;
+  var b = getBubbleById(state.zoomTargetId);
+  if (!b) return;
+  var isFull = !zoomZone1Wrap.classList.contains('zoom-full');
+  b.zoomFull = isFull;
+  applyZoomFull(b, isFull, true);
+});
 
 function closeZoom() {
-  zoomOverlay.classList.remove('active');
-  state.zoomTargetId = null;
+  if (!state.zoomTargetId) return;
+  var b = getBubbleById(state.zoomTargetId);
+
+  // persist full state
+  if (b) { b.zoomFull = zoomZone1Wrap.classList.contains('zoom-full'); }
+
+  // cancel any in-flight open timers
+  if (state.zoomTimerInterior) { window.clearTimeout(state.zoomTimerInterior); state.zoomTimerInterior = null; }
+  if (state.zoomTimerDone)     { window.clearTimeout(state.zoomTimerDone);     state.zoomTimerDone     = null; }
+
+  var dur    = visualSettings.zoomDuration     || 900;
+  var outDur = Math.min(dur, 500);
+  var easingOut = 'cubic-bezier(0.55,0.05,0.95,0.45)';
+
+  zoomZone1Wrap.classList.remove('interactive');
+
+  var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  if (reducedMotion) {
+    var rmDur = 150;
+    zoomBg.style.transition        = 'opacity ' + rmDur + 'ms ease';
+    zoomBg.style.opacity           = '0';
+    zoomZone2.style.transition     = 'opacity ' + rmDur + 'ms ease';
+    zoomZone2.style.opacity        = '0';
+    zoomZone1Wrap.style.transition = 'opacity ' + rmDur + 'ms ease';
+    zoomZone1Wrap.style.opacity    = '0';
+    state.zoomTargetId  = null;
+    state.zoomAnimating = false;
+    window.setTimeout(function() {
+      zoomOverlay.classList.remove('active');
+      // reset stage
+      zoomStage.style.transition = 'none';
+      zoomStage.style.transform  = 'translate(0,0) scale(1)';
+      // snap back to framed glyph for next open
+      zoomZone1Wrap.classList.remove('zoom-full');
+      zoomFullToggle.innerHTML = ZOOM_EXPAND_ICON;
+    }, rmDur + 20);
+    return;
+  }
+
+  // snap back to framed for exit (full→framed is instant so star returns to
+  // its framed size before the reverse-zoom collapses it back to the bubble)
+  if (zoomZone1Wrap.classList.contains('zoom-full')) {
+    applyZoomFull(b, false, false);
+  }
+
+  // get bubble's current screen position for reverse travel
+  var bEl  = b ? (b.el || document.getElementById('bubble-' + (b ? b.id : 0))) : null;
+  var rect = bEl ? bEl.getBoundingClientRect() : null;
+  var sx   = rect ? (rect.left + rect.width  / 2) : (window.innerWidth  / 2);
+  var sy   = rect ? (rect.top  + rect.height / 2) : (window.innerHeight / 2);
+  var D    = b ? (bubbleRadius(b) * 2) : 60;
+
+  var iStage    = Math.min(window.innerWidth, window.innerHeight);
+  var atm       = visualSettings.zoneAtmosphereScale || 1.58;
+  var atmosDiam = iStage * atm * ZOOM_FRAMED_LEVEL;
+  var endScale  = Math.max(0.01, D / atmosDiam);
+
+  var cx = window.innerWidth  / 2;
+  var cy = window.innerHeight / 2;
+  var dx = sx - cx;
+  var dy = sy - cy;
+
+  // crossfade interior out first
+  var exitIntDur = Math.round(outDur * 0.45);
+  zoomZone1Wrap.style.transition = 'opacity ' + exitIntDur + 'ms ' + easingOut;
+  zoomZone1Wrap.style.opacity    = '0';
+  zoomZone2.style.transition     = 'opacity ' + exitIntDur + 'ms ' + easingOut;
+  zoomZone2.style.opacity        = '0';
+
+  // animate stage back to star
+  zoomStage.style.transition = 'transform ' + outDur + 'ms ' + easingOut;
+  zoomStage.style.transform  = 'translate(' + dx + 'px,' + dy + 'px) scale(' + endScale + ')';
+
+  // bg fades out
+  zoomBg.style.transition = 'opacity ' + outDur + 'ms ' + easingOut;
+  zoomBg.style.opacity    = '0';
+
+  state.zoomTargetId  = null;
+  state.zoomAnimating = false;
+
+  window.setTimeout(function() {
+    zoomOverlay.classList.remove('active');
+    zoomStage.style.transition = 'none';
+    zoomStage.style.transform  = 'translate(0,0) scale(1)';
+  }, outDur + 30);
 }
 
 document.getElementById('zoom-whisper-submit').addEventListener('click', function() {
@@ -7944,6 +8485,16 @@ var visualSettings = {
 visualSettings.starDefaults = { movement: 'vortex', palette: 'nebula', border: 'soft' };
 visualSettings.starOverrideMode = 'unstyled';
 visualSettings.starMassCap = 10;
+visualSettings.zoomDuration           = 900;
+visualSettings.zoneVignetteIntensity  = 0.50;
+visualSettings.zoneVignetteInner      = 0.30;
+visualSettings.zoneVignetteTone       = 'page';
+visualSettings.zonePageFeather        = 0.62;
+visualSettings.zonePageAlpha          = 0.90;
+visualSettings.zoneAtmosphereScale    = 1.58;
+visualSettings.zoneAtmosphereSharpness = 0;
+visualSettings.zoneAtmosphereOpacity  = 1.0;
+visualSettings.zoneBubbleAnchor       = 1.00;
 
 var COLORS = {
   gold:  '201,168,76',
@@ -8470,6 +9021,121 @@ document.getElementById('sp-brightness').addEventListener('input', function() {
 });
 
 /* === END SLIDERS === */
+/* === BEGIN ZOOM-INTERIOR-SETTINGS-LISTENERS === */
+// ── ZOOM & INTERIOR SETTINGS ──────────────────────────────
+(function() {
+  function _zS(id) { return document.getElementById(id); }
+
+  function _refreshZoomLive() {
+    if (!state.zoomTargetId) return;
+    var b = getBubbleById(state.zoomTargetId);
+    if (!b) return;
+    var iStage = Math.min(window.innerWidth, window.innerHeight);
+    var atm    = visualSettings.zoneAtmosphereScale || 1.58;
+    var anchor = visualSettings.zoneBubbleAnchor    || 1.00;
+    var isFull = zoomZone1Wrap.classList.contains('zoom-full');
+    var geom   = computeInteriorGeom(iStage, atm, anchor, isFull);
+    applyZoomPageStyle(b, isFull, geom);
+    applyZoomZone2();
+  }
+
+  _zS('sp-zoom-duration').addEventListener('input', function() {
+    var v = parseInt(this.value, 10);
+    visualSettings.zoomDuration = v;
+    _zS('sp-zoom-dur-val').textContent = v + 'ms';
+  });
+
+  _zS('sp-vignette-intensity').addEventListener('input', function() {
+    var v = parseInt(this.value, 10);
+    visualSettings.zoneVignetteIntensity = v / 100;
+    _zS('sp-vignette-int-val').textContent = v + '%';
+    if (state.zoomTargetId) applyZoomZone2();
+  });
+
+  _zS('sp-vignette-inner').addEventListener('input', function() {
+    var v = parseInt(this.value, 10);
+    visualSettings.zoneVignetteInner = v / 100;
+    _zS('sp-vignette-inn-val').textContent = v + '%';
+    if (state.zoomTargetId) applyZoomZone2();
+  });
+
+  bindToggles('[data-zoom-tone]', function(btn) {
+    visualSettings.zoneVignetteTone = btn.getAttribute('data-zoom-tone');
+    if (state.zoomTargetId) applyZoomZone2();
+  });
+
+  _zS('sp-page-feather').addEventListener('input', function() {
+    var v = parseInt(this.value, 10);
+    visualSettings.zonePageFeather = v / 100;
+    _zS('sp-page-feather-val').textContent = v + '%';
+    _refreshZoomLive();
+  });
+
+  _zS('sp-page-alpha').addEventListener('input', function() {
+    var v = parseInt(this.value, 10);
+    visualSettings.zonePageAlpha = v / 100;
+    _zS('sp-page-alpha-val').textContent = v + '%';
+    _refreshZoomLive();
+  });
+
+  _zS('sp-atm-scale').addEventListener('input', function() {
+    var v = parseInt(this.value, 10);
+    visualSettings.zoneAtmosphereScale = v / 100;
+    _zS('sp-atm-scale-val').textContent = (v / 100).toFixed(2);
+    if (state.zoomTargetId) {
+      var b = getBubbleById(state.zoomTargetId);
+      if (!b) return;
+      var iStage = Math.min(window.innerWidth, window.innerHeight);
+      var atm    = visualSettings.zoneAtmosphereScale;
+      var anchor = visualSettings.zoneBubbleAnchor || 1.00;
+      renderZoomAtmosphere(b, iStage * atm * ZOOM_FRAMED_LEVEL);
+      applyZoomZone2();
+      var isFull = zoomZone1Wrap.classList.contains('zoom-full');
+      var geom   = computeInteriorGeom(iStage, atm, anchor, isFull);
+      applyZoomZone1Size(geom, false);
+      applyZoomPageStyle(b, isFull, geom);
+    }
+  });
+
+  _zS('sp-atm-sharpness').addEventListener('input', function() {
+    var v = parseInt(this.value, 10);
+    visualSettings.zoneAtmosphereSharpness = v;
+    _zS('sp-atm-sharp-val').textContent = v > 0 ? '+' + v : '' + v;
+    if (state.zoomTargetId) {
+      var b = getBubbleById(state.zoomTargetId);
+      if (!b) return;
+      var iStage    = Math.min(window.innerWidth, window.innerHeight);
+      var atmosDiam = iStage * (visualSettings.zoneAtmosphereScale || 1.58) * ZOOM_FRAMED_LEVEL;
+      renderZoomAtmosphere(b, atmosDiam);
+    }
+  });
+
+  _zS('sp-atm-opacity').addEventListener('input', function() {
+    var v = parseInt(this.value, 10);
+    visualSettings.zoneAtmosphereOpacity = v / 100;
+    _zS('sp-atm-opacity-val').textContent = v + '%';
+    zoomZone3.style.opacity = String(v / 100);
+  });
+
+  _zS('sp-bubble-anchor').addEventListener('input', function() {
+    var v = parseInt(this.value, 10);
+    visualSettings.zoneBubbleAnchor = v / 100;
+    _zS('sp-bubble-anchor-val').textContent = (v / 100).toFixed(2);
+    if (state.zoomTargetId) {
+      var b = getBubbleById(state.zoomTargetId);
+      if (!b) return;
+      var iStage = Math.min(window.innerWidth, window.innerHeight);
+      var atm    = visualSettings.zoneAtmosphereScale || 1.58;
+      var anchor = visualSettings.zoneBubbleAnchor;
+      var isFull = zoomZone1Wrap.classList.contains('zoom-full');
+      var geom   = computeInteriorGeom(iStage, atm, anchor, isFull);
+      applyZoomZone1Size(geom, true);
+      applyZoomPageStyle(b, isFull, geom);
+    }
+  });
+
+})();
+/* === END ZOOM-INTERIOR-SETTINGS-LISTENERS === */
 /* === BEGIN ORBIT-SPEED-DIRECTION === */
 // ── ORBIT SPEED + DIRECTION ───────────────────────────────
 // Slider: 0–200%, default 100. Soft snaps at 0, 50, 100, 150, 200.
