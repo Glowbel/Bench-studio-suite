@@ -36,7 +36,7 @@ Ideas are minerals. Interaction is pressure. Crystallization is commitment. The 
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~10,678
+lines: ~11,520
 state: mid-build | stable but finding unusual bugs | hardcore audit underway
 phase: 1 shipped | 1.5/2 active (bug fixes + core audit + phase-change rethink)
 external-work: file split in progress (developer friend, testing in Claude artifacts)
@@ -66,6 +66,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-06] fix  | bg star lag — pause field gas-anims on drag/zoom/compass/dial + reduced-motion | touches: BUBBLES, STAR-SYSTEM, ZOOM
 [2026-06-03] fix  | star dial center — scale 1.0→1.6; transform centering; mass tab parity | touches: COMPASS, VISUAL-SETTINGS-STATE
 [2026-06-03] fix  | bubble-star body missing — renderBubbleStar moved after appendChild so getElementById finds el | touches: BUBBLES
 [2026-06-03] fix  | swirl canvas bleed removed; paintCrystalSwirl on-demand; starDefaults moved to VISUAL-SETTINGS-STATE; dial 320→420px full-size preview | touches: BUBBLES, CRYSTAL-SWIRL, VISUAL-SETTINGS-STATE, STAR-DIAL
@@ -225,6 +226,12 @@ file split → external work in progress | don't restructure file inline
 ### Approaching — warn on approach
 
 ```
+star-turbulence-cost: animated SVG turbulence (feTurbulence) on every bubble star
+  re-rasterizes every frame — root of the post-zoom background lag (Jun 2026 audit)
+  field-star gas-anims now PAUSE on drag/zoom/compass/dial + reduced-motion
+  never animate a transform on a live-filtered element without a pause path
+  real fix = rasterize the star once, animate cheap transforms (deferred)
+
 asset-handling: base64 inline images broke The Bench's context window in Apr 2026
   Constellation hasn't had this incident, but it's the next-largest HTML file
   preserve the code | be creative with how external assets get included

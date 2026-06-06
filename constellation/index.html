@@ -3800,6 +3800,26 @@
 .bubble-star[data-movement="drift"] .gas-3 .gas-anim { animation: bs-drift-c calc(19s / var(--spd, 1)) ease-in-out -5s infinite, bs-rot-cw  calc(320s / var(--spd, 1)) linear infinite; }
 .bubble-star[data-movement="drift"] .gas-4 .gas-anim { animation: bs-drift-d calc(23s / var(--spd, 1)) ease-in-out -7s infinite, bs-rot-ccw calc(360s / var(--spd, 1)) linear infinite; }
 
+/* === STAR INTERACTION PAUSE ===
+   Freeze field-star animations during heavy interaction (drag, compass,
+   dial, zoom) so the gas-layer turbulence filters stop re-rasterizing every
+   frame while the field isn't the focus. Scoped to .bubble so the zoom
+   interior star (#zoom-zone3) keeps living while you're inside it. */
+body.bubble-dragging .bubble .bubble-star,
+body.bubble-dragging .bubble .bubble-star *,
+body.field-frozen    .bubble .bubble-star,
+body.field-frozen    .bubble .bubble-star *,
+body.dial-open       .bubble .bubble-star,
+body.dial-open       .bubble .bubble-star *,
+body.zoom-open       .bubble .bubble-star,
+body.zoom-open       .bubble .bubble-star * {
+  animation-play-state: paused !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bubble-star,
+  .bubble-star * { animation-play-state: paused !important; }
+}
+
 /* Compass customize direction */
 .compass-dir.customize .compass-rune { color: #b59aff; }
 .compass-dir.customize.lit .compass-rune {
@@ -5621,6 +5641,7 @@ function renderBubble(b) {
     b.moveMode = true;
 
     state.dragging    = { id: b.id };
+    document.body.classList.add('bubble-dragging');
     state.dragOffsetX = clientX - b.x;
     state.dragOffsetY = clientY - b.y;
     // Visual feedback
@@ -6038,6 +6059,12 @@ function freezeField() {
 function resumeField() {
   document.body.classList.remove('field-frozen');
   state.fieldFrozen = false;
+}
+// Single drag-end path: null the drag flag AND drop the body class that pauses
+// field-star animations, so a missed end path can never leave stars frozen.
+function clearDragging() {
+  state.dragging = null;
+  document.body.classList.remove('bubble-dragging');
 }
 
 // Adaptive radial placement — distributes buttons along a safe arc
@@ -7399,7 +7426,7 @@ document.addEventListener('mouseup', function() {
       }
     }
     if (typeof hideReleaseZone === 'function') hideReleaseZone();
-    state.dragging = null;
+    clearDragging();
     autoSave();
   }
 });
@@ -7433,7 +7460,7 @@ document.addEventListener('touchend', function() {
       }
     }
     if (typeof hideReleaseZone === 'function') hideReleaseZone();
-    state.dragging = null;
+    clearDragging();
     autoSave();
   }
 });
@@ -7455,7 +7482,7 @@ document.addEventListener('touchcancel', function() {
     }
   }
   if (typeof hideReleaseZone === 'function') hideReleaseZone();
-  state.dragging = null;
+  clearDragging();
   autoSave();
 });
 
@@ -7711,6 +7738,7 @@ function openZoom(bubbleId) {
   // would otherwise fire its action on the wrong star on the next finger-lift.
   if (state.activeCompassId !== null) closeCompass();
   state.zoomTargetId = bubbleId;
+  document.body.classList.add('zoom-open');
   b.viewed = true;
 
   // populate content
@@ -8048,6 +8076,7 @@ function closeZoom() {
     zoomZone2.style.opacity        = '0';
     zoomZone1Wrap.style.transition = 'opacity ' + rmDur + 'ms ease';
     zoomZone1Wrap.style.opacity    = '0';
+    document.body.classList.remove('zoom-open');
     state.zoomTargetId  = null;
     window.setTimeout(function() {
       state.zoomAnimating = false;
@@ -8100,6 +8129,7 @@ function closeZoom() {
   zoomBg.style.transition = 'opacity ' + outDur + 'ms ' + easingOut;
   zoomBg.style.opacity    = '0';
 
+  document.body.classList.remove('zoom-open');
   state.zoomTargetId = null;
 
   window.setTimeout(function() {
@@ -10100,7 +10130,7 @@ function clearField() {
   state.residueStars = [];
   state.unlinkedNodes = [];
   state.nextId = 1;
-  state.dragging = null;
+  clearDragging();
   state.fieldFrozen = false;
   state.activeCompassId = null;
   // Dismiss any open transient overlay so its state can't point at a bubble
