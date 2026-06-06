@@ -7708,8 +7708,17 @@ function openZoom(bubbleId) {
   applyZoomZone1Size(geom, false);
   applyZoomPageStyle(b, false, geom);
 
-  // per-bubble full state — restore without animation
+  // per-bubble full state — pre-size zone1-wrap while it's still opacity:0
+  // so it fades in already at the right size (no visible resize flash).
+  // zone3 boost is applied after the zoom-in animation (see zoomTimerDone).
   var isFull = !!b.zoomFull;
+  if (isFull) {
+    var fullGeom = computeInteriorGeom(iStage, atm, anchor, true);
+    applyZoomZone1Size(fullGeom, false);
+    applyZoomPageStyle(b, true, fullGeom);
+    zoomZone1Wrap.classList.add('zoom-full');
+    zoomFullToggle.innerHTML = ZOOM_COLLAPSE_ICON;
+  }
 
   // get bubble screen position for the camera start pose
   var bEl  = b.el || document.getElementById('bubble-' + bubbleId);
@@ -7754,7 +7763,13 @@ function openZoom(bubbleId) {
     state.zoomTimerDone = window.setTimeout(function() {
       state.zoomAnimating = false;
       zoomZone1Wrap.classList.add('interactive');
-      if (isFull) { applyZoomFull(b, true, false); }
+      // zone3 boost for reduced-motion (no camera animation, so apply now)
+      if (isFull) {
+        var rmGeom  = computeInteriorGeom(iStage, atm, anchor, true);
+        var rmBoost = rmGeom.scaleBoost || 1;
+        zoomZone3.style.transition = 'none';
+        zoomZone3.style.transform  = 'translate(-50%,-50%) scale(' + rmBoost + ')';
+      }
     }, rmDur + 20);
     return;
   }
@@ -7784,7 +7799,14 @@ function openZoom(bubbleId) {
   state.zoomTimerDone = window.setTimeout(function() {
     state.zoomAnimating = false;
     zoomZone1Wrap.classList.add('interactive');
-    if (isFull) { applyZoomFull(b, true, false); }
+    // zone3 boost: now that the camera is settled, animate the star out to
+    // its maximized scale so the corners stay anchored to the page corners.
+    if (isFull) {
+      var fGeom = computeInteriorGeom(iStage, atm, anchor, true);
+      var boost = fGeom.scaleBoost || 1;
+      zoomZone3.style.transition = 'transform 0.42s cubic-bezier(0.25,0.8,0.25,1)';
+      zoomZone3.style.transform  = 'translate(-50%,-50%) scale(' + boost + ')';
+    }
   }, dur + 20);
 }
 
@@ -7971,10 +7993,12 @@ zoomFullToggle.addEventListener('click', function(e) {
 });
 
 function closeZoom() {
-  if (!state.zoomTargetId) return;
+  if (!state.zoomTargetId || state.zoomAnimating) return;
+  state.zoomAnimating = true;
+
   var b = getBubbleById(state.zoomTargetId);
 
-  // persist full state
+  // persist full state before snapping back to framed for exit
   if (b) { b.zoomFull = zoomZone1Wrap.classList.contains('zoom-full'); }
 
   // cancel any in-flight open timers
@@ -7998,13 +8022,13 @@ function closeZoom() {
     zoomZone1Wrap.style.transition = 'opacity ' + rmDur + 'ms ease';
     zoomZone1Wrap.style.opacity    = '0';
     state.zoomTargetId  = null;
-    state.zoomAnimating = false;
     window.setTimeout(function() {
+      state.zoomAnimating = false;
       zoomOverlay.classList.remove('active');
-      // reset stage
       zoomStage.style.transition = 'none';
       zoomStage.style.transform  = 'translate(0,0) scale(1)';
-      // snap back to framed glyph for next open
+      zoomZone3.style.transition = 'none';
+      zoomZone3.style.transform  = 'translate(-50%,-50%) scale(1)';
       zoomZone1Wrap.classList.remove('zoom-full');
       zoomFullToggle.innerHTML = ZOOM_EXPAND_ICON;
     }, rmDur + 20);
@@ -8049,13 +8073,17 @@ function closeZoom() {
   zoomBg.style.transition = 'opacity ' + outDur + 'ms ' + easingOut;
   zoomBg.style.opacity    = '0';
 
-  state.zoomTargetId  = null;
-  state.zoomAnimating = false;
+  state.zoomTargetId = null;
 
   window.setTimeout(function() {
+    state.zoomAnimating = false;
     zoomOverlay.classList.remove('active');
     zoomStage.style.transition = 'none';
     zoomStage.style.transform  = 'translate(0,0) scale(1)';
+    zoomZone3.style.transition = 'none';
+    zoomZone3.style.transform  = 'translate(-50%,-50%) scale(1)';
+    zoomZone1Wrap.classList.remove('zoom-full');
+    zoomFullToggle.innerHTML = ZOOM_EXPAND_ICON;
   }, outDur + 30);
 }
 
