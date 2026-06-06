@@ -5770,6 +5770,9 @@ function renderBubble(b) {
       return;
     }
     if (!dragStarted && elapsed < 320) {
+      // Suppress the synthetic mouse/click the browser fires ~300ms after a tap;
+      // without this it re-enters the press machinery on the now-open overlay.
+      if (e.cancelable) e.preventDefault();
       if (b.crystallized) { openPreview(b.id); }
       else { openZoom(b.id); }
     }
@@ -7434,6 +7437,27 @@ document.addEventListener('touchend', function() {
     autoSave();
   }
 });
+// Touch interrupted by the OS (call, notification, gesture-nav) — abort the
+// drag cleanly instead of leaving the bubble stuck to a finger that's gone.
+document.addEventListener('touchcancel', function() {
+  if (!state.dragging) return;
+  var b = getBubbleById(state.dragging.id);
+  if (b) {
+    cancelLink();              // drop any pending link — gesture was interrupted, not committed
+    b.moveMode = false;
+    b.vx = 0; b.vy = 0;
+    b.homeX = b.x; b.homeY = b.y;
+    var el = document.getElementById('bubble-' + b.id);
+    if (el) {
+      el.classList.remove('move-mode');
+      var radar = el.querySelector('.radar-pulse');
+      if (radar && radar.parentNode) radar.parentNode.removeChild(radar);
+    }
+  }
+  if (typeof hideReleaseZone === 'function') hideReleaseZone();
+  state.dragging = null;
+  autoSave();
+});
 
 /* === END DRAG-HANDLERS === */
 /* === BEGIN CRYSTALLIZATION === */
@@ -7683,6 +7707,9 @@ function applyZoomFull(b, isFull, animated) {
 function openZoom(bubbleId) {
   var b = getBubbleById(bubbleId);
   if (!b || state.zoomAnimating) return;
+  // One transient overlay at a time — a compass left open on another bubble
+  // would otherwise fire its action on the wrong star on the next finger-lift.
+  if (state.activeCompassId !== null) closeCompass();
   state.zoomTargetId = bubbleId;
   b.viewed = true;
 
@@ -8114,6 +8141,7 @@ var previewOverlay = document.getElementById('preview-overlay');
 function openPreview(bubbleId) {
   var b = getBubbleById(bubbleId);
   if (!b) return;
+  if (state.activeCompassId !== null) closeCompass();
   state.previewTargetId = bubbleId;
 
   document.getElementById('preview-name').textContent = b.label.toUpperCase();
@@ -8524,6 +8552,119 @@ visualSettings.zoneAtmosphereSharpness = 0;
 visualSettings.zoneAtmosphereOpacity  = 1.0;
 visualSettings.zoneBubbleAnchor       = 1.00;
 
+// ── VISUAL SETTINGS PERSISTENCE ───────────────────────────
+// visualSettings is app-global (not per-session), so it persists under its own
+// localStorage key — mirroring the orbit-speed pattern.
+var VISUAL_SETTINGS_KEY = 'constellation-visual-settings';
+
+function saveVisualSettings() {
+  try {
+    var v = visualSettings;
+    localStorage.setItem(VISUAL_SETTINGS_KEY, JSON.stringify({
+      showPlanetary: v.showPlanetary, planetaryStyle: v.planetaryStyle,
+      planetaryOpacity: v.planetaryOpacity, planetaryColor: v.planetaryColor,
+      ringStyle: v.ringStyle,
+      showMutual: v.showMutual, mutualStyle: v.mutualStyle,
+      mutualOpacity: v.mutualOpacity, mutualColor: v.mutualColor,
+      fieldBrightness: v.fieldBrightness,
+      starDefaults: v.starDefaults, starOverrideMode: v.starOverrideMode,
+      zoomDuration: v.zoomDuration,
+      zoneVignetteIntensity: v.zoneVignetteIntensity,
+      zoneVignetteInner: v.zoneVignetteInner,
+      zoneVignetteTone: v.zoneVignetteTone,
+      zonePageFeather: v.zonePageFeather,
+      zonePageAlpha: v.zonePageAlpha,
+      zoneAtmosphereScale: v.zoneAtmosphereScale,
+      zoneAtmosphereSharpness: v.zoneAtmosphereSharpness,
+      zoneAtmosphereOpacity: v.zoneAtmosphereOpacity,
+      zoneBubbleAnchor: v.zoneBubbleAnchor
+    }));
+  } catch (e) {}
+}
+
+function restoreVisualSettings() {
+  var raw = null;
+  try { raw = localStorage.getItem(VISUAL_SETTINGS_KEY); } catch (e) { return; }
+  if (!raw) return;
+  var data;
+  try { data = JSON.parse(raw); } catch (e) { return; }
+  if (!data || typeof data !== 'object') return;
+  var keys = ['showPlanetary','planetaryStyle','planetaryOpacity','planetaryColor','ringStyle',
+    'showMutual','mutualStyle','mutualOpacity','mutualColor','fieldBrightness',
+    'starOverrideMode','zoomDuration','zoneVignetteIntensity','zoneVignetteInner',
+    'zoneVignetteTone','zonePageFeather','zonePageAlpha','zoneAtmosphereScale',
+    'zoneAtmosphereSharpness','zoneAtmosphereOpacity','zoneBubbleAnchor'];
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    if (Object.prototype.hasOwnProperty.call(data, k) && data[k] !== null && data[k] !== undefined) {
+      visualSettings[k] = data[k];
+    }
+  }
+  if (data.starDefaults && typeof data.starDefaults === 'object') {
+    if (data.starDefaults.movement) visualSettings.starDefaults.movement = data.starDefaults.movement;
+    if (data.starDefaults.palette)  visualSettings.starDefaults.palette  = data.starDefaults.palette;
+    if (data.starDefaults.border)   visualSettings.starDefaults.border   = data.starDefaults.border;
+  }
+}
+
+// Push visualSettings → the settings-panel controls so the UI reflects live /
+// restored values instead of static HTML defaults.
+function _spActiveToggle(selector, attr, val) {
+  var btns = document.querySelectorAll(selector);
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.toggle('active', btns[i].getAttribute(attr) === val);
+  }
+}
+function _spSet(id, prop, val)  { var el = document.getElementById(id); if (el) el[prop] = val; }
+function _spText(id, txt)       { var el = document.getElementById(id); if (el) el.textContent = txt; }
+
+function syncVisualControls() {
+  var v = visualSettings;
+  // Link lines
+  _spSet('sp-show-planetary', 'checked', !!v.showPlanetary);
+  _spSet('sp-show-mutual',    'checked', !!v.showMutual);
+  _spSet('sp-planetary-opacity', 'value', Math.round(v.planetaryOpacity * 100));
+  _spSet('sp-mutual-opacity',    'value', Math.round(v.mutualOpacity * 100));
+  _spActiveToggle('[data-group="planetary"][data-style]', 'data-style', v.planetaryStyle);
+  _spActiveToggle('[data-group="planetary"][data-color]', 'data-color', v.planetaryColor);
+  _spActiveToggle('[data-group="ring"][data-style]',      'data-style', v.ringStyle);
+  _spActiveToggle('[data-group="mutual"][data-style]',    'data-style', v.mutualStyle);
+  _spActiveToggle('[data-group="mutual"][data-color]',    'data-color', v.mutualColor);
+  if (typeof setSub === 'function') {
+    setSub('sp-planetary-sub', !!v.showPlanetary);
+    setSub('sp-mutual-sub',    !!v.showMutual);
+  }
+  // Brightness
+  _spSet('sp-brightness', 'value', v.fieldBrightness);
+  _spText('sp-brightness-val', v.fieldBrightness + '%');
+  var fieldEl = document.getElementById('field');
+  if (fieldEl) fieldEl.style.filter = 'brightness(' + v.fieldBrightness + '%)';
+  // Zoom & Interior
+  _spSet('sp-zoom-duration', 'value', v.zoomDuration);
+  _spText('sp-zoom-dur-val', v.zoomDuration + 'ms');
+  _spSet('sp-vignette-intensity', 'value', Math.round(v.zoneVignetteIntensity * 100));
+  _spText('sp-vignette-int-val', Math.round(v.zoneVignetteIntensity * 100) + '%');
+  _spSet('sp-vignette-inner', 'value', Math.round(v.zoneVignetteInner * 100));
+  _spText('sp-vignette-inn-val', Math.round(v.zoneVignetteInner * 100) + '%');
+  _spActiveToggle('[data-zoom-tone]', 'data-zoom-tone', v.zoneVignetteTone);
+  _spSet('sp-page-feather', 'value', Math.round(v.zonePageFeather * 100));
+  _spText('sp-page-feather-val', Math.round(v.zonePageFeather * 100) + '%');
+  _spSet('sp-page-alpha', 'value', Math.round(v.zonePageAlpha * 100));
+  _spText('sp-page-alpha-val', Math.round(v.zonePageAlpha * 100) + '%');
+  _spSet('sp-atm-scale', 'value', Math.round(v.zoneAtmosphereScale * 100));
+  _spText('sp-atm-scale-val', v.zoneAtmosphereScale.toFixed(2));
+  _spSet('sp-atm-sharpness', 'value', v.zoneAtmosphereSharpness);
+  _spText('sp-atm-sharp-val', v.zoneAtmosphereSharpness > 0 ? '+' + v.zoneAtmosphereSharpness : '' + v.zoneAtmosphereSharpness);
+  _spSet('sp-atm-opacity', 'value', Math.round(v.zoneAtmosphereOpacity * 100));
+  _spText('sp-atm-opacity-val', Math.round(v.zoneAtmosphereOpacity * 100) + '%');
+  _spSet('sp-bubble-anchor', 'value', Math.round(v.zoneBubbleAnchor * 100));
+  _spText('sp-bubble-anchor-val', v.zoneBubbleAnchor.toFixed(2));
+  if (typeof applyOrbitalSettings === 'function') applyOrbitalSettings();
+}
+
+// Restore persisted values now so first zoom/use reflects them.
+restoreVisualSettings();
+
 var COLORS = {
   gold:  '201,168,76',
   white: '255,255,255',
@@ -8706,6 +8847,7 @@ document.addEventListener('click', function() {
 document.getElementById('dd-settings').addEventListener('click', function(e) {
   titlePill.classList.remove('open');
   settingsPanel.classList.add('visible');
+  if (typeof syncVisualControls === 'function') syncVisualControls(); // reflect live/restored values
   // Pin left edge so collapse never shifts position
   var spRect = settingsPanel.getBoundingClientRect();
   settingsPanel.style.left      = spRect.left + 'px';
@@ -8837,6 +8979,7 @@ function closeSettings(e) {
   if (e) { e.stopPropagation(); e.preventDefault(); }
   settingsPanel.classList.remove('visible');
   showSpView('nav');
+  saveVisualSettings(); // persist tuning when the panel closes
 }
 spCloseBtn.addEventListener('click',    closeSettings);
 spCloseBtn.addEventListener('touchend', closeSettings, { passive: false });
@@ -9163,6 +9306,17 @@ document.getElementById('sp-brightness').addEventListener('input', function() {
   });
 
 })();
+
+// Boot: reflect restored visual settings into the panel + apply global effects
+// (brightness, link styles). Script runs at end of body, so the DOM exists.
+syncVisualControls();
+
+// Persist visual settings when the user leaves/backgrounds the page — robust on
+// mobile where 'beforeunload' is unreliable. (Panel-close also persists.)
+window.addEventListener('pagehide', saveVisualSettings);
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'hidden') saveVisualSettings();
+});
 /* === END ZOOM-INTERIOR-SETTINGS-LISTENERS === */
 /* === BEGIN ORBIT-SPEED-DIRECTION === */
 // ── ORBIT SPEED + DIRECTION ───────────────────────────────
@@ -9521,7 +9675,8 @@ function serializeSession() {
       moveMode:     false,  // never persist move mode
       starMovement: b.starMovement || null,
       starPalette:  b.starPalette  || null,
-      starBorder:   b.starBorder   || null
+      starBorder:   b.starBorder   || null,
+      zoomFull:     b.zoomFull || false
     });
   }
   return {
@@ -9603,6 +9758,8 @@ function deserializeSession(id) {
   for (var k = 0; k < state.links.length; k++) {
     respawnLinkVisuals(state.links[k]);
   }
+  // Apply persisted link-line styling to the freshly respawned rings.
+  if (typeof applyOrbitalSettings === 'function') applyOrbitalSettings();
 
   // Restore decay interval setting
   setDecayInterval(state.decayInterval);
@@ -9658,7 +9815,8 @@ function restoreBubble(bd) {
     orbitalPathEl:   null,
     starMovement:    bd.starMovement || null,
     starPalette:     bd.starPalette  || null,
-    starBorder:      bd.starBorder   || null
+    starBorder:      bd.starBorder   || null,
+    zoomFull:        bd.zoomFull || false
   };
   state.bubbles.push(b);
   renderBubble(b);
@@ -9945,6 +10103,17 @@ function clearField() {
   state.dragging = null;
   state.fieldFrozen = false;
   state.activeCompassId = null;
+  // Dismiss any open transient overlay so its state can't point at a bubble
+  // that no longer exists once the field is rebuilt (and so a mid-flight zoom
+  // timer can't fire into the new session).
+  if (state.zoomTimerInterior) { clearTimeout(state.zoomTimerInterior); state.zoomTimerInterior = null; }
+  if (state.zoomTimerDone)     { clearTimeout(state.zoomTimerDone);     state.zoomTimerDone     = null; }
+  state.zoomTargetId    = null;
+  state.zoomAnimating   = false;
+  state.previewTargetId = null;
+  if (typeof zoomOverlay    !== 'undefined' && zoomOverlay)    zoomOverlay.classList.remove('active');
+  if (typeof previewOverlay !== 'undefined' && previewOverlay) previewOverlay.classList.remove('active');
+  if (typeof compassEl      !== 'undefined' && compassEl)      compassEl.classList.remove('active');
   // Clear canvases
   if (typeof tetherCtx !== 'undefined') {
     tetherCtx.clearRect(0, 0, tetherCanvas.width, tetherCanvas.height);
