@@ -36,7 +36,7 @@ Ideas are minerals. Interaction is pressure. Crystallization is commitment. The 
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~11,357
+lines: ~11,346
 state: mid-build | stable but finding unusual bugs | hardcore audit underway
 phase: 1 shipped | 1.5/2 active (bug fixes + core audit + phase-change rethink)
 external-work: file split in progress (developer friend, testing in Claude artifacts)
@@ -66,6 +66,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-08] feat | starfield swap — CSS twinkle dots replace canvas drift field; +density slider 0.5-2.5× | touches: AMBIENT-STARS, SETTINGS-PANEL, PERSISTENCE
 [2026-06-08] ref  | zoom interior settings pruned — baked 5 constants (anchor/atm-opacity/sharp/pullback/melt), +zoom-out-speed, removed dead vignette (invalid gradient %) | touches: ZOOM, SETTINGS-PANEL, PERSISTENCE
 [2026-06-06] fix  | bg star lag — pause field gas-anims on drag/zoom/compass/dial + reduced-motion | touches: BUBBLES, STAR-SYSTEM, ZOOM
 [2026-06-03] fix  | star dial center — scale 1.0→1.6; transform centering; mass tab parity | touches: COMPASS, VISUAL-SETTINGS-STATE

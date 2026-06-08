@@ -372,6 +372,15 @@
     pointer-events: none;
   }
 
+  /* CSS twinkle starfield — replaces the per-frame canvas ambient dots.
+     Dots use percent positions so they re-fit on resize without a rebuild. */
+  .starfield { position: absolute; inset: 0; pointer-events: none; }
+  .star-dot { position: absolute; background: #fff; border-radius: 50%; }
+  @keyframes twinkle {
+    0%, 100% { opacity: var(--o-base, 0.6); }
+    50%      { opacity: calc(var(--o-base, 0.6) * 0.35); }
+  }
+
   #bubble-layer {
     position: absolute;
     inset: 0;
@@ -4111,6 +4120,7 @@ body.dial-open .field-motion { animation-play-state: paused; }
 <!-- Background star canvas -->
 <div id="field">
   <canvas id="star-canvas"></canvas>
+  <div class="starfield" id="starfield"></div>
   <canvas id="tether-canvas"></canvas>
   <div id="bubble-layer"></div>
 </div>
@@ -4435,6 +4445,16 @@ body.dial-open .field-motion { animation-play-state: paused; }
       </div>
       <div class="sp-subrow">
         <input type="range" class="sp-slider" id="sp-brightness" min="50" max="300" value="100">
+      </div>
+    </div>
+    <!-- STARFIELD DENSITY -->
+    <div class="sp-section">
+      <div class="sp-row">
+        <div class="sp-label">starfield density</div>
+        <div class="sp-sublabel" id="sp-starfield-density-val" style="min-width:32px;text-align:right;">1.0&#215;</div>
+      </div>
+      <div class="sp-subrow">
+        <input type="range" class="sp-slider" id="sp-starfield-density" min="0.5" max="2.5" step="0.1" value="1">
       </div>
     </div>
     <!-- ORBIT -->
@@ -5125,15 +5145,16 @@ window.addEventListener('resize', function() {
   clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(function() {
     resizeCanvases();
-    initAmbientStars(); // re-seed stars to fill new dimensions
+    paintStarBackdrop(); // canvas clears on resize; repaint backdrop (dots use % positions, no rebuild)
   }, 120);
 });
 
 /* === END CANVAS-SETUP === */
 /* === BEGIN AMBIENT-STARS === */
 // ── AMBIENT STARS ─────────────────────────────────────────
-var ambientStars = [];
 var starBgGradient = null; // cached — rebuilt only on resize
+var STARFIELD_BASE = 220;  // base star-dot count at density 1.0
+var starfieldEl = document.getElementById('starfield');
 
 function rebuildStarGradient() {
   var w = starCanvas.width, h = starCanvas.height;
@@ -5144,87 +5165,44 @@ function rebuildStarGradient() {
   starBgGradient.addColorStop(0, 'rgba(12, 16, 48, 0.6)');
   starBgGradient.addColorStop(1, 'rgba(4, 5, 15, 0)');
 }
-function initAmbientStars() {
-  var w = starCanvas.width  || document.documentElement.clientWidth;
-  var h = starCanvas.height || document.documentElement.clientHeight;
-  var count = Math.floor((w * h) / 2800);
-  ambientStars = [];
+// Paint the static cosmic backdrop gradient once. The canvas clears when
+// resized, so repaint there — it no longer redraws every frame.
+function paintStarBackdrop() {
   rebuildStarGradient();
-  for (var i = 0; i < count; i++) {
-    ambientStars.push({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: Math.random() * 1.2 + 0.2,
-      alpha: Math.random() * 0.7 + 0.1,
-      alphaDir: Math.random() > 0.5 ? 1 : -1,
-      alphaSpeed: Math.random() * 0.003 + 0.001,
-      vx: (Math.random() - 0.5) * 0.05,
-      vy: (Math.random() - 0.5) * 0.05
-    });
-  }
-  // Larger rune-cross stars
-  for (var j = 0; j < 14; j++) {
-    ambientStars.push({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: Math.random() * 1.8 + 1.2,
-      alpha: Math.random() * 0.5 + 0.2,
-      alphaDir: Math.random() > 0.5 ? 1 : -1,
-      alphaSpeed: Math.random() * 0.002 + 0.0005,
-      vx: (Math.random() - 0.5) * 0.03,
-      vy: (Math.random() - 0.5) * 0.03,
-      rune: true
-    });
-  }
-}
-
-// Defer first init to rAF so layout is fully settled
-requestAnimationFrame(function() {
-  resizeCanvases();
-  initAmbientStars();
-});
-
-function drawAmbientStars() {
   starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
   if (starBgGradient) {
     starCtx.fillStyle = starBgGradient;
     starCtx.fillRect(0, 0, starCanvas.width, starCanvas.height);
   }
-
-  for (var i = 0; i < ambientStars.length; i++) {
-    var s = ambientStars[i];
-    s.alpha += s.alphaSpeed * s.alphaDir;
-    if (s.alpha >= 0.9) { s.alphaDir = -1; }
-    if (s.alpha <= 0.05) { s.alphaDir = 1; }
-    s.x += s.vx;
-    s.y += s.vy;
-    var sw = starCanvas.width, sh = starCanvas.height;
-    if (s.x < -10) s.x = sw + 10;
-    if (s.x > sw + 10) s.x = -10;
-    if (s.y < -10) s.y = sh + 10;
-    if (s.y > sh + 10) s.y = -10;
-
-    starCtx.globalAlpha = s.alpha;
-    starCtx.fillStyle = '#c8cfe8';
-    starCtx.beginPath();
-    starCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-    starCtx.fill();
-
-    if (s.rune) {
-      starCtx.strokeStyle = 'rgba(200, 207, 232, ' + (s.alpha * 0.6) + ')';
-      starCtx.lineWidth = 0.5;
-      starCtx.beginPath();
-      starCtx.moveTo(s.x - s.r * 2.5, s.y);
-      starCtx.lineTo(s.x + s.r * 2.5, s.y);
-      starCtx.moveTo(s.x, s.y - s.r * 2.5);
-      starCtx.lineTo(s.x, s.y + s.r * 2.5);
-      starCtx.stroke();
-    }
-  }
-  starCtx.globalAlpha = 1;
-
-  drawTethers();
 }
+
+// Build the CSS twinkle starfield. Density scales the dot count; positions
+// are percent-based so they re-fit on resize with no rebuild needed.
+function makeStarfield(density) {
+  if (!starfieldEl) return;
+  var d = density || 1;
+  var n = Math.round(STARFIELD_BASE * d);
+  var html = '';
+  for (var i = 0; i < n; i++) {
+    var x = Math.random() * 100;
+    var y = Math.random() * 100;
+    var r = Math.random();
+    var size = r < 0.78 ? 1 : (r < 0.95 ? 2 : 3);
+    var opacity = (0.18 + Math.random() * 0.72).toFixed(2);
+    var dur = (3 + Math.random() * 8).toFixed(1);
+    var delay = (Math.random() * -6).toFixed(1);
+    var blur = size === 3 ? 'filter:blur(0.4px);' : '';
+    html += '<span class="star-dot" style="left:' + x + '%;top:' + y + '%;width:' + size + 'px;height:' + size + 'px;--o-base:' + opacity + ';opacity:' + opacity + ';' + blur + 'animation:twinkle ' + dur + 's ease-in-out ' + delay + 's infinite"></span>';
+  }
+  starfieldEl.innerHTML = html;
+}
+
+// Defer first init to rAF so layout is fully settled
+requestAnimationFrame(function() {
+  resizeCanvases();
+  paintStarBackdrop();
+  makeStarfield(visualSettings.starfieldDensity);
+});
 
 /* === END AMBIENT-STARS === */
 /* === BEGIN TETHER-LINES === */
@@ -5284,7 +5262,7 @@ function drawTethers() {
 /* === BEGIN ANIMATION-LOOP === */
 // ── ANIMATION LOOP ────────────────────────────────────────
 function loop() {
-  drawAmbientStars();
+  drawTethers();
   updateBubblePhysics();
   requestAnimationFrame(loop);
 }
@@ -8491,7 +8469,8 @@ var visualSettings = {
   mutualStyle:      'solid',
   mutualOpacity:    0.22,
   mutualColor:      'white',
-  fieldBrightness:  100
+  fieldBrightness:  100,
+  starfieldDensity: 1.0
 };
 visualSettings.starDefaults = { movement: 'vortex', palette: 'nebula', border: 'soft' };
 visualSettings.starOverrideMode = 'unstyled';
@@ -8522,6 +8501,7 @@ function saveVisualSettings() {
       showMutual: v.showMutual, mutualStyle: v.mutualStyle,
       mutualOpacity: v.mutualOpacity, mutualColor: v.mutualColor,
       fieldBrightness: v.fieldBrightness,
+      starfieldDensity: v.starfieldDensity,
       starDefaults: v.starDefaults, starOverrideMode: v.starOverrideMode,
       zoomDuration: v.zoomDuration,
       zoomOutDuration: v.zoomOutDuration,
@@ -8539,7 +8519,7 @@ function restoreVisualSettings() {
   if (!data || typeof data !== 'object') return;
   var keys = ['showPlanetary','planetaryStyle','planetaryOpacity','planetaryColor','ringStyle',
     'showMutual','mutualStyle','mutualOpacity','mutualColor','fieldBrightness',
-    'starOverrideMode','zoomDuration','zoomOutDuration','zonePageAlpha'];
+    'starfieldDensity','starOverrideMode','zoomDuration','zoomOutDuration','zonePageAlpha'];
   for (var i = 0; i < keys.length; i++) {
     var k = keys[i];
     if (Object.prototype.hasOwnProperty.call(data, k) && data[k] !== null && data[k] !== undefined) {
@@ -8585,6 +8565,9 @@ function syncVisualControls() {
   _spText('sp-brightness-val', v.fieldBrightness + '%');
   var fieldEl = document.getElementById('field');
   if (fieldEl) fieldEl.style.filter = 'brightness(' + v.fieldBrightness + '%)';
+  // Starfield density
+  _spSet('sp-starfield-density', 'value', v.starfieldDensity);
+  _spText('sp-starfield-density-val', (v.starfieldDensity).toFixed(1) + '×');
   // Zoom & Interior
   _spSet('sp-zoom-duration', 'value', v.zoomDuration);
   _spText('sp-zoom-dur-val', v.zoomDuration + 'ms');
@@ -9122,6 +9105,12 @@ document.getElementById('sp-brightness').addEventListener('input', function() {
   visualSettings.fieldBrightness = parseInt(this.value, 10);
   document.getElementById('field').style.filter = 'brightness(' + visualSettings.fieldBrightness + '%)';
   document.getElementById('sp-brightness-val').textContent = visualSettings.fieldBrightness + '%';
+});
+
+document.getElementById('sp-starfield-density').addEventListener('input', function() {
+  visualSettings.starfieldDensity = parseFloat(this.value);
+  document.getElementById('sp-starfield-density-val').textContent = visualSettings.starfieldDensity.toFixed(1) + '×';
+  makeStarfield(visualSettings.starfieldDensity);
 });
 
 /* === END SLIDERS === */
