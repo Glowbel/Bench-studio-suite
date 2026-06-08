@@ -1316,6 +1316,57 @@
     color: rgba(200,215,255,0.90);
   }
 
+  /* load gate: brief warming screen while star textures bake on project resume */
+  #load-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 50% 45%, #0b1030 0%, #05060f 82%);
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    pointer-events: all;
+  }
+  #load-gate.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .load-gate-inner { text-align: center; }
+  .load-gate-orb {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 32%, #fff 0%, #9b8aff 42%, #5d8bff 72%, transparent 100%);
+    animation: load-gate-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes load-gate-pulse {
+    0%, 100% { transform: scale(0.9);  opacity: 0.8; }
+    50%      { transform: scale(1.08); opacity: 1;   }
+  }
+  .load-gate-label {
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: rgba(200,207,232,0.85);
+  }
+  .load-gate-track {
+    width: 180px;
+    height: 3px;
+    margin: 16px auto 0;
+    border-radius: 3px;
+    background: rgba(100,130,220,0.18);
+    overflow: hidden;
+  }
+  .load-gate-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #5d8bff, #9b8aff);
+    transition: width 0.18s linear;
+  }
+
   /* exit hint */
   .zoom-hint {
     position: fixed;
@@ -5971,6 +6022,69 @@ function scheduleZoomWarm(movement, paletteId) {
   if (typeof requestIdleCallback === 'function') { requestIdleCallback(_runZoomWarm, { timeout: 1500 }); }
   else { setTimeout(_runZoomWarm, 400); }
 }
+
+// ── LOAD GATE ──────────────────────────────────────────────
+// A brief warming screen on project resume: bake every present combo's field +
+// atmosphere textures up front, with the field frozen so the main thread is free
+// to drain the bake queue fast, then reveal. So a resumed project opens already
+// baked — the first zoom/maximize is smooth instead of rasterizing live.
+var _loadGateEl = null;
+function _ensureLoadGate() {
+  if (_loadGateEl) return _loadGateEl;
+  var el = document.createElement('div');
+  el.id = 'load-gate';
+  el.className = 'hidden';
+  el.innerHTML =
+    '<div class="load-gate-inner">' +
+      '<div class="load-gate-orb"></div>' +
+      '<div class="load-gate-label">Warming the constellation…</div>' +
+      '<div class="load-gate-track"><div class="load-gate-fill" id="load-gate-fill"></div></div>' +
+    '</div>';
+  document.body.appendChild(el);
+  _loadGateEl = el;
+  return el;
+}
+function _bakesRemaining() {
+  return _bakeQ.length + _bakeQLow.length + (_bakeActive ? 1 : 0);
+}
+function _bakesQuiet() {
+  return !_bakeActive && !_drainScheduled && !_warmScheduled &&
+    _bakeQ.length === 0 && _bakeQLow.length === 0;
+}
+function runLoadGate(maxWaitMs) {
+  if (!_starBakeOK) return;
+  var seen = {};
+  for (var i = 0; i < state.bubbles.length; i++) {
+    var cfg = getBubbleStar(state.bubbles[i]);
+    var key = cfg.movement + '|' + cfg.palette;
+    if (seen[key]) continue;
+    seen[key] = true;
+    warmStarTextures(cfg.movement, cfg.palette, 384);
+    warmStarTextures(cfg.movement, cfg.palette, 1024);
+  }
+  var total = _bakesRemaining();
+  if (total === 0) return; // already baked — open instantly, no gate
+  var gate = _ensureLoadGate();
+  var fill = document.getElementById('load-gate-fill');
+  if (fill) fill.style.width = '0%';
+  gate.className = '';
+  if (typeof freezeField === 'function') freezeField();
+  var start = Date.now();
+  var cap = maxWaitMs || 8000;
+  var poll = window.setInterval(function () {
+    var remaining = _bakesRemaining();
+    var done = total - remaining; if (done < 0) done = 0;
+    if (fill) fill.style.width = Math.round((done / total) * 100) + '%';
+    if (_bakesQuiet() || (Date.now() - start) >= cap) {
+      window.clearInterval(poll);
+      if (fill) fill.style.width = '100%';
+      window.setTimeout(function () {
+        gate.className = 'hidden';
+        if (typeof resumeField === 'function') resumeField();
+      }, 200);
+    }
+  }, 120);
+}
 /* === END STAR-BAKE === */
 
 function buildStarSvg(uid, palette, movement, border, profile, texSize) {
@@ -10322,6 +10436,8 @@ function loadSession(s) {
   state.currentSessionType = s.type;
   // Deserialize — clears field and restores saved state
   deserializeSession(s.id);
+  // Warm star textures behind a brief gate so the project opens already baked
+  runLoadGate();
   // If hardcore session, restart timer with remaining time
   if (s.type === 'hardcore' && s.durationMins) {
     // Only restart if not already expired

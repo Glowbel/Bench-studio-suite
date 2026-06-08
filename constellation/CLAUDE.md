@@ -66,6 +66,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-08] feat | resume warming gate — loadSession bakes all present combos (field 384 + atm 1024) behind a brief frozen-field loader, reveals on queue-drain or 8s cap; resumed project opens already baked | touches: STAR-BAKE, LOAD-GATE
 [2026-06-08] fix  | bake flood on big projects — serialized bakes (1 at a time, idle-scheduled, visible-first/warm-last); was main-thread freeze + "loading movement" on maximize | touches: STAR-BAKE
 [2026-06-08] fix  | maximize jump — pre-promote zoom star + page to GPU layers (will-change/backface), kills Android layer-creation snap on full-screen toggle | touches: ZOOM
 [2026-06-08] feat | star gas-layers baked — feTurbulence rasterized once to blob-url <image>; cheap CSS transforms still animate; kills zoom lag (worst on iOS Safari) | touches: STAR-RENDERER, ZOOM, STAR-BAKE
