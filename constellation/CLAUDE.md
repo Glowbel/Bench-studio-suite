@@ -66,6 +66,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-08] feat | star gas-layers baked — feTurbulence rasterized once to blob-url <image>; cheap CSS transforms still animate; kills zoom lag (worst on iOS Safari) | touches: STAR-RENDERER, ZOOM, STAR-BAKE
 [2026-06-08] feat | interior-size control — zoomFramedScale (0.6-1.5×) multiplies framed atm; star+page combo scales as one locked unit, live-calibrates while zoomed open (_relayoutZoomLive) | touches: ZOOM, SETTINGS-PANEL, PERSISTENCE
 [2026-06-08] fix  | desktop maximize grows as one unit — uniform framed-page scale-up (was reshaping under 760×660 cap); mobile unchanged | touches: ZOOM
 [2026-06-08] feat | starfield swap — CSS twinkle dots replace canvas drift field; +density slider 0.5-2.5× | touches: AMBIENT-STARS, SETTINGS-PANEL, PERSISTENCE
@@ -138,6 +139,12 @@ global defaults: visualSettings.starDefaults {movement, palette, border}
 mass scale: 0-10 (starMassCap=10) → 0..1 via bubbleMassToStarMass()
 phase thresholds: 3=Main Sequence, 6=Giant, 10=Supergiant
 renderer: renderBubbleStar(b) — idempotent, fingerprint-gated SVG rebuild
+baking (STAR-BAKE, locked Jun 2026): gas-layer feTurbulence rasterized ONCE to a
+  PNG blob-url (createObjectURL + canvas.toBlob — NEVER base64), reused as <image>
+  texture; cheap CSS transforms (rotation/breathe) animate the bitmap. cache key =
+  movement|palette|layer|size (size: field 384, atm 1024). async + fingerprint-gated:
+  un-baked layer renders the live <circle filter> + registers a _texWaiter that
+  re-renders to baked when ready. _starBakeOK=false → permanent live fallback.
 compass 'customize' direction → openStarDial(b) — per-bubble dial
 settings panel 'customize stars' row → openGlobalStarsModal() — field defaults
 override confirm: 'unstyled' (default) | 'all' — only shown if any bubble customized
@@ -231,10 +238,15 @@ file split → external work in progress | don't restructure file inline
 
 ```
 star-turbulence-cost: animated SVG turbulence (feTurbulence) on every bubble star
-  re-rasterizes every frame — root of the post-zoom background lag (Jun 2026 audit)
-  field-star gas-anims now PAUSE on drag/zoom/compass/dial + reduced-motion
+  re-rasterized every frame — was root of the post-zoom background lag (Jun 2026 audit)
+  field-star gas-anims PAUSE on drag/zoom/compass/dial + reduced-motion
   never animate a transform on a live-filtered element without a pause path
-  real fix = rasterize the star once, animate cheap transforms (deferred)
+  real fix SHIPPED (Jun 2026): gas-layers baked once → blob-url <image>, cheap
+    transforms animate the bitmap (STAR-BAKE). atmosphere star (#zoom-zone3) is
+    NOT in the .bubble pause scope, so its bake is what smooths the zoom camera.
+  still live (not yet baked): corona border (corona-fx) — thin ring, opt-in, low cost
+  first-ever zoom of a new movement|palette combo warms the 1024px cache (one
+    live frame then swaps); every repeat zoom + all field stars render baked
 
 asset-handling: base64 inline images broke The Bench's context window in Apr 2026
   Constellation hasn't had this incident, but it's the next-largest HTML file
