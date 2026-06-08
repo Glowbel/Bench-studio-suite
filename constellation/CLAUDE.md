@@ -66,6 +66,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-08] fix  | bake flood on big projects — serialized bakes (1 at a time, idle-scheduled, visible-first/warm-last); was main-thread freeze + "loading movement" on maximize | touches: STAR-BAKE
 [2026-06-08] fix  | maximize jump — pre-promote zoom star + page to GPU layers (will-change/backface), kills Android layer-creation snap on full-screen toggle | touches: ZOOM
 [2026-06-08] feat | star gas-layers baked — feTurbulence rasterized once to blob-url <image>; cheap CSS transforms still animate; kills zoom lag (worst on iOS Safari) | touches: STAR-RENDERER, ZOOM, STAR-BAKE
 [2026-06-08] feat | interior-size control — zoomFramedScale (0.6-1.5×) multiplies framed atm; star+page combo scales as one locked unit, live-calibrates while zoomed open (_relayoutZoomLive) | touches: ZOOM, SETTINGS-PANEL, PERSISTENCE
@@ -146,6 +147,11 @@ baking (STAR-BAKE, locked Jun 2026): gas-layer feTurbulence rasterized ONCE to a
   movement|palette|layer|size (size: field 384, atm 1024). async + fingerprint-gated:
   un-baked layer renders the live <circle filter> + registers a _texWaiter that
   re-renders to baked when ready. _starBakeOK=false → permanent live fallback.
+  bakes are SERIALIZED through a queue (concurrency 1, idle-scheduled): visible
+  stars via _bakeQ (high), proactive warm via _bakeQLow (low). never parallel —
+  a burst of 1024px feTurbulence rasters + PNG encodes froze big projects on
+  maximize (Jun 2026). watch: 1024px warm textures are ~16MB/combo — many
+  distinct combos in one project is a memory ceiling (no eviction yet).
 compass 'customize' direction → openStarDial(b) — per-bubble dial
 settings panel 'customize stars' row → openGlobalStarsModal() — field defaults
 override confirm: 'unstyled' (default) | 'all' — only shown if any bubble customized

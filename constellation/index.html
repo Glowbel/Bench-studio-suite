@@ -5859,12 +5859,13 @@ function _bakeSvgMarkup(size, colorHex, g, filterId) {
     '<circle cx="100" cy="100" r="94" fill="url(#bgrad)" filter="url(#' + filterId + ')"/></svg>';
 }
 
-function _startStarBake(key, size, colorHex, g, filterId) {
+function _startStarBake(key, size, colorHex, g, filterId, done) {
+  function finish() { if (done) done(); }
   var svgUrl;
   try {
     svgUrl = URL.createObjectURL(new Blob([_bakeSvgMarkup(size, colorHex, g, filterId)], { type: 'image/svg+xml' }));
   } catch (e) {
-    STAR_TEX[key] = null; STAR_TEX_PENDING[key] = false; _fireTexWaiters(); return;
+    STAR_TEX[key] = null; STAR_TEX_PENDING[key] = false; _fireTexWaiters(); finish(); return;
   }
   var img = new Image();
   img.onload = function () {
@@ -5876,29 +5877,62 @@ function _startStarBake(key, size, colorHex, g, filterId) {
         URL.revokeObjectURL(svgUrl);
         STAR_TEX[key] = blob ? URL.createObjectURL(blob) : null;
         STAR_TEX_PENDING[key] = false;
-        _fireTexWaiters();
+        _fireTexWaiters(); finish();
       }, 'image/png');
     } catch (e) {
       URL.revokeObjectURL(svgUrl);
-      STAR_TEX[key] = null; STAR_TEX_PENDING[key] = false; _fireTexWaiters();
+      STAR_TEX[key] = null; STAR_TEX_PENDING[key] = false; _fireTexWaiters(); finish();
     }
   };
   img.onerror = function () {
     URL.revokeObjectURL(svgUrl);
-    STAR_TEX[key] = null; STAR_TEX_PENDING[key] = false; _fireTexWaiters();
+    STAR_TEX[key] = null; STAR_TEX_PENDING[key] = false; _fireTexWaiters(); finish();
   };
   img.src = svgUrl;
 }
 
+// Serialize bakes so a big project can't flood the main thread with a burst of
+// feTurbulence rasterization + PNG encoding (the "frozen / panic" on maximize).
+// One bake at a time, scheduled on idle; visible stars (high queue) bake before
+// the proactive zoom warm (low queue). Idle-scheduled means no baking competes
+// with an active animation. Live fallback keeps every un-baked layer correct.
+var _bakeQ = [];
+var _bakeQLow = [];
+var _bakeActive = false;
+var _drainScheduled = false;
+function _enqueueBake(job, low) {
+  (low ? _bakeQLow : _bakeQ).push(job);
+  _scheduleDrain();
+}
+function _scheduleDrain() {
+  if (_bakeActive || _drainScheduled) return;
+  if (!_bakeQ.length && !_bakeQLow.length) return;
+  _drainScheduled = true;
+  var kick = function () { _drainScheduled = false; _drainBake(); };
+  if (typeof requestIdleCallback === 'function') { requestIdleCallback(kick, { timeout: 1000 }); }
+  else { setTimeout(kick, 16); }
+}
+function _drainBake() {
+  if (_bakeActive) return;
+  var job = _bakeQ.length ? _bakeQ.shift() : (_bakeQLow.length ? _bakeQLow.shift() : null);
+  if (!job) return;
+  _bakeActive = true;
+  _startStarBake(job.key, job.size, job.colorHex, job.g, job.filterId, function () {
+    _bakeActive = false;
+    _scheduleDrain();
+  });
+}
+
 // Ready blob-url texture, or null. On null the caller emits the live filter and
 // registers a waiter, so the star re-renders to the baked texture once ready.
-function getStarTexture(movement, paletteId, li, size, colorHex, g, filterId) {
+// lowPri=true defers the bake behind any visible-star bakes (used by warming).
+function getStarTexture(movement, paletteId, li, size, colorHex, g, filterId, lowPri) {
   if (!_starBakeOK) return null;
   var key = movement + '|' + paletteId + '|' + li + '|' + size;
   if (Object.prototype.hasOwnProperty.call(STAR_TEX, key)) return STAR_TEX[key];
   if (!STAR_TEX_PENDING[key]) {
     STAR_TEX_PENDING[key] = true;
-    _startStarBake(key, size, colorHex, g, filterId);
+    _enqueueBake({ key: key, size: size, colorHex: colorHex, g: g, filterId: filterId }, lowPri);
   }
   return null;
 }
@@ -5917,7 +5951,7 @@ function warmStarTextures(movement, paletteId, size) {
   var gp     = STAR_GRAD_LAYOUTS[preset.grad] || STAR_GRAD_LAYOUTS['default'];
   var colors = pal.colors;
   for (var li = 0; li < 4; li++) {
-    getStarTexture(movement, pal.id, li, size, colors[li] || colors[0], gp[li] || gp[0], preset.filters[li]);
+    getStarTexture(movement, pal.id, li, size, colors[li] || colors[0], gp[li] || gp[0], preset.filters[li], true);
   }
 }
 function _runZoomWarm() {
