@@ -36,7 +36,7 @@ Ideas are minerals. Interaction is pressure. Crystallization is commitment. The 
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~11,900
+lines: ~11,915
 state: mid-build | stable but finding unusual bugs | hardcore audit underway
 phase: 1 shipped | 1.5/2 active (bug fixes + core audit + phase-change rethink)
 external-work: file split in progress (developer friend, testing in Claude artifacts)
@@ -66,6 +66,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-08] ref  | resume opens faster — gate waits only on visible 384 bakes, warms 1024 zoom textures in background post-reveal; zero lag on visible, tiny first-zoom fallback window | touches: LOAD-GATE, STAR-BAKE
 [2026-06-08] ref  | autoSave coalesced — debounced 800ms (was full sync write per interaction); critical saves stay immediate, flush on hide/unload | touches: PERSISTENCE
 [2026-06-08] ref  | loop rests when tab hidden + skips tether canvas when no links — battery/heat win; one-shot clear avoids ghost tether | touches: ANIMATION-LOOP, TETHER-LINES
 [2026-06-08] feat | star texture memory cap — STAR_TEX evicts orphaned (off-bubble) combos over 128MB soft cap, revokes blob urls; on-screen combos never touched | touches: STAR-BAKE

@@ -6142,10 +6142,13 @@ function scheduleZoomWarm(movement, paletteId) {
 }
 
 // ── LOAD GATE ──────────────────────────────────────────────
-// A brief warming screen on project resume: bake every present combo's field +
-// atmosphere textures up front, with the field frozen so the main thread is free
-// to drain the bake queue fast, then reveal. So a resumed project opens already
-// baked — the first zoom/maximize is smooth instead of rasterizing live.
+// A brief warming screen on project resume that gates ONLY on the visible bakes
+// (the 384px field stars + corona), with the field frozen so the main thread is
+// free to drain them fast, then reveals. The 1024px atmosphere textures are only
+// seen on zoom, so they're warmed in the background AFTER reveal — the open is
+// fast and nothing on screen lags. A zoom in the first moment after reveal may
+// briefly fall back to one live frame (kept correct by the live fallback) until
+// background warming reaches that combo.
 var _loadGateEl = null;
 function _ensureLoadGate() {
   if (_loadGateEl) return _loadGateEl;
@@ -6172,6 +6175,7 @@ function _bakesQuiet() {
 function runLoadGate(maxWaitMs) {
   if (!_starBakeOK) return;
   var seen = {};
+  var atmJobs = []; // 1024px zoom textures — warmed AFTER reveal, never block the open
   for (var i = 0; i < state.bubbles.length; i++) {
     var cfg = getBubbleStar(state.bubbles[i]);
     // corona depends on palette+border (not movement) — warm it per corona
@@ -6179,17 +6183,30 @@ function runLoadGate(maxWaitMs) {
     if (cfg.border === 'corona') {
       var cpal = STAR_PALETTES_BY_ID[cfg.palette] || STAR_PALETTES[0];
       var chalo = cpal.halo || cpal.colors[0];
-      getCoronaTexture(cfg.palette, chalo, 384, true);
-      getCoronaTexture(cfg.palette, chalo, 1024, true);
+      getCoronaTexture(cfg.palette, chalo, 384, true); // visible on the field — gate on it
+      atmJobs.push({ corona: true, palette: cfg.palette, halo: chalo });
     }
     var key = cfg.movement + '|' + cfg.palette;
     if (seen[key]) continue;
     seen[key] = true;
-    warmStarTextures(cfg.movement, cfg.palette, 384);
-    warmStarTextures(cfg.movement, cfg.palette, 1024);
+    warmStarTextures(cfg.movement, cfg.palette, 384); // visible field star — gate on it
+    atmJobs.push({ corona: false, movement: cfg.movement, palette: cfg.palette });
   }
+  // The 1024px atmosphere textures are only seen during a zoom, so they must not
+  // delay the open. Warm them in the background once the field is revealed. The
+  // window where a fast first-zoom could fall back to one live frame is tiny, and
+  // the live fallback keeps even that frame correct — nothing visible ever lags.
+  function warmAtm() {
+    for (var j = 0; j < atmJobs.length; j++) {
+      var a = atmJobs[j];
+      if (a.corona) getCoronaTexture(a.palette, a.halo, 1024, true);
+      else warmStarTextures(a.movement, a.palette, 1024);
+    }
+  }
+  // Gate only on the VISIBLE bakes (384px field + corona) — they're all that's on
+  // screen at reveal, so when they're done the field opens with zero lag.
   var total = _bakesRemaining();
-  if (total === 0) return; // already baked — open instantly, no gate
+  if (total === 0) { warmAtm(); return; } // field already baked — open instantly, warm zoom in bg
   var gate = _ensureLoadGate();
   var fill = document.getElementById('load-gate-fill');
   if (fill) fill.style.width = '0%';
@@ -6207,6 +6224,7 @@ function runLoadGate(maxWaitMs) {
       window.setTimeout(function () {
         gate.className = 'hidden';
         if (typeof resumeField === 'function') resumeField();
+        warmAtm(); // field is up — now warm the zoom textures behind the scenes
       }, 200);
     }
   }, 120);
