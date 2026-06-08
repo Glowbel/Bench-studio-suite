@@ -5896,6 +5896,41 @@ function getStarTexture(movement, paletteId, li, size, colorHex, g, filterId) {
   }
   return null;
 }
+
+// Proactively bake the atmosphere-size (zoom) textures for combos already on the
+// field, so the first zoom of any bubble is coherent — no live-to-baked pop.
+// Deferred to idle so it never competes with the initial field paint. Bounded by
+// the number of DISTINCT movement|palette combos in use, not by bubble count.
+// Size MUST match renderZoomAtmosphere's request (1024) or the cache key misses.
+var _warmSet = {};
+var _warmScheduled = false;
+function warmStarTextures(movement, paletteId, size) {
+  if (!_starBakeOK) return;
+  var pal    = STAR_PALETTES_BY_ID[paletteId] || STAR_PALETTES[0];
+  var preset = STAR_MOVEMENT_PRESETS[movement] || STAR_MOVEMENT_PRESETS.vortex;
+  var gp     = STAR_GRAD_LAYOUTS[preset.grad] || STAR_GRAD_LAYOUTS['default'];
+  var colors = pal.colors;
+  for (var li = 0; li < 4; li++) {
+    getStarTexture(movement, pal.id, li, size, colors[li] || colors[0], gp[li] || gp[0], preset.filters[li]);
+  }
+}
+function _runZoomWarm() {
+  _warmScheduled = false;
+  var keys = Object.keys(_warmSet);
+  _warmSet = {};
+  for (var i = 0; i < keys.length; i++) {
+    var p = keys[i].split('|');
+    warmStarTextures(p[0], p[1], 1024);
+  }
+}
+function scheduleZoomWarm(movement, paletteId) {
+  if (!_starBakeOK) return;
+  _warmSet[movement + '|' + paletteId] = true;
+  if (_warmScheduled) return;
+  _warmScheduled = true;
+  if (typeof requestIdleCallback === 'function') { requestIdleCallback(_runZoomWarm, { timeout: 1500 }); }
+  else { setTimeout(_runZoomWarm, 400); }
+}
 /* === END STAR-BAKE === */
 
 function buildStarSvg(uid, palette, movement, border, profile, texSize) {
@@ -6051,6 +6086,8 @@ function renderBubbleStar(b) {
       if (c) c.setAttribute('opacity', profile.layerOp[ai]);
     }
   }
+  // warm this combo's zoom-size texture ahead of any zoom (deduped, idle-deferred)
+  scheduleZoomWarm(cfg.movement, cfg.palette);
 }
 /* === END STAR-RENDERER === */
 /* === BEGIN CRYSTAL-SWIRL === */
