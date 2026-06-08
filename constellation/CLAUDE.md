@@ -66,6 +66,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-08] feat | corona border baked — corona-fx rings rasterized once via generalized bake queue (job carries svg markup); no live feTurbulence left in stars | touches: STAR-BAKE, STAR-RENDERER
 [2026-06-08] feat | resume warming gate — loadSession bakes all present combos (field 384 + atm 1024) behind a brief frozen-field loader, reveals on queue-drain or 8s cap; resumed project opens already baked | touches: STAR-BAKE, LOAD-GATE
 [2026-06-08] fix  | bake flood on big projects — serialized bakes (1 at a time, idle-scheduled, visible-first/warm-last); was main-thread freeze + "loading movement" on maximize | touches: STAR-BAKE
 [2026-06-08] fix  | maximize jump — pre-promote zoom star + page to GPU layers (will-change/backface), kills Android layer-creation snap on full-screen toggle | touches: ZOOM
@@ -252,7 +253,9 @@ star-turbulence-cost: animated SVG turbulence (feTurbulence) on every bubble sta
   real fix SHIPPED (Jun 2026): gas-layers baked once → blob-url <image>, cheap
     transforms animate the bitmap (STAR-BAKE). atmosphere star (#zoom-zone3) is
     NOT in the .bubble pause scope, so its bake is what smooths the zoom camera.
-  still live (not yet baked): corona border (corona-fx) — thin ring, opt-in, low cost
+  corona border (corona-fx) also baked (Jun 2026) — its two rings rasterize once,
+    the .corona-ring CSS spin/flicker animates the baked bitmap. NO live feTurbulence
+    remains in the star system.
   first-ever zoom of a new movement|palette combo warms the 1024px cache (one
     live frame then swaps); every repeat zoom + all field stars render baked
 

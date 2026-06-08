@@ -5910,11 +5910,11 @@ function _bakeSvgMarkup(size, colorHex, g, filterId) {
     '<circle cx="100" cy="100" r="94" fill="url(#bgrad)" filter="url(#' + filterId + ')"/></svg>';
 }
 
-function _startStarBake(key, size, colorHex, g, filterId, done) {
+function _startStarBake(key, size, svg, done) {
   function finish() { if (done) done(); }
   var svgUrl;
   try {
-    svgUrl = URL.createObjectURL(new Blob([_bakeSvgMarkup(size, colorHex, g, filterId)], { type: 'image/svg+xml' }));
+    svgUrl = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
   } catch (e) {
     STAR_TEX[key] = null; STAR_TEX_PENDING[key] = false; _fireTexWaiters(); finish(); return;
   }
@@ -5968,7 +5968,7 @@ function _drainBake() {
   var job = _bakeQ.length ? _bakeQ.shift() : (_bakeQLow.length ? _bakeQLow.shift() : null);
   if (!job) return;
   _bakeActive = true;
-  _startStarBake(job.key, job.size, job.colorHex, job.g, job.filterId, function () {
+  _startStarBake(job.key, job.size, job.svg, function () {
     _bakeActive = false;
     _scheduleDrain();
   });
@@ -5983,7 +5983,28 @@ function getStarTexture(movement, paletteId, li, size, colorHex, g, filterId, lo
   if (Object.prototype.hasOwnProperty.call(STAR_TEX, key)) return STAR_TEX[key];
   if (!STAR_TEX_PENDING[key]) {
     STAR_TEX_PENDING[key] = true;
-    _enqueueBake({ key: key, size: size, colorHex: colorHex, g: g, filterId: filterId }, lowPri);
+    _enqueueBake({ key: key, size: size, svg: _bakeSvgMarkup(size, colorHex, g, filterId) }, lowPri);
+  }
+  return null;
+}
+
+// Corona border bakes the same way — its two rings use the corona-fx turbulence.
+// Keyed by palette (halo color) + size; the .corona-ring CSS spin/flicker still
+// animates the baked bitmap, identical to the live ring.
+function _coronaSvgMarkup(size, haloColor) {
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size +
+    '" viewBox="0 0 200 200"><defs>' + _filterMarkup('corona-fx') + '</defs>' +
+    '<circle cx="100" cy="100" r="96" fill="none" stroke="white" stroke-width="2.2" filter="url(#corona-fx)" opacity="0.95"/>' +
+    '<circle cx="100" cy="100" r="99" fill="none" stroke="' + haloColor + '" stroke-width="3" filter="url(#corona-fx)" opacity="0.7"/>' +
+    '</svg>';
+}
+function getCoronaTexture(paletteId, haloColor, size, lowPri) {
+  if (!_starBakeOK) return null;
+  var key = 'corona|' + paletteId + '|' + size;
+  if (Object.prototype.hasOwnProperty.call(STAR_TEX, key)) return STAR_TEX[key];
+  if (!STAR_TEX_PENDING[key]) {
+    STAR_TEX_PENDING[key] = true;
+    _enqueueBake({ key: key, size: size, svg: _coronaSvgMarkup(size, haloColor) }, lowPri);
   }
   return null;
 }
@@ -6056,6 +6077,14 @@ function runLoadGate(maxWaitMs) {
   var seen = {};
   for (var i = 0; i < state.bubbles.length; i++) {
     var cfg = getBubbleStar(state.bubbles[i]);
+    // corona depends on palette+border (not movement) — warm it per corona
+    // bubble; getCoronaTexture dedups internally, so no combo-key needed here
+    if (cfg.border === 'corona') {
+      var cpal = STAR_PALETTES_BY_ID[cfg.palette] || STAR_PALETTES[0];
+      var chalo = cpal.halo || cpal.colors[0];
+      getCoronaTexture(cfg.palette, chalo, 384, true);
+      getCoronaTexture(cfg.palette, chalo, 1024, true);
+    }
     var key = cfg.movement + '|' + cfg.palette;
     if (seen[key]) continue;
     seen[key] = true;
@@ -6181,9 +6210,15 @@ function buildStarSvg(uid, palette, movement, border, profile, texSize) {
     s += '<circle class="dashed-ring" cx="100" cy="100" r="95.5" fill="none" stroke="' + haloColor + '" stroke-width="0.9" stroke-dasharray="3 2.5" opacity="0.9"/>';
   } else if (border === 'corona') {
     s += '<circle cx="100" cy="100" r="94" fill="url(#rim-glow)"/>';
+    var coronaTex = getCoronaTexture(palette.id, haloColor, texSize);
     s += '<g class="corona-ring">';
-    s += '<circle cx="100" cy="100" r="96" fill="none" stroke="white" stroke-width="2.2" filter="url(#corona-fx)" opacity="0.95"/>';
-    s += '<circle cx="100" cy="100" r="99" fill="none" stroke="' + haloColor + '" stroke-width="3"   filter="url(#corona-fx)" opacity="0.7"/>';
+    if (coronaTex) {
+      s += '<image x="0" y="0" width="200" height="200" href="' + coronaTex + '" preserveAspectRatio="xMidYMid meet"/>';
+    } else {
+      _starSvgUsedLive = true;
+      s += '<circle cx="100" cy="100" r="96" fill="none" stroke="white" stroke-width="2.2" filter="url(#corona-fx)" opacity="0.95"/>';
+      s += '<circle cx="100" cy="100" r="99" fill="none" stroke="' + haloColor + '" stroke-width="3"   filter="url(#corona-fx)" opacity="0.7"/>';
+    }
     s += '</g>';
     s += '<circle cx="100" cy="100" r="94" fill="none" stroke="' + haloColor + '" stroke-width="0.4" opacity="0.6"/>';
   }
