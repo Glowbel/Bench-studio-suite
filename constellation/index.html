@@ -4510,6 +4510,13 @@ body.dial-open .field-motion { animation-play-state: paused; }
         <input type="range" class="sp-slider" id="sp-zoom-out-duration" min="200" max="1200" step="50" value="500">
       </div>
       <div class="sp-subrow" style="margin-top:8px;">
+        <div class="sp-sublabel">Interior Size</div>
+        <div class="sp-sublabel" id="sp-zoom-framed-scale-val" style="min-width:42px;text-align:right;color:rgba(201,168,76,0.7);">1.00×</div>
+      </div>
+      <div class="sp-subrow">
+        <input type="range" class="sp-slider" id="sp-zoom-framed-scale" min="0.6" max="1.5" step="0.05" value="1.0">
+      </div>
+      <div class="sp-subrow" style="margin-top:8px;">
         <div class="sp-sublabel">Page Translucency</div>
         <div class="sp-sublabel" id="sp-page-alpha-val" style="min-width:32px;text-align:right;">90%</div>
       </div>
@@ -7510,6 +7517,17 @@ function zoomAnchoredBubble(diskR, aspect, anchor) {
   return { w: w, h: w * aspect };
 }
 
+// zoomFramedAtm: effective atmosphere scale for the framed interior, folding in
+// the user's "Interior Size" control (zoomFramedScale, default 1.0). This single
+// lever scales the framed star + page combo together so they stay locked — it
+// sets the size the combo shows at once the zoom-in animation settles.
+function zoomFramedAtm() {
+  var atm = visualSettings.zoneAtmosphereScale || 1.58;
+  var s   = visualSettings.zoomFramedScale;
+  if (s === undefined || s === null || isNaN(s)) s = 1.0;
+  return atm * s;
+}
+
 // computeInteriorGeom: framed or maximized page geometry
 // verbatim port of interiorGeom() from interior.jsx
 function computeInteriorGeom(iStage, atm, anchor, full) {
@@ -7622,7 +7640,7 @@ function applyZoomZone1Size(geom, animated) {
 // applyZoomFull: toggle full/framed state — sizes page + scales zone3 star
 function applyZoomFull(b, isFull, animated) {
   var iStage = Math.min(window.innerWidth, window.innerHeight);
-  var atm    = visualSettings.zoneAtmosphereScale || 1.58;
+  var atm    = zoomFramedAtm();
   var anchor = visualSettings.zoneBubbleAnchor    || 1.00;
   var geom   = computeInteriorGeom(iStage, atm, anchor, isFull);
   applyZoomZone1Size(geom, animated);
@@ -7661,7 +7679,7 @@ function openZoom(bubbleId) {
 
   // read settings
   var dur    = visualSettings.zoomDuration        || 900;
-  var atm    = visualSettings.zoneAtmosphereScale || 1.58;
+  var atm    = zoomFramedAtm();
   var anchor = visualSettings.zoneBubbleAnchor    || 1.00;
   var iStage = Math.min(window.innerWidth, window.innerHeight);
   var atmosDiam = iStage * atm * ZOOM_FRAMED_LEVEL;
@@ -8015,7 +8033,7 @@ function closeZoom() {
   var D    = b ? (bubbleRadius(b) * 2) : 60;
 
   var iStage    = Math.min(window.innerWidth, window.innerHeight);
-  var atm       = visualSettings.zoneAtmosphereScale || 1.58;
+  var atm       = zoomFramedAtm();
   var atmosDiam = iStage * atm * ZOOM_FRAMED_LEVEL;
   var endScale  = Math.max(0.01, D / atmosDiam);
 
@@ -8484,6 +8502,7 @@ visualSettings.starOverrideMode = 'unstyled';
 visualSettings.starMassCap = 10;
 visualSettings.zoomDuration           = 900;   // adjustable — Zoom Speed
 visualSettings.zoomOutDuration        = 500;   // adjustable — Zoom Out Speed
+visualSettings.zoomFramedScale        = 1.0;   // adjustable — Interior Size (post-zoom star+page combo size)
 visualSettings.zonePageAlpha          = 0.90;  // adjustable — Page Translucency
 // Baked interior constants — fixed values, sliders removed from settings (Jun 2026).
 // Vignette removed entirely (it was non-functional). Retune by editing these numbers.
@@ -8512,6 +8531,7 @@ function saveVisualSettings() {
       starDefaults: v.starDefaults, starOverrideMode: v.starOverrideMode,
       zoomDuration: v.zoomDuration,
       zoomOutDuration: v.zoomOutDuration,
+      zoomFramedScale: v.zoomFramedScale,
       zonePageAlpha: v.zonePageAlpha
     }));
   } catch (e) {}
@@ -8526,7 +8546,7 @@ function restoreVisualSettings() {
   if (!data || typeof data !== 'object') return;
   var keys = ['showPlanetary','planetaryStyle','planetaryOpacity','planetaryColor','ringStyle',
     'showMutual','mutualStyle','mutualOpacity','mutualColor','fieldBrightness',
-    'starfieldDensity','starOverrideMode','zoomDuration','zoomOutDuration','zonePageAlpha'];
+    'starfieldDensity','starOverrideMode','zoomDuration','zoomOutDuration','zoomFramedScale','zonePageAlpha'];
   for (var i = 0; i < keys.length; i++) {
     var k = keys[i];
     if (Object.prototype.hasOwnProperty.call(data, k) && data[k] !== null && data[k] !== undefined) {
@@ -8580,6 +8600,8 @@ function syncVisualControls() {
   _spText('sp-zoom-dur-val', v.zoomDuration + 'ms');
   _spSet('sp-zoom-out-duration', 'value', v.zoomOutDuration);
   _spText('sp-zoom-out-dur-val', v.zoomOutDuration + 'ms');
+  _spSet('sp-zoom-framed-scale', 'value', v.zoomFramedScale);
+  _spText('sp-zoom-framed-scale-val', (v.zoomFramedScale).toFixed(2) + '×');
   _spSet('sp-page-alpha', 'value', Math.round(v.zonePageAlpha * 100));
   _spText('sp-page-alpha-val', Math.round(v.zonePageAlpha * 100) + '%');
   if (typeof applyOrbitalSettings === 'function') applyOrbitalSettings();
@@ -9131,7 +9153,7 @@ document.getElementById('sp-starfield-density').addEventListener('input', functi
     var b = getBubbleById(state.zoomTargetId);
     if (!b) return;
     var iStage = Math.min(window.innerWidth, window.innerHeight);
-    var atm    = visualSettings.zoneAtmosphereScale || 1.58;
+    var atm    = zoomFramedAtm();
     var anchor = visualSettings.zoneBubbleAnchor    || 1.00;
     var isFull = zoomZone1Wrap.classList.contains('zoom-full');
     var geom   = computeInteriorGeom(iStage, atm, anchor, isFull);
@@ -9148,6 +9170,13 @@ document.getElementById('sp-starfield-density').addEventListener('input', functi
     var v = parseInt(this.value, 10);
     visualSettings.zoomOutDuration = v;
     _zS('sp-zoom-out-dur-val').textContent = v + 'ms';
+  });
+
+  _zS('sp-zoom-framed-scale').addEventListener('input', function() {
+    var v = parseFloat(this.value);
+    if (isNaN(v)) v = 1.0;
+    visualSettings.zoomFramedScale = v;
+    _zS('sp-zoom-framed-scale-val').textContent = v.toFixed(2) + '×';
   });
 
   _zS('sp-page-alpha').addEventListener('input', function() {

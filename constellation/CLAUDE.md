@@ -66,6 +66,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-08] feat | interior-size control — zoomFramedScale (0.6-1.5×) multiplies framed atm so post-zoom star+page combo scales as one locked unit | touches: ZOOM, SETTINGS-PANEL, PERSISTENCE
 [2026-06-08] fix  | desktop maximize grows as one unit — uniform framed-page scale-up (was reshaping under 760×660 cap); mobile unchanged | touches: ZOOM
 [2026-06-08] feat | starfield swap — CSS twinkle dots replace canvas drift field; +density slider 0.5-2.5× | touches: AMBIENT-STARS, SETTINGS-PANEL, PERSISTENCE
 [2026-06-08] ref  | zoom interior settings pruned — baked 5 constants (anchor/atm-opacity/sharp/pullback/melt), +zoom-out-speed, removed dead vignette (invalid gradient %) | touches: ZOOM, SETTINGS-PANEL, PERSISTENCE
