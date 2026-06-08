@@ -9160,6 +9160,29 @@ document.getElementById('sp-starfield-density').addEventListener('input', functi
     applyZoomPageStyle(b, isFull, geom);
   }
 
+  // _relayoutZoomLive: live-resize the open interior (star + page combo) as one
+  // locked unit — used by the Interior Size slider so it calibrates in real time
+  // while a bubble is zoomed open. No transition → tracks the slider 1:1.
+  // renderZoomAtmosphere is fingerprint-gated, so the star is only re-sized here,
+  // never rebuilt (no flash). No-ops when nothing is open or mid-animation.
+  function _relayoutZoomLive() {
+    if (!state.zoomTargetId || state.zoomAnimating) return;
+    var b = getBubbleById(state.zoomTargetId);
+    if (!b) return;
+    var iStage    = Math.min(window.innerWidth, window.innerHeight);
+    var atm       = zoomFramedAtm();
+    var anchor    = visualSettings.zoneBubbleAnchor || 1.00;
+    var isFull    = zoomZone1Wrap.classList.contains('zoom-full');
+    var atmosDiam = iStage * atm * ZOOM_FRAMED_LEVEL;
+    renderZoomAtmosphere(b, atmosDiam);
+    var geom = computeInteriorGeom(iStage, atm, anchor, isFull);
+    applyZoomZone1Size(geom, false);
+    applyZoomPageStyle(b, isFull, geom);
+    var boost = geom.scaleBoost || 1;
+    zoomZone3.style.transition = 'none';
+    zoomZone3.style.transform  = 'translate(-50%,-50%) scale(' + boost + ')';
+  }
+
   _zS('sp-zoom-duration').addEventListener('input', function() {
     var v = parseInt(this.value, 10);
     visualSettings.zoomDuration = v;
@@ -9177,6 +9200,7 @@ document.getElementById('sp-starfield-density').addEventListener('input', functi
     if (isNaN(v)) v = 1.0;
     visualSettings.zoomFramedScale = v;
     _zS('sp-zoom-framed-scale-val').textContent = v.toFixed(2) + '×';
+    _relayoutZoomLive();
   });
 
   _zS('sp-page-alpha').addEventListener('input', function() {
