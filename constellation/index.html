@@ -1226,7 +1226,7 @@
     pointer-events: none;
   }
 
-  /* zone2: vignette dissolves page into atmosphere */
+  /* zone2: inert transition layer (vignette removed Jun 2026 — was non-functional) */
   #zoom-zone2 {
     position: absolute;
     inset: 0;
@@ -4483,32 +4483,11 @@ body.dial-open .field-motion { animation-play-state: paused; }
         <input type="range" class="sp-slider" id="sp-zoom-duration" min="500" max="1500" step="50" value="900">
       </div>
       <div class="sp-subrow" style="margin-top:8px;">
-        <div class="sp-sublabel">Vignette Intensity</div>
-        <div class="sp-sublabel" id="sp-vignette-int-val" style="min-width:32px;text-align:right;">50%</div>
+        <div class="sp-sublabel">Zoom Out Speed</div>
+        <div class="sp-sublabel" id="sp-zoom-out-dur-val" style="min-width:42px;text-align:right;color:rgba(201,168,76,0.7);">500ms</div>
       </div>
       <div class="sp-subrow">
-        <input type="range" class="sp-slider" id="sp-vignette-intensity" min="0" max="100" step="1" value="50">
-      </div>
-      <div class="sp-subrow" style="margin-top:8px;">
-        <div class="sp-sublabel">Vignette Start</div>
-        <div class="sp-sublabel" id="sp-vignette-inn-val" style="min-width:32px;text-align:right;">30%</div>
-      </div>
-      <div class="sp-subrow">
-        <input type="range" class="sp-slider" id="sp-vignette-inner" min="5" max="60" step="1" value="30">
-      </div>
-      <div class="sp-subrow" style="margin-top:8px;">
-        <div class="sp-sublabel">Vignette Tone</div>
-        <div class="sp-toggle-group" style="margin-left:auto;">
-          <button class="sp-toggle active" data-zoom-tone="page">Page</button>
-          <button class="sp-toggle" data-zoom-tone="black">Black</button>
-        </div>
-      </div>
-      <div class="sp-subrow" style="margin-top:8px;">
-        <div class="sp-sublabel">Page Melt</div>
-        <div class="sp-sublabel" id="sp-page-feather-val" style="min-width:32px;text-align:right;">62%</div>
-      </div>
-      <div class="sp-subrow">
-        <input type="range" class="sp-slider" id="sp-page-feather" min="30" max="90" step="2" value="62">
+        <input type="range" class="sp-slider" id="sp-zoom-out-duration" min="200" max="1200" step="50" value="500">
       </div>
       <div class="sp-subrow" style="margin-top:8px;">
         <div class="sp-sublabel">Page Translucency</div>
@@ -4516,34 +4495,6 @@ body.dial-open .field-motion { animation-play-state: paused; }
       </div>
       <div class="sp-subrow">
         <input type="range" class="sp-slider" id="sp-page-alpha" min="30" max="100" step="1" value="90">
-      </div>
-      <div class="sp-subrow" style="margin-top:8px;">
-        <div class="sp-sublabel">Atmosphere Pullback</div>
-        <div class="sp-sublabel" id="sp-atm-scale-val" style="min-width:32px;text-align:right;">1.58</div>
-      </div>
-      <div class="sp-subrow">
-        <input type="range" class="sp-slider" id="sp-atm-scale" min="130" max="200" step="2" value="158">
-      </div>
-      <div class="sp-subrow" style="margin-top:8px;">
-        <div class="sp-sublabel">Atmosphere Sharpness</div>
-        <div class="sp-sublabel" id="sp-atm-sharp-val" style="min-width:32px;text-align:right;">0</div>
-      </div>
-      <div class="sp-subrow">
-        <input type="range" class="sp-slider" id="sp-atm-sharpness" min="-100" max="100" step="5" value="0">
-      </div>
-      <div class="sp-subrow" style="margin-top:8px;">
-        <div class="sp-sublabel">Atmosphere Opacity</div>
-        <div class="sp-sublabel" id="sp-atm-opacity-val" style="min-width:32px;text-align:right;">100%</div>
-      </div>
-      <div class="sp-subrow">
-        <input type="range" class="sp-slider" id="sp-atm-opacity" min="30" max="100" step="1" value="100">
-      </div>
-      <div class="sp-subrow" style="margin-top:8px;">
-        <div class="sp-sublabel">Bubble Anchor</div>
-        <div class="sp-sublabel" id="sp-bubble-anchor-val" style="min-width:32px;text-align:right;">1.00</div>
-      </div>
-      <div class="sp-subrow">
-        <input type="range" class="sp-slider" id="sp-bubble-anchor" min="70" max="115" step="1" value="100">
       </div>
     </div>
     <!-- === END ZOOM-INTERIOR-SETTINGS-DOM === -->
@@ -7573,13 +7524,6 @@ function isDesktop() {
   return window.innerWidth > 600;
 }
 
-function zoomWithAlpha(rgb, a) {
-  var m = rgb.match(/rgba?\(([^)]+)\)/);
-  if (!m) return rgb;
-  var parts = m[1].split(',');
-  return 'rgba(' + parts[0].trim() + ', ' + parts[1].trim() + ', ' + parts[2].trim() + ', ' + a + ')';
-}
-
 // anchoredBubble: page (w,h) whose corners sit at anchor*diskR
 // verbatim from interior.jsx
 function zoomAnchoredBubble(diskR, aspect, anchor) {
@@ -7656,23 +7600,6 @@ function renderZoomAtmosphere(b, atmosDiam) {
     sphere.innerHTML = '<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">' +
       buildStarSvg(uid, pal, cfg.movement, cfg.border, profile) + '</svg>';
   }
-}
-
-// applyZoomZone2: set the vignette radial gradient
-function applyZoomZone2() {
-  var inner     = visualSettings.zoneVignetteInner     || 0.30;
-  var outer     = 0.60;
-  var intensity = visualSettings.zoneVignetteIntensity || 0.50;
-  var tone      = visualSettings.zoneVignetteTone      || 'page';
-  var vColor = tone === 'black' ? 'rgb(0,0,0)' : 'rgb(252,250,246)';
-  var ip = (inner * 100).toFixed(1);
-  var op = (outer * 100).toFixed(1);
-  var mp = ((inner * 100 + outer * 100) / 2).toFixed(1);
-  zoomZone2.style.background = 'radial-gradient(circle at center, ' +
-    vColor + ' 0%, ' +
-    vColor + ' ' + ip + '%, ' +
-    zoomWithAlpha(vColor, intensity) + ' ' + mp + '%, ' +
-    zoomWithAlpha(vColor, 0) + ' ' + op + ')';
 }
 
 // applyZoomPageStyle: feathered radial gradient page + halo
@@ -7756,7 +7683,6 @@ function openZoom(bubbleId) {
 
   // build/update zone3 atmosphere star
   renderZoomAtmosphere(b, atmosDiam);
-  applyZoomZone2();
 
   // framed geometry for the page
   var geom = computeInteriorGeom(iStage, atm, anchor, false);
@@ -8060,8 +7986,7 @@ function closeZoom() {
   if (state.zoomTimerInterior) { window.clearTimeout(state.zoomTimerInterior); state.zoomTimerInterior = null; }
   if (state.zoomTimerDone)     { window.clearTimeout(state.zoomTimerDone);     state.zoomTimerDone     = null; }
 
-  var dur    = visualSettings.zoomDuration     || 900;
-  var outDur = Math.min(dur, 500);
+  var outDur = visualSettings.zoomOutDuration || 500;
   var easingOut = 'cubic-bezier(0.55,0.05,0.95,0.45)';
 
   zoomZone1Wrap.classList.remove('interactive');
@@ -8571,16 +8496,16 @@ var visualSettings = {
 visualSettings.starDefaults = { movement: 'vortex', palette: 'nebula', border: 'soft' };
 visualSettings.starOverrideMode = 'unstyled';
 visualSettings.starMassCap = 10;
-visualSettings.zoomDuration           = 900;
-visualSettings.zoneVignetteIntensity  = 0.50;
-visualSettings.zoneVignetteInner      = 0.30;
-visualSettings.zoneVignetteTone       = 'page';
-visualSettings.zonePageFeather        = 0.62;
-visualSettings.zonePageAlpha          = 0.90;
-visualSettings.zoneAtmosphereScale    = 1.58;
-visualSettings.zoneAtmosphereSharpness = 0;
-visualSettings.zoneAtmosphereOpacity  = 1.0;
-visualSettings.zoneBubbleAnchor       = 1.00;
+visualSettings.zoomDuration           = 900;   // adjustable — Zoom Speed
+visualSettings.zoomOutDuration        = 500;   // adjustable — Zoom Out Speed
+visualSettings.zonePageAlpha          = 0.90;  // adjustable — Page Translucency
+// Baked interior constants — fixed values, sliders removed from settings (Jun 2026).
+// Vignette removed entirely (it was non-functional). Retune by editing these numbers.
+visualSettings.zonePageFeather         = 0.10; // Page Melt
+visualSettings.zoneAtmosphereScale     = 1.30; // Atmosphere Pullback
+visualSettings.zoneAtmosphereSharpness = 30;   // Atmosphere Sharpness
+visualSettings.zoneAtmosphereOpacity   = 0.65; // Atmosphere Opacity
+visualSettings.zoneBubbleAnchor        = 0.91; // Bubble Anchor
 
 // ── VISUAL SETTINGS PERSISTENCE ───────────────────────────
 // visualSettings is app-global (not per-session), so it persists under its own
@@ -8599,15 +8524,8 @@ function saveVisualSettings() {
       fieldBrightness: v.fieldBrightness,
       starDefaults: v.starDefaults, starOverrideMode: v.starOverrideMode,
       zoomDuration: v.zoomDuration,
-      zoneVignetteIntensity: v.zoneVignetteIntensity,
-      zoneVignetteInner: v.zoneVignetteInner,
-      zoneVignetteTone: v.zoneVignetteTone,
-      zonePageFeather: v.zonePageFeather,
-      zonePageAlpha: v.zonePageAlpha,
-      zoneAtmosphereScale: v.zoneAtmosphereScale,
-      zoneAtmosphereSharpness: v.zoneAtmosphereSharpness,
-      zoneAtmosphereOpacity: v.zoneAtmosphereOpacity,
-      zoneBubbleAnchor: v.zoneBubbleAnchor
+      zoomOutDuration: v.zoomOutDuration,
+      zonePageAlpha: v.zonePageAlpha
     }));
   } catch (e) {}
 }
@@ -8621,9 +8539,7 @@ function restoreVisualSettings() {
   if (!data || typeof data !== 'object') return;
   var keys = ['showPlanetary','planetaryStyle','planetaryOpacity','planetaryColor','ringStyle',
     'showMutual','mutualStyle','mutualOpacity','mutualColor','fieldBrightness',
-    'starOverrideMode','zoomDuration','zoneVignetteIntensity','zoneVignetteInner',
-    'zoneVignetteTone','zonePageFeather','zonePageAlpha','zoneAtmosphereScale',
-    'zoneAtmosphereSharpness','zoneAtmosphereOpacity','zoneBubbleAnchor'];
+    'starOverrideMode','zoomDuration','zoomOutDuration','zonePageAlpha'];
   for (var i = 0; i < keys.length; i++) {
     var k = keys[i];
     if (Object.prototype.hasOwnProperty.call(data, k) && data[k] !== null && data[k] !== undefined) {
@@ -8672,23 +8588,10 @@ function syncVisualControls() {
   // Zoom & Interior
   _spSet('sp-zoom-duration', 'value', v.zoomDuration);
   _spText('sp-zoom-dur-val', v.zoomDuration + 'ms');
-  _spSet('sp-vignette-intensity', 'value', Math.round(v.zoneVignetteIntensity * 100));
-  _spText('sp-vignette-int-val', Math.round(v.zoneVignetteIntensity * 100) + '%');
-  _spSet('sp-vignette-inner', 'value', Math.round(v.zoneVignetteInner * 100));
-  _spText('sp-vignette-inn-val', Math.round(v.zoneVignetteInner * 100) + '%');
-  _spActiveToggle('[data-zoom-tone]', 'data-zoom-tone', v.zoneVignetteTone);
-  _spSet('sp-page-feather', 'value', Math.round(v.zonePageFeather * 100));
-  _spText('sp-page-feather-val', Math.round(v.zonePageFeather * 100) + '%');
+  _spSet('sp-zoom-out-duration', 'value', v.zoomOutDuration);
+  _spText('sp-zoom-out-dur-val', v.zoomOutDuration + 'ms');
   _spSet('sp-page-alpha', 'value', Math.round(v.zonePageAlpha * 100));
   _spText('sp-page-alpha-val', Math.round(v.zonePageAlpha * 100) + '%');
-  _spSet('sp-atm-scale', 'value', Math.round(v.zoneAtmosphereScale * 100));
-  _spText('sp-atm-scale-val', v.zoneAtmosphereScale.toFixed(2));
-  _spSet('sp-atm-sharpness', 'value', v.zoneAtmosphereSharpness);
-  _spText('sp-atm-sharp-val', v.zoneAtmosphereSharpness > 0 ? '+' + v.zoneAtmosphereSharpness : '' + v.zoneAtmosphereSharpness);
-  _spSet('sp-atm-opacity', 'value', Math.round(v.zoneAtmosphereOpacity * 100));
-  _spText('sp-atm-opacity-val', Math.round(v.zoneAtmosphereOpacity * 100) + '%');
-  _spSet('sp-bubble-anchor', 'value', Math.round(v.zoneBubbleAnchor * 100));
-  _spText('sp-bubble-anchor-val', v.zoneBubbleAnchor.toFixed(2));
   if (typeof applyOrbitalSettings === 'function') applyOrbitalSettings();
 }
 
@@ -9237,7 +9140,6 @@ document.getElementById('sp-brightness').addEventListener('input', function() {
     var isFull = zoomZone1Wrap.classList.contains('zoom-full');
     var geom   = computeInteriorGeom(iStage, atm, anchor, isFull);
     applyZoomPageStyle(b, isFull, geom);
-    applyZoomZone2();
   }
 
   _zS('sp-zoom-duration').addEventListener('input', function() {
@@ -9246,30 +9148,10 @@ document.getElementById('sp-brightness').addEventListener('input', function() {
     _zS('sp-zoom-dur-val').textContent = v + 'ms';
   });
 
-  _zS('sp-vignette-intensity').addEventListener('input', function() {
+  _zS('sp-zoom-out-duration').addEventListener('input', function() {
     var v = parseInt(this.value, 10);
-    visualSettings.zoneVignetteIntensity = v / 100;
-    _zS('sp-vignette-int-val').textContent = v + '%';
-    if (state.zoomTargetId) applyZoomZone2();
-  });
-
-  _zS('sp-vignette-inner').addEventListener('input', function() {
-    var v = parseInt(this.value, 10);
-    visualSettings.zoneVignetteInner = v / 100;
-    _zS('sp-vignette-inn-val').textContent = v + '%';
-    if (state.zoomTargetId) applyZoomZone2();
-  });
-
-  bindToggles('[data-zoom-tone]', function(btn) {
-    visualSettings.zoneVignetteTone = btn.getAttribute('data-zoom-tone');
-    if (state.zoomTargetId) applyZoomZone2();
-  });
-
-  _zS('sp-page-feather').addEventListener('input', function() {
-    var v = parseInt(this.value, 10);
-    visualSettings.zonePageFeather = v / 100;
-    _zS('sp-page-feather-val').textContent = v + '%';
-    _refreshZoomLive();
+    visualSettings.zoomOutDuration = v;
+    _zS('sp-zoom-out-dur-val').textContent = v + 'ms';
   });
 
   _zS('sp-page-alpha').addEventListener('input', function() {
@@ -9277,62 +9159,6 @@ document.getElementById('sp-brightness').addEventListener('input', function() {
     visualSettings.zonePageAlpha = v / 100;
     _zS('sp-page-alpha-val').textContent = v + '%';
     _refreshZoomLive();
-  });
-
-  _zS('sp-atm-scale').addEventListener('input', function() {
-    var v = parseInt(this.value, 10);
-    visualSettings.zoneAtmosphereScale = v / 100;
-    _zS('sp-atm-scale-val').textContent = (v / 100).toFixed(2);
-    if (state.zoomTargetId) {
-      var b = getBubbleById(state.zoomTargetId);
-      if (!b) return;
-      var iStage = Math.min(window.innerWidth, window.innerHeight);
-      var atm    = visualSettings.zoneAtmosphereScale;
-      var anchor = visualSettings.zoneBubbleAnchor || 1.00;
-      renderZoomAtmosphere(b, iStage * atm * ZOOM_FRAMED_LEVEL);
-      applyZoomZone2();
-      var isFull = zoomZone1Wrap.classList.contains('zoom-full');
-      var geom   = computeInteriorGeom(iStage, atm, anchor, isFull);
-      applyZoomZone1Size(geom, false);
-      applyZoomPageStyle(b, isFull, geom);
-    }
-  });
-
-  _zS('sp-atm-sharpness').addEventListener('input', function() {
-    var v = parseInt(this.value, 10);
-    visualSettings.zoneAtmosphereSharpness = v;
-    _zS('sp-atm-sharp-val').textContent = v > 0 ? '+' + v : '' + v;
-    if (state.zoomTargetId) {
-      var b = getBubbleById(state.zoomTargetId);
-      if (!b) return;
-      var iStage    = Math.min(window.innerWidth, window.innerHeight);
-      var atmosDiam = iStage * (visualSettings.zoneAtmosphereScale || 1.58) * ZOOM_FRAMED_LEVEL;
-      renderZoomAtmosphere(b, atmosDiam);
-    }
-  });
-
-  _zS('sp-atm-opacity').addEventListener('input', function() {
-    var v = parseInt(this.value, 10);
-    visualSettings.zoneAtmosphereOpacity = v / 100;
-    _zS('sp-atm-opacity-val').textContent = v + '%';
-    zoomZone3.style.opacity = String(v / 100);
-  });
-
-  _zS('sp-bubble-anchor').addEventListener('input', function() {
-    var v = parseInt(this.value, 10);
-    visualSettings.zoneBubbleAnchor = v / 100;
-    _zS('sp-bubble-anchor-val').textContent = (v / 100).toFixed(2);
-    if (state.zoomTargetId) {
-      var b = getBubbleById(state.zoomTargetId);
-      if (!b) return;
-      var iStage = Math.min(window.innerWidth, window.innerHeight);
-      var atm    = visualSettings.zoneAtmosphereScale || 1.58;
-      var anchor = visualSettings.zoneBubbleAnchor;
-      var isFull = zoomZone1Wrap.classList.contains('zoom-full');
-      var geom   = computeInteriorGeom(iStage, atm, anchor, isFull);
-      applyZoomZone1Size(geom, true);
-      applyZoomPageStyle(b, isFull, geom);
-    }
   });
 
 })();
