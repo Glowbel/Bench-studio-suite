@@ -36,7 +36,7 @@ Ideas are minerals. Interaction is pressure. Crystallization is commitment. The 
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~11,850
+lines: ~11,900
 state: mid-build | stable but finding unusual bugs | hardcore audit underway
 phase: 1 shipped | 1.5/2 active (bug fixes + core audit + phase-change rethink)
 external-work: file split in progress (developer friend, testing in Claude artifacts)
@@ -66,6 +66,8 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-08] ref  | autoSave coalesced — debounced 800ms (was full sync write per interaction); critical saves stay immediate, flush on hide/unload | touches: PERSISTENCE
+[2026-06-08] ref  | loop rests when tab hidden + skips tether canvas when no links — battery/heat win; one-shot clear avoids ghost tether | touches: ANIMATION-LOOP, TETHER-LINES
 [2026-06-08] feat | star texture memory cap — STAR_TEX evicts orphaned (off-bubble) combos over 128MB soft cap, revokes blob urls; on-screen combos never touched | touches: STAR-BAKE
 [2026-06-08] ref  | getBubbleById → O(1) id index — lazy, count-guarded; was linear scan making physics tick O(n²) at scale | touches: PHYSICS, TETHER-LINES
 [2026-06-08] feat | corona border baked — corona-fx rings rasterized once via generalized bake queue (job carries svg markup); no live feTurbulence left in stars | touches: STAR-BAKE, STAR-RENDERER

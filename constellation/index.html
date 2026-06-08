@@ -5325,12 +5325,32 @@ function drawTethers() {
 /* === END TETHER-LINES === */
 /* === BEGIN ANIMATION-LOOP === */
 // ── ANIMATION LOOP ────────────────────────────────────────
+// The loop rests when the tab/app is hidden — no point drawing tethers and
+// running physics into a surface nobody can see (battery + heat on iPad). It
+// restarts on the next visibilitychange. drawTethers clears+repaints the whole
+// canvas every frame, so when there are no links we skip it entirely and only
+// clear once, the frame the last link disappears (no ghost tether left behind).
+var _loopRunning = false;
+var _tethersPainted = false;
 function loop() {
-  drawTethers();
+  if (document.hidden) { _loopRunning = false; return; }
+  if (state.links.length) { drawTethers(); _tethersPainted = true; }
+  else if (_tethersPainted) {
+    tetherCtx.clearRect(0, 0, tetherCanvas.width, tetherCanvas.height);
+    _tethersPainted = false;
+  }
   updateBubblePhysics();
   requestAnimationFrame(loop);
 }
-requestAnimationFrame(loop);
+function _startLoop() {
+  if (_loopRunning) return;
+  _loopRunning = true;
+  requestAnimationFrame(loop);
+}
+_startLoop();
+document.addEventListener('visibilitychange', function () {
+  if (!document.hidden) _startLoop();
+});
 
 /* === END ANIMATION-LOOP === */
 /* === BEGIN PHYSICS === */
@@ -9653,9 +9673,15 @@ syncVisualControls();
 
 // Persist visual settings when the user leaves/backgrounds the page — robust on
 // mobile where 'beforeunload' is unreliable. (Panel-close also persists.)
+// Flush any debounced session write too, so a pending autoSave is never lost on
+// leave/background (saveCurrentSession no-ops cleanly if there's no active session).
+function _flushSessionSave() {
+  if (state.currentSessionId) saveCurrentSession();
+}
 window.addEventListener('pagehide', saveVisualSettings);
+window.addEventListener('pagehide', _flushSessionSave);
 document.addEventListener('visibilitychange', function() {
-  if (document.visibilityState === 'hidden') saveVisualSettings();
+  if (document.visibilityState === 'hidden') { saveVisualSettings(); _flushSessionSave(); }
 });
 /* === END ZOOM-INTERIOR-SETTINGS-LISTENERS === */
 /* === BEGIN ORBIT-SPEED-DIRECTION === */
@@ -10032,6 +10058,7 @@ function serializeSession() {
 }
 
 function saveCurrentSession() {
+  if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; } // absorb any pending debounce
   if (!state.currentSessionId) { return; }
   var data = serializeSession();
   localStorage.setItem('constellation-state-' + state.currentSessionId, JSON.stringify(data));
@@ -10391,9 +10418,22 @@ function doImport(file) {
 // Called after every meaningful interaction.
 // No-op if no active session.
 
+// autoSave fires after every meaningful interaction (18 call sites). Each
+// saveCurrentSession is a full synchronous serialize + stringify + localStorage
+// write of the whole project — a hitch on a big constellation, and wasteful when
+// a burst of interactions fires several in a row. We coalesce them: schedule one
+// write 800ms after activity settles. Any direct saveCurrentSession (switching
+// sessions, closing) cancels the pending debounce, and a hide/unload flushes it,
+// so the latest state is never lost.
+var _saveTimer = null;
+function scheduleSave() {
+  if (!state.currentSessionId) return;
+  if (_saveTimer) return; // a write is already pending — coalesced
+  _saveTimer = setTimeout(function () { _saveTimer = null; saveCurrentSession(); }, 800);
+}
 function autoSave() {
   if (!state.currentSessionId) { return; }
-  saveCurrentSession();
+  scheduleSave();
 }
 
 // Session storage — array of session objects
