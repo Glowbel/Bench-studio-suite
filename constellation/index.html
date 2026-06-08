@@ -1233,6 +1233,10 @@
     transform: translate(-50%, -50%);
     overflow: visible;
     pointer-events: none;
+    /* pre-promote to a GPU layer so the maximize scale doesn't trigger a
+       layer-creation snap on first toggle (the Android-only jump) */
+    will-change: transform;
+    backface-visibility: hidden;
   }
 
   /* zone2: inert transition layer (vignette removed Jun 2026 — was non-functional) */
@@ -1253,6 +1257,8 @@
     opacity: 0;
     z-index: 3;
     pointer-events: none;
+    /* own compositor layer so the resize repaint stays isolated */
+    will-change: transform;
   }
   #zoom-zone1-wrap.interactive {
     pointer-events: all;
