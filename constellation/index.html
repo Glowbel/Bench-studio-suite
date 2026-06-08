@@ -7517,13 +7517,20 @@ function computeInteriorGeom(iStage, atm, anchor, full) {
   var framedPage   = zoomAnchoredBubble(framedDiskR, 1.40, anchor);
   if (!full) { return { bubbleW: framedPage.w, bubbleH: framedPage.h, scaleBoost: 1 }; }
 
-  var desktop = isDesktop();
-  var fillW   = desktop ? 0.60 : 0.92;
-  var fillH   = desktop ? 0.84 : 0.90;
-  var maxPW   = desktop ? 760  : 99999;
-  var maxPH   = desktop ? 660  : 99999;
-  var availW  = Math.min(window.innerWidth  * fillW, maxPW);
-  var availH  = Math.min(window.innerHeight * fillH, maxPH);
+  // Desktop: maximize is a uniform scale-up of the framed page — it keeps the
+  // portrait shape so the star + page grow as one locked unit (no reshaping),
+  // and scaleBoost == page growth so the star corners stay anchored. Fill the
+  // viewport height, bounded by width; never shrink below framed.
+  if (isDesktop()) {
+    var growH = (window.innerHeight * 0.95) / framedPage.h;
+    var growW = (window.innerWidth  * 0.82) / framedPage.w;
+    var f = Math.max(1, Math.min(growH, growW));
+    return { bubbleW: framedPage.w * f, bubbleH: framedPage.h * f, scaleBoost: f };
+  }
+
+  // Mobile: fill the tall viewport (unchanged — works well on phones).
+  var availW  = window.innerWidth  * 0.92;
+  var availH  = window.innerHeight * 0.90;
   var aspect  = Math.max(1.04, Math.min(2.15, availH / availW));
   var fw = availW;
   var fh = fw * aspect;
