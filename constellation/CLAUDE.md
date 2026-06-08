@@ -36,7 +36,7 @@ Ideas are minerals. Interaction is pressure. Crystallization is commitment. The 
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~11,353
+lines: ~11,850
 state: mid-build | stable but finding unusual bugs | hardcore audit underway
 phase: 1 shipped | 1.5/2 active (bug fixes + core audit + phase-change rethink)
 external-work: file split in progress (developer friend, testing in Claude artifacts)
@@ -66,6 +66,8 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-08] feat | star texture memory cap — STAR_TEX evicts orphaned (off-bubble) combos over 128MB soft cap, revokes blob urls; on-screen combos never touched | touches: STAR-BAKE
+[2026-06-08] ref  | getBubbleById → O(1) id index — lazy, count-guarded; was linear scan making physics tick O(n²) at scale | touches: PHYSICS, TETHER-LINES
 [2026-06-08] feat | corona border baked — corona-fx rings rasterized once via generalized bake queue (job carries svg markup); no live feTurbulence left in stars | touches: STAR-BAKE, STAR-RENDERER
 [2026-06-08] feat | resume warming gate — loadSession bakes all present combos (field 384 + atm 1024) behind a brief frozen-field loader, reveals on queue-drain or 8s cap; resumed project opens already baked | touches: STAR-BAKE, LOAD-GATE
 [2026-06-08] fix  | bake flood on big projects — serialized bakes (1 at a time, idle-scheduled, visible-first/warm-last); was main-thread freeze + "loading movement" on maximize | touches: STAR-BAKE
@@ -110,6 +112,8 @@ tiers: based on accumulated mass | drives orbit speed multiplier + visual promin
 free-bubbles vs moons: free bubbles physics-pass first, moons after (two-pass)
 orbit-speed: global value with per-tier multipliers | NOT per-bubble setting
 manual-completion-circle: required for crystallization | no auto-trigger
+lookup: getBubbleById is O(1) via lazy id→bubble index (_bubbleIdx, count-guarded,
+  invalidated on add/remove) — never reintroduce a linear scan in a hot path
 
 [physics] (locked geometry rules)
 two-pass: free bubbles processed first, then moons
@@ -152,8 +156,11 @@ baking (STAR-BAKE, locked Jun 2026): gas-layer feTurbulence rasterized ONCE to a
   bakes are SERIALIZED through a queue (concurrency 1, idle-scheduled): visible
   stars via _bakeQ (high), proactive warm via _bakeQLow (low). never parallel —
   a burst of 1024px feTurbulence rasters + PNG encodes froze big projects on
-  maximize (Jun 2026). watch: 1024px warm textures are ~16MB/combo — many
-  distinct combos in one project is a memory ceiling (no eviction yet).
+  maximize (Jun 2026). memory: 1024px combos are ~16MB (size²×4/layer). cache is
+  now bounded (STAR_TEX_CAP, 128MB soft) — over cap, LRU-evicts textures whose
+  movement|palette combo is NOT on any current bubble (orphaned styling combos),
+  revoking their blob urls; on-screen combos are never evicted so nothing blanks.
+  evicted keys re-bake on demand. _enforceTexCap runs on each bake completion.
 compass 'customize' direction → openStarDial(b) — per-bubble dial
 settings panel 'customize stars' row → openGlobalStarsModal() — field defaults
 override confirm: 'unstyled' (default) | 'all' — only shown if any bubble customized

@@ -5493,10 +5493,28 @@ function updateBubbleStaleness(b) {
 /* === END PHYSICS === */
 /* === BEGIN BUBBLE-DATA === */
 // ── BUBBLE DATA ───────────────────────────────────────────
-function getBubbleById(id) {
+// id -> bubble index. getBubbleById is called many times per physics frame
+// (moons resolve their planet, the mutual-gravity pass resolves partners) plus
+// twice per link in drawTethers, so a linear scan made the tick O(n^2) on big
+// projects. The index makes every lookup O(1). It is rebuilt lazily whenever the
+// bubble count changes (which covers every add/remove site automatically) and
+// can be invalidated explicitly for the rare net-zero membership swap.
+var _bubbleIdx = {};
+var _bubbleIdxLen = -1; // count the index was built for | -1 = dirty
+function _rebuildBubbleIdx() {
+  _bubbleIdx = {};
   for (var i = 0; i < state.bubbles.length; i++) {
-    if (state.bubbles[i].id === id) return state.bubbles[i];
+    _bubbleIdx[state.bubbles[i].id] = state.bubbles[i];
   }
+  _bubbleIdxLen = state.bubbles.length;
+}
+function _invalidateBubbleIdx() { _bubbleIdxLen = -1; }
+function getBubbleById(id) {
+  if (_bubbleIdxLen !== state.bubbles.length) _rebuildBubbleIdx();
+  var b = _bubbleIdx[id];
+  // guard against a stale entry from a net-zero swap (count unchanged): the
+  // mapped object must still carry the id we asked for
+  if (b && b.id === id) return b;
   return null;
 }
 
@@ -5865,6 +5883,18 @@ var STAR_GRAD_LAYOUTS = {
    Graceful fallback: if canvas/toBlob is unavailable, every layer stays live. */
 var STAR_TEX = {};            // key -> blob url (string) | null if bake failed
 var STAR_TEX_PENDING = {};    // key -> true while a bake is in flight
+// Memory budget. Each baked texture is a decoded bitmap of size*size*4 bytes
+// (1024 -> 4MB, a 4-layer 1024 combo -> 16MB). The cache was grow-only, so a
+// long styling session that tried many movement/palette combos would pile up
+// orphaned textures until iPad Safari crashed with no warning. We now track
+// total bytes and, over the cap, evict the least-recently-used textures whose
+// combo is NOT on any current bubble — on-screen stars are never touched, so
+// nothing blanks mid-session. Evicted keys simply re-bake on demand if revisited.
+var STAR_TEX_BYTES = {};      // key -> estimated decoded bytes (0 for null bakes)
+var STAR_TEX_USED = {};       // key -> last-touch tick (recency)
+var _texTotalBytes = 0;
+var _texTick = 0;
+var STAR_TEX_CAP = 128 * 1024 * 1024; // soft cap | tune by feel
 var _texWaiters = [];         // one-shot re-render callbacks, deduped by id
 var _filterMarkupCache = {};
 var _starSvgUsedLive = false; // set by buildStarSvg when any layer fell back to live
@@ -5926,8 +5956,16 @@ function _startStarBake(key, size, svg, done) {
       cv.getContext('2d').drawImage(img, 0, 0, size, size);
       cv.toBlob(function (blob) {
         URL.revokeObjectURL(svgUrl);
-        STAR_TEX[key] = blob ? URL.createObjectURL(blob) : null;
+        var url = blob ? URL.createObjectURL(blob) : null;
+        STAR_TEX[key] = url;
         STAR_TEX_PENDING[key] = false;
+        if (url) {
+          var bytes = size * size * 4; // decoded RGBA upper bound
+          if (!STAR_TEX_BYTES[key]) _texTotalBytes += bytes;
+          STAR_TEX_BYTES[key] = bytes;
+          STAR_TEX_USED[key] = ++_texTick;
+          _enforceTexCap();
+        }
         _fireTexWaiters(); finish();
       }, 'image/png');
     } catch (e) {
@@ -5974,13 +6012,52 @@ function _drainBake() {
   });
 }
 
+// Combos currently displayed by a bubble — their textures are never evicted.
+// Both gas keys (movement|palette|...) and corona keys (corona|palette|...) are
+// identified by their first two |-segments, so one lookup table covers both.
+function _liveTexPrefixes() {
+  var live = {};
+  for (var i = 0; i < state.bubbles.length; i++) {
+    var cfg = getBubbleStar(state.bubbles[i]);
+    if (!cfg) continue;
+    live[cfg.movement + '|' + cfg.palette] = true;
+    if (cfg.border === 'corona') live['corona|' + cfg.palette] = true;
+  }
+  return live;
+}
+function _evictTex(key) {
+  var url = STAR_TEX[key];
+  if (url) { try { URL.revokeObjectURL(url); } catch (e) {} }
+  _texTotalBytes -= (STAR_TEX_BYTES[key] || 0);
+  if (_texTotalBytes < 0) _texTotalBytes = 0;
+  delete STAR_TEX[key];          // absent key -> re-bakes on demand if revisited
+  delete STAR_TEX_BYTES[key];
+  delete STAR_TEX_USED[key];
+}
+function _enforceTexCap() {
+  if (_texTotalBytes <= STAR_TEX_CAP) return;
+  var live = _liveTexPrefixes();
+  var keys = [];
+  for (var k in STAR_TEX) {
+    if (!Object.prototype.hasOwnProperty.call(STAR_TEX, k)) continue;
+    if (!STAR_TEX[k]) continue;  // null bakes hold no memory
+    var seg = k.split('|');
+    if (live[seg[0] + '|' + seg[1]]) continue; // on-screen combo — never evict
+    keys.push(k);
+  }
+  keys.sort(function (a, b) { return (STAR_TEX_USED[a] || 0) - (STAR_TEX_USED[b] || 0); });
+  for (var i = 0; i < keys.length && _texTotalBytes > STAR_TEX_CAP; i++) {
+    _evictTex(keys[i]);
+  }
+}
+
 // Ready blob-url texture, or null. On null the caller emits the live filter and
 // registers a waiter, so the star re-renders to the baked texture once ready.
 // lowPri=true defers the bake behind any visible-star bakes (used by warming).
 function getStarTexture(movement, paletteId, li, size, colorHex, g, filterId, lowPri) {
   if (!_starBakeOK) return null;
   var key = movement + '|' + paletteId + '|' + li + '|' + size;
-  if (Object.prototype.hasOwnProperty.call(STAR_TEX, key)) return STAR_TEX[key];
+  if (Object.prototype.hasOwnProperty.call(STAR_TEX, key)) { STAR_TEX_USED[key] = ++_texTick; return STAR_TEX[key]; }
   if (!STAR_TEX_PENDING[key]) {
     STAR_TEX_PENDING[key] = true;
     _enqueueBake({ key: key, size: size, svg: _bakeSvgMarkup(size, colorHex, g, filterId) }, lowPri);
@@ -6001,7 +6078,7 @@ function _coronaSvgMarkup(size, haloColor) {
 function getCoronaTexture(paletteId, haloColor, size, lowPri) {
   if (!_starBakeOK) return null;
   var key = 'corona|' + paletteId + '|' + size;
-  if (Object.prototype.hasOwnProperty.call(STAR_TEX, key)) return STAR_TEX[key];
+  if (Object.prototype.hasOwnProperty.call(STAR_TEX, key)) { STAR_TEX_USED[key] = ++_texTick; return STAR_TEX[key]; }
   if (!STAR_TEX_PENDING[key]) {
     STAR_TEX_PENDING[key] = true;
     _enqueueBake({ key: key, size: size, svg: _coronaSvgMarkup(size, haloColor) }, lowPri);
@@ -6971,6 +7048,7 @@ function initiateDissolution(bubbleId) {
     for (var i = 0; i < state.bubbles.length; i++) {
       if (state.bubbles[i].id === bubbleId) {
         state.bubbles.splice(i, 1);
+        _invalidateBubbleIdx();
         break;
       }
     }
@@ -10358,6 +10436,7 @@ function clearField() {
   }
   // Reset state
   state.bubbles = [];
+  _invalidateBubbleIdx();
   state.links = [];
   state.residueStars = [];
   state.unlinkedNodes = [];
