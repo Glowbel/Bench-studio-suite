@@ -7,50 +7,51 @@
   Sub-zones inside EVENTS use NAME:CHILD (e.g. EVENTS:CAROUSEL).
   Line numbers are post-marker. Rebuild script lives below this block.
 
-    THEME-TOKENS             236 — 319  
-    RESET                    320 — 326  
-    APP-SHELL                327 — 337  
-    SAVE-PILL                338 — 345  
-    TAB-BAR                  346 — 496  
-    CAPSULE (CSS)            497 — 958  
-    INTAKE-BAR (CSS)         959 — 967  
-    TIMER-MODAL (CSS)        968 — 1002 
-    FLOAT-PAUSE-BTN (CSS)   1003 — 1029 
-    BENCH-FADE (CSS)        1030 — 1053 
-    DATA-PANEL (CSS)        1054 — 1072 
-    THEME-PANEL (CSS)       1073 — 1108 
-    COLOR-PICKER            1109 — 1157 
-    BACKUP-NUDGE (CSS)      1158 — 1165 
-    TAB-STUBS               1166 — 1173 
-    DRUM-PICKER             1174 — 1202 
-    SKILLS-CAROUSEL         1203 — 1277 
-    SKILLS-WORKSHOP         1278 — 1675 
-    NODE-CREATE-MODAL       1676 — 1851 
-    CREST-MODAL             1852 — 2197 
-    SUPABASE                2209 — 2237 
-    CONSTANTS               2240 — 2447 
-    DEFAULTS                2448 — 2495 
-    THEME-SYSTEM            2496 — 2686 
-    THEME-UTIL              2687 — 2722 
-    THEME-PANEL (JS)        2723 — 3295 
-    STATE                   3298 — 3333 
-    RENDER                  3335 — 3401 
-    CAPSULE (JS)            3404 — 3621 
-    INTAKE-BAR (JS)         3622 — 3631 
-    FLOAT-PAUSE-BTN (JS)    3632 — 3652 
-    BENCH-FADE (JS)         3653 — 3692 
-    TIMER-MODAL (JS)        3693 — 3770 
-    TAB-CONTENT             3771 — 3782 
-    SKILLS                  3783 — 4928 
-    BACKUP-NUDGE (JS)       4929 — 4938 
-    DATA-PANEL (JS)         4939 — 4953 
-    TIMER                   4954 — 5078 
-    TASK                    5079 — 5108 
-    TIMER-MODAL-LIVE        5109 — 5335 
-    EVENTS                  5336 — 6516 
-    DATA-IO                 6517 — 6564 
-    HELPERS                 6565 — 6569 
-    BOOT                    6571 — 6632 
+    THEME-TOKENS             279 — 362  
+    RESET                    363 — 369  
+    APP-SHELL                370 — 380  
+    SAVE-PILL                381 — 388  
+    TAB-BAR                  389 — 539  
+    CAPSULE (CSS)            540 — 1001 
+    INTAKE-BAR (CSS)        1002 — 1010 
+    TIMER-MODAL (CSS)       1011 — 1045 
+    FLOAT-PAUSE-BTN (CSS)   1046 — 1072 
+    BENCH-FADE (CSS)        1073 — 1096 
+    DATA-PANEL (CSS)        1097 — 1115 
+    THEME-PANEL (CSS)       1116 — 1151 
+    COLOR-PICKER            1152 — 1200 
+    BACKUP-NUDGE (CSS)      1201 — 1208 
+    TAB-STUBS               1209 — 1216 
+    DRUM-PICKER             1217 — 1245 
+    SKILLS-CAROUSEL         1246 — 1320 
+    SKILLS-WORKSHOP         1321 — 1718 
+    NODE-CREATE-MODAL       1719 — 2076 
+    NODE-DETAIL-MODAL       2077 — 2236 
+    CREST-MODAL             2237 — 2582 
+    SUPABASE                2594 — 2622 
+    CONSTANTS               2625 — 2839 
+    DEFAULTS                2840 — 2887 
+    THEME-SYSTEM            2888 — 3078 
+    THEME-UTIL              3079 — 3114 
+    THEME-PANEL (JS)        3115 — 3687 
+    STATE                   3690 — 3726 
+    RENDER                  3728 — 3795 
+    CAPSULE (JS)            3798 — 4015 
+    INTAKE-BAR (JS)         4016 — 4025 
+    FLOAT-PAUSE-BTN (JS)    4026 — 4046 
+    BENCH-FADE (JS)         4047 — 4086 
+    TIMER-MODAL (JS)        4087 — 4164 
+    TAB-CONTENT             4165 — 4176 
+    SKILLS                  4177 — 5543 
+    BACKUP-NUDGE (JS)       5544 — 5553 
+    DATA-PANEL (JS)         5554 — 5568 
+    TIMER                   5569 — 5693 
+    TASK                    5694 — 5723 
+    TIMER-MODAL-LIVE        5724 — 5950 
+    EVENTS                  5951 — 7263 
+    DATA-IO                 7264 — 7311 
+    HELPERS                 7312 — 7316 
+    BOOT                    7318 — 7379 
   ════════════════════════════════════════════════════════════════════
 -->
 <!--
@@ -70,9 +71,18 @@
     2. Run it, passing the HTML file path:
          python3 /tmp/rebuild_registry.py /path/to/this-file.html
     3. The registry block above is rewritten in place with current
-       line numbers. Nothing else in the file is modified.
-    4. Sanity check: grep for the BEGIN and END marker patterns —
-       every BEGIN should pair with a matching END in correct nesting.
+       line numbers, in a single pass. Nothing else in the file is modified.
+    4. If any marker is malformed or unpaired the script aborts with a
+       line-numbered error and writes NOTHING — fix the markers and rerun.
+
+  GUARANTEES
+    - Fail-loud: a marker that opens but does not close on its own line
+      (the multi-line-comment trap), a BEGIN with no END, an END with no
+      BEGIN, or a name reopened before it closed — any of these aborts the
+      run with the offending line numbers. A bad marker can no longer
+      silently drop a zone from the registry.
+    - One pass: the numbers written already account for the registry block
+      changing length, so a single run is correct. No run-it-twice dance.
 
   OUTPUT CONTRACT (what the registry must look like)
     - Top-level zones only (sub-zones with a colon in the name, e.g.
@@ -120,6 +130,7 @@
       # skipping HTML comments (which may contain the registry, the
       # rebuilder source, or prose mentioning the same tokens).
       markers = []
+      malformed = []
       style_close = None
       in_html_comment = False
       for i, line in enumerate(lines, start=1):
@@ -136,26 +147,57 @@
               continue
           if style_close is None and STYLE_CLOSE in line:
               style_close = i
-          if s.startswith("/* === BEGIN ") and s.endswith(" === */"):
-              name = s[len("/* === BEGIN "):-len(" === */")].strip()
-              markers.append(("BEGIN", name, i))
-          elif s.startswith("/* === END ") and s.endswith(" === */"):
-              name = s[len("/* === END "):-len(" === */")].strip()
-              markers.append(("END", name, i))
+          # A marker must be one self-contained line. An opener that does
+          # not close on its own line is malformed (the multi-line-comment
+          # trap) — collect it so the run fails loudly instead of silently
+          # dropping the zone from the registry.
+          if s.startswith("/* === BEGIN ") or s.startswith("/* === END "):
+              pre = "/* === BEGIN " if s.startswith("/* === BEGIN ") else "/* === END "
+              kind = "BEGIN" if pre == "/* === BEGIN " else "END"
+              if s.endswith(" === */"):
+                  markers.append((kind, s[len(pre):-len(" === */")].strip(), i))
+              else:
+                  malformed.append((i, s))
 
-      # Pair BEGIN with END. Top-level zones only (no colon in name).
+      # Pair BEGIN with END. Collect every structural problem instead of
+      # silently dropping markers — a dropped marker means a zone quietly
+      # vanishes from the registry, which is the exact failure this guard
+      # exists to catch. Nothing is written if any problem is found.
+      problems = []
+      for ln, text in malformed:
+          problems.append("  line {:d}: malformed marker — must be one"
+                          " self-contained line ending in ' === */': {:s}"
+                          .format(ln, text))
+
       zones, stack = [], {}
       for kind, name, ln in markers:
           if kind == "BEGIN":
+              if name in stack:
+                  problems.append("  line {:d}: BEGIN {:s} reopened before its"
+                                  " END (earlier BEGIN at line {:d})"
+                                  .format(ln, name, stack[name]))
               stack[name] = ln
           else:
               if name in stack:
                   b = stack.pop(name)
                   if ":" not in name:
                       zones.append((name, b, ln))
+              else:
+                  problems.append("  line {:d}: END {:s} has no matching BEGIN"
+                                  .format(ln, name))
+      for name, ln in stack.items():
+          problems.append("  line {:d}: BEGIN {:s} is never closed by an END"
+                          .format(ln, name))
+
+      if problems:
+          raise SystemExit("Registry NOT rebuilt — fix these markers first:\n"
+                           + "\n".join(sorted(problems)))
+
       zones.sort(key=lambda z: z[1])
 
-      # Disambiguate CSS/JS duplicates by closing style tag position.
+      # Disambiguate CSS/JS duplicates by closing style tag position (uses
+      # original, pre-shift line numbers — a uniform shift below does not
+      # change which side of the style tag a marker is on).
       counts = {}
       for n, _, _ in zones:
           counts[n] = counts.get(n, 0) + 1
@@ -167,7 +209,35 @@
           else:
               labeled.append((n, b, e))
 
-      # Build the new registry block.
+      # Locate the existing ZONE REGISTRY block so we know how many lines it
+      # currently occupies. It always precedes the REBUILDER block, so the
+      # first <!-- whose 8-line peek contains 'ZONE REGISTRY' and does NOT
+      # contain 'REBUILDER' is the registry.
+      blk_start = blk_end = None
+      for k in range(len(lines)):
+          if lines[k].strip() == HTML_COMMENT_OPEN:
+              peek = "\n".join(lines[k:min(k + 8, len(lines))])
+              if "ZONE REGISTRY" in peek and "REBUILDER" not in peek:
+                  blk_start = k
+                  j = k
+                  while j < len(lines) and HTML_COMMENT_CLOSE not in lines[j]:
+                      j += 1
+                  blk_end = j
+                  break
+      if blk_start is None:
+          raise SystemExit("Existing ZONE REGISTRY block not found.")
+      old_count = blk_end - blk_start + 1
+
+      # One-pass convergence. Rewriting the block changes its length, which
+      # shifts every marker below it — and the registry is the first block in
+      # the file, so EVERY zone marker sits below it and shifts by the same
+      # delta. Pre-apply that delta so the numbers we write describe the file
+      # AFTER the rewrite, not before. (Without this the first run is stale by
+      # exactly the change in entry count and you have to run it twice.)
+      new_count = 10 + len(labeled)   # 8 header lines + one per zone + 2 footer
+      delta = new_count - old_count
+
+      # Build the new registry block with shifted line numbers.
       bar = "═" * 68
       reg = [HTML_COMMENT_OPEN]
       reg.append("  " + bar)
@@ -178,35 +248,16 @@
       reg.append("  Line numbers are post-marker. Rebuild script lives below this block.")
       reg.append("")
       for name, b, e in labeled:
-          reg.append("    {:<22s} {:>5d} — {:<5d}".format(name, b, e))
+          reg.append("    {:<22s} {:>5d} — {:<5d}".format(name, b + delta, e + delta))
       reg.append("  " + bar)
       reg.append(HTML_COMMENT_CLOSE)
-      new_block = "\n".join(reg)
 
-      # Replace the existing ZONE REGISTRY comment block in place.
-      out, i, replaced = [], 0, False
-      while i < len(lines):
-          line = lines[i]
-          if not replaced and line.strip() == HTML_COMMENT_OPEN:
-              peek = "\n".join(lines[i:min(i + 6, len(lines))])
-              if "ZONE REGISTRY" in peek:
-                  j = i
-                  while j < len(lines) and HTML_COMMENT_CLOSE not in lines[j]:
-                      j += 1
-                  out.extend(new_block.split("\n"))
-                  i = j + 1
-                  replaced = True
-                  continue
-          out.append(line)
-          i += 1
-
-      if not replaced:
-          raise SystemExit("Existing ZONE REGISTRY block not found.")
+      out = lines[:blk_start] + reg + lines[blk_end + 1:]
 
       with open(path, "w") as f:
           f.write("\n".join(out))
 
-      print("Rebuilt registry: {} top-level zones".format(len(labeled)))
+      print("Rebuilt registry: {:d} top-level zones".format(len(labeled)))
 
   if __name__ == "__main__":
       if len(sys.argv) != 2:

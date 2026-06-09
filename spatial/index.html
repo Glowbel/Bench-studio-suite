@@ -9,29 +9,30 @@
   from this registry. Find them by grep.
   Line numbers are post-marker. Rebuild script lives below this block.
 
-    LAYERS                       253 — 288  
-    DEV-PANEL (CSS)              289 — 600  
-    NAV-ARROWS                   601 — 621  
-    HANDLE-POPUPS (CSS)          623 — 682  
-    SCENE                        686 — 707  
-    DEV-PANEL (HTML)             709 — 930  
-    STATE                        932 — 1086 
-    CANVAS-SETUP                1088 — 1114 
-    RING-DRAW                   1116 — 1278 
-    CLOCK-LABELS                1280 — 1403 
-    BEZIER                      1405 — 1434 
-    NOW-ARC                     1436 — 1490 
-    GUIDE-LINE                  1492 — 1512 
-    HANDLE-POSITIONS            1514 — 1604 
-    CONNECTORS                  1606 — 1673 
-    READOUT                     1675 — 1702 
-    DRAG-HANDLERS               1703 — 1805 
-    HANDLE-POPUPS (JS)          1807 — 2034 
-    VISIBILITY-TOGGLE           2036 — 2108 
-    SLOT-MANAGER                2110 — 2455 
-    DEV-PANEL (JS)              2457 — 2972 
-    BG-IMAGE                    2974 — 3082 
-    BOOT                        3084 — 3092 
+    LAYERS                       296 — 331  
+    DEV-PANEL (CSS)              332 — 643  
+    NAV-ARROWS                   644 — 664  
+    HANDLE-POPUPS (CSS)          666 — 725  
+    SCENE                        729 — 750  
+    DEV-PANEL (HTML)             752 — 973  
+    STATE                        975 — 1135 
+    CANVAS-SETUP                1137 — 1164 
+    ARC-LUT                     1166 — 1219 
+    RING-DRAW                   1221 — 1383 
+    CLOCK-LABELS                1385 — 1508 
+    BEZIER                      1510 — 1539 
+    NOW-ARC                     1541 — 1596 
+    GUIDE-LINE                  1598 — 1618 
+    HANDLE-POSITIONS            1620 — 1710 
+    CONNECTORS                  1712 — 1779 
+    READOUT                     1781 — 1808 
+    DRAG-HANDLERS               1809 — 1914 
+    HANDLE-POPUPS (JS)          1916 — 2143 
+    VISIBILITY-TOGGLE           2145 — 2217 
+    SLOT-MANAGER                2219 — 2564 
+    DEV-PANEL (JS)              2566 — 3082 
+    BG-IMAGE                    3084 — 3192 
+    BOOT                        3194 — 3202 
   ════════════════════════════════════════════════════════════════════
 -->
 <!--
@@ -51,10 +52,19 @@
     2. Strip the 2-space indent from each script line.
     3. Run it, passing the HTML file path:
          python3 /tmp/rebuild_registry.py /path/to/this-file.html
-    4. The registry block above is rewritten in place. Nothing else
-       in the file is modified.
-    5. Sanity check: grep BEGIN and END marker patterns — every
-       BEGIN should pair with a matching END.
+    4. The registry block above is rewritten in place, in a single pass.
+       Nothing else in the file is modified.
+    5. If any marker is malformed or unpaired the script aborts with a
+       line-numbered error and writes NOTHING — fix the markers and rerun.
+
+  GUARANTEES
+    - Fail-loud: a marker that opens but does not close on its own line
+      (the multi-line-comment trap), a BEGIN with no END, an END with no
+      BEGIN, or a name reopened before it closed — any of these aborts the
+      run with the offending line numbers. A bad marker can no longer
+      silently drop a zone from the registry.
+    - One pass: the numbers written already account for the registry block
+      changing length, so a single run is correct. No run-it-twice dance.
 
   OUTPUT CONTRACT
     - Top-level zones only. Sub-zones (NAME:CHILD, e.g. DEV-PANEL:SLIDERS)
@@ -107,6 +117,7 @@
           lines = f.read().split("\n")
 
       markers = []
+      malformed = []
       style_close = None
       script_open = None
       script_close = None
@@ -116,14 +127,16 @@
           s = line.strip()
 
           # HTML marker line (self-contained single-line comment).
-          # Detected before comment-skipping so we still see it.
-          if s.startswith(BEGIN_HTML) and s.endswith(TRAIL_HTML):
-              name = s[len(BEGIN_HTML):-len(TRAIL_HTML)].strip()
-              markers.append(("BEGIN", name, i))
-              continue
-          if s.startswith(END_HTML) and s.endswith(TRAIL_HTML):
-              name = s[len(END_HTML):-len(TRAIL_HTML)].strip()
-              markers.append(("END", name, i))
+          # Detected before comment-skipping so we still see it. A line
+          # that OPENS a marker but does not close on the same line is
+          # malformed (the multi-line-comment trap), not a normal comment.
+          if s.startswith(BEGIN_HTML) or s.startswith(END_HTML):
+              pre = BEGIN_HTML if s.startswith(BEGIN_HTML) else END_HTML
+              kind = "BEGIN" if pre == BEGIN_HTML else "END"
+              if s.endswith(TRAIL_HTML):
+                  markers.append((kind, s[len(pre):-len(TRAIL_HTML)].strip(), i))
+              else:
+                  malformed.append((i, s))
               continue
 
           # HTML comment state machine (skip non-marker comments).
@@ -138,14 +151,15 @@
                   in_html_comment = False
               continue
 
-          # CSS/JS markers (only outside HTML comments).
-          if s.startswith(BEGIN_CSS) and s.endswith(TRAIL_CSS):
-              name = s[len(BEGIN_CSS):-len(TRAIL_CSS)].strip()
-              markers.append(("BEGIN", name, i))
-              continue
-          if s.startswith(END_CSS) and s.endswith(TRAIL_CSS):
-              name = s[len(END_CSS):-len(TRAIL_CSS)].strip()
-              markers.append(("END", name, i))
+          # CSS/JS markers (only outside HTML comments). Same single-line
+          # rule: an opener that does not close on its own line is malformed.
+          if s.startswith(BEGIN_CSS) or s.startswith(END_CSS):
+              pre = BEGIN_CSS if s.startswith(BEGIN_CSS) else END_CSS
+              kind = "BEGIN" if pre == BEGIN_CSS else "END"
+              if s.endswith(TRAIL_CSS):
+                  markers.append((kind, s[len(pre):-len(TRAIL_CSS)].strip(), i))
+              else:
+                  malformed.append((i, s))
               continue
 
           # Region anchors (only outside HTML comments).
@@ -156,19 +170,44 @@
           if script_close is None and SCRIPT_CLOSE in line:
               script_close = i
 
-      # Pair BEGIN with END. Top-level zones only (no colon).
+      # Pair BEGIN with END. Collect every structural problem instead of
+      # silently dropping markers \u2014 a dropped marker means a zone quietly
+      # vanishes from the registry, which is the exact failure this guard
+      # exists to catch. Nothing is written if any problem is found.
+      problems = []
+      for ln, text in malformed:
+          problems.append("  line {:d}: malformed marker \u2014 must be one"
+                          " self-contained line ending in ' === */' (CSS/JS)"
+                          " or ' === -->' (HTML): {:s}".format(ln, text))
+
       zones, stack = [], {}
       for kind, name, ln in markers:
           if kind == "BEGIN":
+              if name in stack:
+                  problems.append("  line {:d}: BEGIN {:s} reopened before its"
+                                  " END (earlier BEGIN at line {:d})"
+                                  .format(ln, name, stack[name]))
               stack[name] = ln
           else:
               if name in stack:
                   b = stack.pop(name)
                   if ":" not in name:
                       zones.append((name, b, ln))
+              else:
+                  problems.append("  line {:d}: END {:s} has no matching BEGIN"
+                                  .format(ln, name))
+      for name, ln in stack.items():
+          problems.append("  line {:d}: BEGIN {:s} is never closed by an END"
+                          .format(ln, name))
+
+      if problems:
+          raise SystemExit("Registry NOT rebuilt \u2014 fix these markers first:\n"
+                           + "\n".join(sorted(problems)))
+
       zones.sort(key=lambda z: z[1])
 
-      # Four-region classification.
+      # Four-region classification (uses original, pre-shift line numbers \u2014
+      # a uniform shift below does not change which region a marker is in).
       def region_of(b):
           if style_close and b < style_close:
               return "CSS"
@@ -184,12 +223,38 @@
 
       labeled = []
       for n, b, e in zones:
-          if counts[n] > 1:
-              labeled.append((n + " (" + region_of(b) + ")", b, e))
-          else:
-              labeled.append((n, b, e))
+          nm = (n + " (" + region_of(b) + ")") if counts[n] > 1 else n
+          labeled.append((nm, b, e))
 
-      # Build new registry block.
+      # Locate the existing ZONE REGISTRY block so we know how many lines it
+      # currently occupies. It always precedes the REBUILDER block, so the
+      # first <!-- whose 8-line peek contains 'ZONE REGISTRY' and does NOT
+      # contain 'REBUILDER' is the registry.
+      blk_start = blk_end = None
+      for k in range(len(lines)):
+          if lines[k].strip() == HTML_COMMENT_OPEN:
+              peek = "\n".join(lines[k:min(k + 8, len(lines))])
+              if "ZONE REGISTRY" in peek and "REBUILDER" not in peek:
+                  blk_start = k
+                  j = k
+                  while j < len(lines) and HTML_COMMENT_CLOSE not in lines[j]:
+                      j += 1
+                  blk_end = j
+                  break
+      if blk_start is None:
+          raise SystemExit("Existing ZONE REGISTRY block not found.")
+      old_count = blk_end - blk_start + 1
+
+      # One-pass convergence. Rewriting the block changes its length, which
+      # shifts every marker below it \u2014 and the registry is the first block in
+      # the file, so EVERY zone marker sits below it and shifts by the same
+      # delta. Pre-apply that delta so the numbers we write describe the file
+      # AFTER the rewrite, not before. (Without this the first run is stale by
+      # exactly the change in entry count and you have to run it twice.)
+      new_count = 12 + len(labeled)   # 10 header lines + one per zone + 2 footer
+      delta = new_count - old_count
+
+      # Build the new registry block with shifted line numbers.
       bar = "\u2550" * 68
       reg = [HTML_COMMENT_OPEN]
       reg.append("  " + bar)
@@ -202,38 +267,16 @@
       reg.append("  Line numbers are post-marker. Rebuild script lives below this block.")
       reg.append("")
       for name, b, e in labeled:
-          reg.append("    {:<26s} {:>5d} \u2014 {:<5d}".format(name, b, e))
+          reg.append("    {:<26s} {:>5d} \u2014 {:<5d}".format(name, b + delta, e + delta))
       reg.append("  " + bar)
       reg.append(HTML_COMMENT_CLOSE)
-      new_block = "\n".join(reg)
 
-      # Replace the existing ZONE REGISTRY block in place.
-      # The registry block always precedes the REBUILDER block in the file,
-      # so the first <!-- whose 8-line peek contains 'ZONE REGISTRY' and
-      # does NOT contain 'REBUILDER' is the registry.
-      out, i, replaced = [], 0, False
-      while i < len(lines):
-          line = lines[i]
-          if not replaced and line.strip() == HTML_COMMENT_OPEN:
-              peek = "\n".join(lines[i:min(i + 8, len(lines))])
-              if "ZONE REGISTRY" in peek and "REBUILDER" not in peek:
-                  j = i
-                  while j < len(lines) and HTML_COMMENT_CLOSE not in lines[j]:
-                      j += 1
-                  out.extend(new_block.split("\n"))
-                  i = j + 1
-                  replaced = True
-                  continue
-          out.append(line)
-          i += 1
-
-      if not replaced:
-          raise SystemExit("Existing ZONE REGISTRY block not found.")
+      out = lines[:blk_start] + reg + lines[blk_end + 1:]
 
       with open(path, "w") as f:
           f.write("\n".join(out))
 
-      print("Rebuilt registry: {} top-level zones".format(len(labeled)))
+      print("Rebuilt registry: {:d} top-level zones".format(len(labeled)))
 
   if __name__ == "__main__":
       if len(sys.argv) != 2:
