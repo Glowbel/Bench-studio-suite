@@ -2,7 +2,7 @@
 
 # CONSTELLATION
 *Single living doc. Read at start of every Constellation session.*
-*Last updated: May 2026*
+*Last updated: June 2026*
 
 ---
 
@@ -36,7 +36,8 @@ Ideas are minerals. Interaction is pressure. Crystallization is commitment. The 
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~11,353
+lines: ~11,822
+zones: 114 top-level zones | in-file registry + rebuilder (line 2)
 state: mid-build | stable but finding unusual bugs | hardcore audit underway
 phase: 1 shipped | 1.5/2 active (bug fixes + core audit + phase-change rethink)
 external-work: file split in progress (developer friend, testing in Claude artifacts)
@@ -66,6 +67,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-09] fix | zone registry rebuilt + rebuilder hardened (fail-loud on bad markers, single-pass); STAR-BAKE marker repaired | touches: REGISTRY, STAR-BAKE
 [2026-06-08] feat | corona border baked — corona-fx rings rasterized once via generalized bake queue (job carries svg markup); no live feTurbulence left in stars | touches: STAR-BAKE, STAR-RENDERER
 [2026-06-08] feat | resume warming gate — loadSession bakes all present combos (field 384 + atm 1024) behind a brief frozen-field loader, reveals on queue-drain or 8s cap; resumed project opens already baked | touches: STAR-BAKE, LOAD-GATE
 [2026-06-08] fix  | bake flood on big projects — serialized bakes (1 at a time, idle-scheduled, visible-first/warm-last); was main-thread freeze + "loading movement" on maximize | touches: STAR-BAKE

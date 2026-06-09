@@ -2,7 +2,7 @@
 
 # SPATIAL CALENDAR
 *Single living doc. Read at start of every Spatial session.*
-*Last updated: May 2026*
+*Last updated: June 2026*
 
 ---
 
@@ -29,9 +29,9 @@ Spatial is the face of a calendar app — viewer and scheduler in one. It redefi
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~2,765
+lines: ~3,205
 state: working, stable, no mid-build
-zones: 23 top-level zones | in-file registry + rebuilder (line 2)
+zones: 24 top-level zones | in-file registry + rebuilder (line 2)
 phase: 4 shipped | 5 active (events on pipe — design session pending)
 ```
 
@@ -57,6 +57,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-09] fix | registry rebuilt (was ~67 lines stale) + rebuilder hardened (fail-loud, single-pass) | touches: REGISTRY
 [2026-05-19] fix | arc-length LUT — equal visual ring spacing regardless of bezier shape | touches: [pipe], [rings], [clock]
 [2026-05-19] fix | now arc desync — apply slot calibration to arcT in drawNowArc | touches: [now-arc]
 [2026-05-18] ref | zone markers + in-file registry — 23 zones, BEGIN/END pairs throughout | touches: all

@@ -2,7 +2,7 @@
 
 # DECISION WIZARD
 *Single living doc. Read at start of every Wizard session.*
-*Last updated: May 2026*
+*Last updated: June 2026*
 
 ---
 
@@ -29,7 +29,7 @@ The deeper purpose: getting through hard decisions without bypassing the parts t
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~2,173
+lines: ~2,235
 state: Decision Wizard (middle stage) built and stable | parser audit clean
 zones: 21 top-level zones | in-file registry + rebuilder (line 2)
 phase: suite-build (extending forward + backward — design pending for both)
@@ -57,6 +57,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-09] fix | registry rebuilt + rebuilder hardened (fail-loud on bad markers, single-pass) | touches: REGISTRY
 [2026-05-18] ref | zone markers + in-file registry — 21 zones, BEGIN/END pairs throughout | touches: all
 ```
 

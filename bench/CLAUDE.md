@@ -2,7 +2,7 @@
 
 # THE BENCH
 *Single living doc. Read at start of every Bench session.*
-*Last updated: May 2026*
+*Last updated: June 2026*
 
 ---
 
@@ -29,7 +29,8 @@ This is the convergent engine of the suite.
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~7,230
+lines: ~7,385
+zones: 45 top-level zones | in-file registry + rebuilder (line 2)
 phase: 4.5 in-progress (ceremonial node-create modal built; node-system rework underway)
 ```
 
@@ -56,6 +57,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[jun-09] fix | registry rebuilt (was ~696 lines stale) + rebuilder hardened (fail-loud on bad markers, single-pass) | touches: REGISTRY
 [may-20] feat | Node-create modal v2 — orb particle system (halo/aura/core/ring-out/6 drifting particles), blue immersion, "focus" label, input box-sizing fix, comma-scroll Filigree glyphs for all 4 types | touches: NODE-CREATE-MODAL, NODE_TYPES, CSS
 [may-20] feat | Ceremonial node-create modal (Filigree) — hero orb (triple-ring + heraldic diamonds + arcane pulse + smoke), selector strip, color-immersion, per-type glyphs, in-place type select | touches: NODE-CREATE-MODAL, NODE_TYPES, CSS, EVENTS
 [may-20] data | NODE_TYPES: debrief→note, hybrid Filigree tints (research=violet, session=teal, immersion=jade, note=gold) + one-line descriptions | touches: CONSTANTS
