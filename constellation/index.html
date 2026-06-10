@@ -5355,8 +5355,13 @@ function drawTethers() {
 /* === BEGIN ANIMATION-LOOP === */
 // ── ANIMATION LOOP ────────────────────────────────────────
 function loop() {
-  drawTethers();
-  updateBubblePhysics();
+  // Frozen field (compass, load gate): nothing moves, so skip the full-canvas
+  // tether redraw + physics — the load gate's fast bake drain depends on the
+  // main thread actually being free. resumeField repaints tethers once.
+  if (!state.fieldFrozen) {
+    drawTethers();
+    updateBubblePhysics();
+  }
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
@@ -5989,6 +5994,10 @@ var _bakeQ = [];
 var _bakeQLow = [];
 var _bakeActive = false;
 var _drainScheduled = false;
+// Set by the load gate: the warming screen owns the main thread, so bakes
+// chain back-to-back (setTimeout 0) instead of waiting for idle slots —
+// idle-paced bakes blew the gate's 8s cap on iPad and opened half-baked.
+var _bakeFastDrain = false;
 function _enqueueBake(job, low) {
   (low ? _bakeQLow : _bakeQ).push(job);
   _scheduleDrain();
@@ -5998,7 +6007,8 @@ function _scheduleDrain() {
   if (!_bakeQ.length && !_bakeQLow.length) return;
   _drainScheduled = true;
   var kick = function () { _drainScheduled = false; _drainBake(); };
-  if (typeof requestIdleCallback === 'function') { requestIdleCallback(kick, { timeout: 1000 }); }
+  if (_bakeFastDrain) { setTimeout(kick, 0); }
+  else if (typeof requestIdleCallback === 'function') { requestIdleCallback(kick, { timeout: 1000 }); }
   else { setTimeout(kick, 16); }
 }
 function _drainBake() {
@@ -6136,6 +6146,12 @@ function runLoadGate(maxWaitMs) {
   if (fill) fill.style.width = '0%';
   gate.className = '';
   if (typeof freezeField === 'function') freezeField();
+  // The gate owns the main thread: chain bakes back-to-back. A drain kick
+  // scheduled earlier (idle, up to 1s out) may already be pending, so
+  // re-kick immediately — double kicks are safe (_bakeActive guards).
+  _bakeFastDrain = true;
+  _drainScheduled = false;
+  if (!_bakeActive) _drainBake();
   var start = Date.now();
   var cap = maxWaitMs || 8000;
   var poll = window.setInterval(function () {
@@ -6144,6 +6160,8 @@ function runLoadGate(maxWaitMs) {
     if (fill) fill.style.width = Math.round((done / total) * 100) + '%';
     if (_bakesQuiet() || (Date.now() - start) >= cap) {
       window.clearInterval(poll);
+      // leftover bakes (cap hit) go back to idle pacing behind the live field
+      _bakeFastDrain = false;
       if (fill) fill.style.width = '100%';
       window.setTimeout(function () {
         gate.className = 'hidden';
@@ -6383,6 +6401,9 @@ function freezeField() {
 function resumeField() {
   document.body.classList.remove('field-frozen');
   state.fieldFrozen = false;
+  // links can change while frozen (compass west breaks them) and the loop
+  // skips tether redraws during the freeze — repaint once on resume
+  drawTethers();
 }
 // Single drag-end path: null the drag flag AND drop the body class that pauses
 // field-star animations, so a missed end path can never leave stars frozen.
