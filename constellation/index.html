@@ -5409,6 +5409,11 @@ function updateBubblePhysics() {
     // ── ORBITAL MOON ──
     if (b.orbitOf) {
       var planet = getBubbleById(b.orbitOf);
+      // Guard: a bubble must never orbit itself. A self-referential orbitOf turns
+      // line "b.x = planet.x + cos·r" into "b.x = b.x + cos·r" — position integrates
+      // every frame and the whole system runs away off-screen. Release in place
+      // (flash-free) so any corrupt saved session self-heals on load.
+      if (planet && planet.id === b.id) planet = null;
       if (planet) {
         // Single source of truth: state.orbitSpeed × per-tier multiplier.
         // Tier multipliers alternate sign so adjacent tiers counter-rotate.
@@ -7390,6 +7395,7 @@ function commitLink(sourceId, targetId, linkType) {
         if (!partnerId) continue;
         var partner = getBubbleById(partnerId);
         if (!partner || partner.orbitOf) continue; // already orbiting something
+        if (partner.id === planet.id) continue; // never let the planet orbit itself
         var partnerAngle = initAngle + Math.PI;
         var partnerOrbitR = Math.max(orbitR, bubbleRadius(planet) + bubbleRadius(partner) + 20);
         partner.orbitOf     = planet.id;
@@ -7430,7 +7436,7 @@ function commitLink(sourceId, targetId, linkType) {
               joinerMutualCount++;
             }
           }
-          if (joinerMutualCount < 2) {
+          if (joinerMutualCount < 2 && joiner.id !== rootPlanetId) {
             var jdx = joiner.x - rootPlanet.x;
             var jdy = joiner.y - rootPlanet.y;
             var jdist = Math.sqrt(jdx*jdx + jdy*jdy) || bubbleRadius(rootPlanet) * 2.5;

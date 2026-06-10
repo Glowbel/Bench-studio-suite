@@ -67,6 +67,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-10] fix | orbit runaway killed — self-referential orbitOf (planet mutual-linked to its own moon) made physics integrate b.x=b.x+cos·r every frame → whole system flew off-screen; guarded physics tick (release in place if planet===self) + both link-creation sites | touches: [physics], [bubbles]
 [2026-06-09] fix | zone registry rebuilt + rebuilder hardened (fail-loud on bad markers, single-pass); STAR-BAKE marker repaired | touches: REGISTRY, STAR-BAKE
 [2026-06-08] feat | corona border baked — corona-fx rings rasterized once via generalized bake queue (job carries svg markup); no live feTurbulence left in stars | touches: STAR-BAKE, STAR-RENDERER
 [2026-06-08] feat | resume warming gate — loadSession bakes all present combos (field 384 + atm 1024) behind a brief frozen-field loader, reveals on queue-drain or 8s cap; resumed project opens already baked | touches: STAR-BAKE, LOAD-GATE
@@ -243,7 +244,23 @@ file split → external work in progress | don't restructure file inline
 
 ### Past — do not repeat
 
-*(none yet at the Constellation level — the audit may surface root causes that get logged here as they're found)*
+```
+self-orbit-runaway (found Jun 2026 audit): a bubble could end up with orbitOf === its
+  own id. The physics integrator (b.x = planet.x + cos·r) then became b.x = b.x + cos·r,
+  integrating its own position every frame — the whole star system rocketed off-screen,
+  sometimes swooshing back through the field before diverging. Grabbing the bubble masked
+  it (dragging skips physics), which is why it was hard to reproduce.
+  root: not a direct self-link (commitLink blocks targetId===sourceId), but two indirect
+    paths where a planet mutual-linked to its OWN moon resolved to itself as the "joiner"/
+    induced-partner → planet.orbitOf = planet.id.
+  fix: (1) durable guard in physics tick — if planet===self, release in place (flash-free),
+    which self-heals any already-saved corrupt session on load; (2) block the assignment at
+    both creation sites (mutual-join joiner.id!==rootPlanetId; planetary induced-partner
+    partner.id!==planet.id).
+  rule: orbitOf must NEVER equal self. Nested moons-of-moons ARE legit (orbitDepth walks
+    chains) — only the self-reference is illegal. Any new orbitOf assignment must exclude
+    the bubble's own id.
+```
 
 ### Approaching — warn on approach
 
