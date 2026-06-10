@@ -176,9 +176,9 @@
       # exists to catch. Nothing is written if any problem is found.
       problems = []
       for ln, text in malformed:
-          problems.append("  line {:d}: malformed marker \u2014 must be one"
+          problems.append(("  line {:d}: malformed marker \u2014 must be one"
                           " self-contained line ending in ' === */' (CSS/JS)"
-                          " or ' === -->' (HTML): {:s}".format(ln, text))
+                          " or ' === " + HTML_COMMENT_CLOSE + "' (HTML): {:s}").format(ln, text))
 
       zones, stack = [], {}
       for kind, name, ln in markers:
