@@ -36,8 +36,8 @@ Ideas are minerals. Interaction is pressure. Crystallization is commitment. The 
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~11,822
-zones: 114 top-level zones | in-file registry + rebuilder (line 2)
+lines: ~11,759
+zones: 110 top-level zones | in-file registry + rebuilder (line 2)
 state: mid-build | stable but finding unusual bugs | hardcore audit underway
 phase: 1 shipped | 1.5/2 active (bug fixes + core audit + phase-change rethink)
 external-work: file split in progress (developer friend, testing in Claude artifacts)
@@ -67,8 +67,10 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-10] rm   | release-zone drop strip — CSS+HTML+JS+vis all out; compass west is the only link-break path | touches: DRAG-HANDLERS, COMPASS
+[2026-06-10] fix | mutual ring resizes with mass — updateBubbleVisualMass syncs ring to bubble edge | touches: BUBBLE-DATA
 [2026-06-10] fix | orbit cycles — commitLink cycle guard ×3 sites + load-time heal | touches: PHYSICS, CONTACT-DWELL-LINK, PERSISTENCE
-[2026-06-10] fix | moon release — mouse moon follows pointer, touch shows zone, induced sweep | touches: DRAG-HANDLERS, INDUCED-ORBIT-CLEANUP
+[2026-06-10] fix | moon release — mouse moon follows pointer, induced sweep | touches: DRAG-HANDLERS, INDUCED-ORBIT-CLEANUP
 [2026-06-10] fix | drift-speed restore 3× too fast; bloom target-gone state clear; mass-minus autosave | touches: PERSISTENCE, GRAVITY-SUBMENU
 [2026-06-09] fix | zone registry rebuilt + rebuilder hardened (fail-loud on bad markers, single-pass); STAR-BAKE marker repaired | touches: REGISTRY, STAR-BAKE
 [2026-06-08] feat | corona border baked — corona-fx rings rasterized once via generalized bake queue (job carries svg markup); no live feTurbulence left in stars | touches: STAR-BAKE, STAR-RENDERER
