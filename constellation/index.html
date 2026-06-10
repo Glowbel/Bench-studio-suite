@@ -3900,6 +3900,16 @@ body.zoom-open       .bubble .bubble-star,
 body.zoom-open       .bubble .bubble-star * {
   animation-play-state: paused !important;
 }
+/* Camera-move pause: while the zoom camera flies (in or out), freeze the
+   interior star's gas/corona/core animations too. WebKit doesn't composite
+   transforms on SVG inner elements — every animation frame repaints the
+   1024px star on the main thread exactly while the stage scale runs (the
+   iPad zoom lag). A static star rides the composited stage transform for
+   free; its motion resumes the moment the camera settles. */
+body.zoom-animating #zoom-zone3 .bubble-star,
+body.zoom-animating #zoom-zone3 .bubble-star * {
+  animation-play-state: paused !important;
+}
 @media (prefers-reduced-motion: reduce) {
   .bubble-star,
   .bubble-star * { animation-play-state: paused !important; }
@@ -8144,6 +8154,7 @@ function openZoom(bubbleId) {
   var intDelay = Math.round(dur * 0.76);
   var intDur   = Math.round(dur * 0.45);
   state.zoomAnimating      = true;
+  document.body.classList.add('zoom-animating');
   state.zoomTimerInterior  = window.setTimeout(function() {
     zoomZone2.style.transition     = 'opacity ' + intDur + 'ms ' + easing;
     zoomZone2.style.opacity        = '1';
@@ -8153,6 +8164,7 @@ function openZoom(bubbleId) {
 
   state.zoomTimerDone = window.setTimeout(function() {
     state.zoomAnimating = false;
+    document.body.classList.remove('zoom-animating');
     zoomZone1Wrap.classList.add('interactive');
     // zone3 boost: now that the camera is settled, animate the star out to
     // its maximized scale so the corners stay anchored to the page corners.
@@ -8350,6 +8362,7 @@ zoomFullToggle.addEventListener('click', function(e) {
 function closeZoom() {
   if (!state.zoomTargetId || state.zoomAnimating) return;
   state.zoomAnimating = true;
+  document.body.classList.add('zoom-animating');
 
   var b = getBubbleById(state.zoomTargetId);
 
@@ -8379,6 +8392,7 @@ function closeZoom() {
     state.zoomTargetId  = null;
     window.setTimeout(function() {
       state.zoomAnimating = false;
+      document.body.classList.remove('zoom-animating');
       zoomOverlay.classList.remove('active');
       zoomStage.style.transition = 'none';
       zoomStage.style.transform  = 'translate(0,0) scale(1)';
@@ -8433,6 +8447,7 @@ function closeZoom() {
 
   window.setTimeout(function() {
     state.zoomAnimating = false;
+    document.body.classList.remove('zoom-animating');
     zoomOverlay.classList.remove('active');
     zoomStage.style.transition = 'none';
     zoomStage.style.transform  = 'translate(0,0) scale(1)';
@@ -10399,6 +10414,7 @@ function clearField() {
   if (state.zoomTimerDone)     { clearTimeout(state.zoomTimerDone);     state.zoomTimerDone     = null; }
   state.zoomTargetId    = null;
   state.zoomAnimating   = false;
+  document.body.classList.remove('zoom-animating');
   state.previewTargetId = null;
   if (typeof zoomOverlay    !== 'undefined' && zoomOverlay)    zoomOverlay.classList.remove('active');
   if (typeof previewOverlay !== 'undefined' && previewOverlay) previewOverlay.classList.remove('active');

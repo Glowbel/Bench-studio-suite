@@ -67,6 +67,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-10] fix | iPad zoom-camera jank — zone3 star anims pause while camera flies (zoom-animating class) | touches: ZOOM, STAR-RENDERER
 [2026-06-10] fix | iPad laggy resume — load gate fast-drains bake queue; loop idles while frozen | touches: STAR-BAKE, LOAD-GATE, ANIMATION-LOOP
 [2026-06-10] rm   | release-zone drop strip — CSS+HTML+JS+vis all out; compass west is the only link-break path | touches: DRAG-HANDLERS, COMPASS
 [2026-06-10] fix | mutual ring resizes with mass — updateBubbleVisualMass syncs ring to bubble edge | touches: BUBBLE-DATA

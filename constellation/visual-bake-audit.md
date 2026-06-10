@@ -61,9 +61,14 @@ WebKit does not composite transforms on SVG inner elements (Blink does)
 why iPad-only: Chrome/Android composites these → free | WebKit repaints
 
 [fix — two stages]
-quick test (5 min, proves diagnosis): pause zone3 .gas-anim while
-  state.zoomAnimating, resume on settle. if camera smooths → confirmed.
-real fix: restructure baked layers as stacked HTML <img> elements
+quick stage (SHIPPED 2026-06-10): zone3 .bubble-star anims pause under
+  body.zoom-animating — class set when either camera move starts (openZoom
+  main path, closeZoom), removed on settle (+ clearField safety). reduced-
+  motion open path skips the class (media query already pauses everything).
+  if iPad zoom is now smooth → diagnosis confirmed; HTML restructure below
+  becomes optional polish (star motion during the fly itself stays paused).
+real fix (NOT YET — do only if lag persists while zoomed/reading inside):
+  restructure baked layers as stacked HTML <img> elements
   (wrapper div: clip-path circle | img: mix-blend-mode screen + CSS anim)
   HTML transforms ARE composited on WebKit → identical look, GPU-cheap
   applies to field stars too (384px × N bubbles repainting on iPad)
