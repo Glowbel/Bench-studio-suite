@@ -51,6 +51,32 @@ note: requestIdleCallback exists only iPadOS 18+ — older iPads use the
 ### 2. Zoom star animations repaint on WebKit instead of compositing
 
 ```
+[update 2026-06-10 — field report after steps 1+2 shipped]
+iPad symptom sharpened: zoom freezes HARD ~2s then SKIPS the camera animation
+(both directions). field interaction fine. that profile = main-thread BLOCK,
+not slow frames → renderZoomAtmosphere emitted LIVE 1024px feTurbulence
+(textures not ready at tap — iPad raster too slow for the gate cap, or bakes
+failing silently on iOS). live raster at atmosphere size = the block; the CSS
+transition clock keeps running while blocked → animation skips.
+
+[fix — SHIPPED 2026-06-10] zoom NEVER renders live feTurbulence:
+renderZoomAtmosphere picks best fully-baked tier — 1024 sharp, else 384
+(slightly soft, instant — field stars already baked it), else gas-less —
+via _texReadyAll (null = failed bake ≠ ready). _starSvgNoLive makes
+buildStarSvg emit nothing for unbaked layers in zone3. texSize in zone3
+fingerprint; waiter re-renders + upgrades in place when 1024 lands;
+missing 1024s re-enqueued (warm + corona) on every degraded render.
+
+[diagnostic key — read Jordan's next iPad report]
+"zoom smooth, slightly soft first time, sharpens" → 1024 bakes slow but OK
+  → consider 768px iPad textures + longer gate cap (cosmetic tuning)
+"zoom smooth but star has NO gas clouds inside" → bakes FAIL on iOS
+  → debug _startStarBake on iPad (toBlob? svg-image draw? canvas limits)
+"still freezes 2s" → block is NOT the star → next suspect: zoomZone1
+  backdrop-filter blur(7px) snapshot at overlay activation
+```
+
+```
 [cause]
 #zoom-zone3 star deliberately NOT in the pause scope ("keeps living inside")
 gas rotation/breathe animate <g class="gas-anim"> INSIDE the SVG (CSS

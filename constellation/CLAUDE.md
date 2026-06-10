@@ -67,6 +67,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-10] fix | iPad 2s zoom freeze — zoom never renders live feTurbulence; baked-tier fallback 1024→384 | touches: ZOOM, STAR-BAKE
 [2026-06-10] fix | iPad zoom-camera jank — zone3 star anims pause while camera flies (zoom-animating class) | touches: ZOOM, STAR-RENDERER
 [2026-06-10] fix | iPad laggy resume — load gate fast-drains bake queue; loop idles while frozen | touches: STAR-BAKE, LOAD-GATE, ANIMATION-LOOP
 [2026-06-10] rm   | release-zone drop strip — CSS+HTML+JS+vis all out; compass west is the only link-break path | touches: DRAG-HANDLERS, COMPASS

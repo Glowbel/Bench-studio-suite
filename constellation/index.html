@@ -5921,6 +5921,10 @@ var STAR_TEX_PENDING = {};    // key -> true while a bake is in flight
 var _texWaiters = [];         // one-shot re-render callbacks, deduped by id
 var _filterMarkupCache = {};
 var _starSvgUsedLive = false; // set by buildStarSvg when any layer fell back to live
+var _starSvgNoLive = false;   // zone3 render: unbaked layers emit NOTHING instead of
+                              // live feTurbulence — a live raster at atmosphere size
+                              // blocks the main thread for seconds on iPad and the
+                              // zoom camera animation gets skipped entirely
 
 var _starBakeOK = (function () {
   try {
@@ -6065,6 +6069,17 @@ function getCoronaTexture(paletteId, haloColor, size, lowPri) {
     _enqueueBake({ key: key, size: size, svg: _coronaSvgMarkup(size, haloColor) }, lowPri);
   }
   return null;
+}
+
+// Every texture buildStarSvg needs at this size is baked AND usable — a
+// failed bake caches null and must not count as ready. Used by the zoom
+// renderer to pick the best fully-baked tier instead of going live.
+function _texReadyAll(cfg, pal, size) {
+  for (var li = 0; li < 4; li++) {
+    if (!STAR_TEX[cfg.movement + '|' + pal.id + '|' + li + '|' + size]) return false;
+  }
+  if (cfg.border === 'corona' && !STAR_TEX['corona|' + pal.id + '|' + size]) return false;
+  return true;
 }
 
 // Proactively bake the atmosphere-size (zoom) textures for combos already on the
@@ -6230,11 +6245,13 @@ function buildStarSvg(uid, palette, movement, border, profile, texSize) {
     } else {
       // live fallback (texture not ready / bake unsupported) — current behavior
       _starSvgUsedLive = true;
-      s += '<circle cx="100" cy="100" r="94"';
-      s += ' fill="url(#bs-grad-' + uid + '-' + li + ')"';
-      s += ' filter="url(#' + preset.filters[li] + ')"';
-      s += ' opacity="' + profile.layerOp[li] + '"';
-      s += ' style="mix-blend-mode:screen"/>';
+      if (!_starSvgNoLive) {
+        s += '<circle cx="100" cy="100" r="94"';
+        s += ' fill="url(#bs-grad-' + uid + '-' + li + ')"';
+        s += ' filter="url(#' + preset.filters[li] + ')"';
+        s += ' opacity="' + profile.layerOp[li] + '"';
+        s += ' style="mix-blend-mode:screen"/>';
+      }
     }
     s += '</g></g>';
   }
@@ -6282,8 +6299,10 @@ function buildStarSvg(uid, palette, movement, border, profile, texSize) {
       s += '<image x="0" y="0" width="200" height="200" href="' + coronaTex + '" preserveAspectRatio="xMidYMid meet"/>';
     } else {
       _starSvgUsedLive = true;
-      s += '<circle cx="100" cy="100" r="96" fill="none" stroke="white" stroke-width="2.2" filter="url(#corona-fx)" opacity="0.95"/>';
-      s += '<circle cx="100" cy="100" r="99" fill="none" stroke="' + haloColor + '" stroke-width="3"   filter="url(#corona-fx)" opacity="0.7"/>';
+      if (!_starSvgNoLive) {
+        s += '<circle cx="100" cy="100" r="96" fill="none" stroke="white" stroke-width="2.2" filter="url(#corona-fx)" opacity="0.95"/>';
+        s += '<circle cx="100" cy="100" r="99" fill="none" stroke="' + haloColor + '" stroke-width="3"   filter="url(#corona-fx)" opacity="0.7"/>';
+      }
     }
     s += '</g>';
     s += '<circle cx="100" cy="100" r="94" fill="none" stroke="' + haloColor + '" stroke-width="0.4" opacity="0.6"/>';
@@ -7969,14 +7988,26 @@ function renderZoomAtmosphere(b, atmosDiam) {
   starWrap.style.setProperty('--spd', '0.6');
   starWrap.style.filter = 'brightness(' + profile.bloom.toFixed(3) + ') saturate(' + profile.sat.toFixed(3) + ')';
 
-  var fp = cfg.movement + '|' + cfg.palette + '|' + cfg.border;
+  // The zoom NEVER renders live feTurbulence: a live raster at atmosphere
+  // size blocked iPads for ~2s and the camera animation got skipped. Render
+  // the best fully-baked tier — 1024 sharp, else 384 (slightly soft, instant),
+  // else gas-less — and upgrade in place via the waiter when 1024 lands.
+  var texSize = _texReadyAll(cfg, pal, 1024) ? 1024 : 384;
+  if (texSize !== 1024) {
+    // make sure the sharp tier is actually on its way (deduped, low-pri)
+    warmStarTextures(cfg.movement, cfg.palette, 1024);
+    if (cfg.border === 'corona') getCoronaTexture(cfg.palette, pal.halo || pal.colors[0], 1024, true);
+  }
+  var fp = cfg.movement + '|' + cfg.palette + '|' + cfg.border + '|' + texSize;
   if (starWrap.getAttribute('data-fp') !== fp) {
     starWrap.setAttribute('data-fp', fp);
     var uid    = 'z3-' + b.id;
     var sphere = starWrap.querySelector('.sphere');
+    _starSvgNoLive = true;
     sphere.innerHTML = '<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">' +
-      buildStarSvg(uid, pal, cfg.movement, cfg.border, profile, 1024) + '</svg>';
-    if (_starSvgUsedLive) {
+      buildStarSvg(uid, pal, cfg.movement, cfg.border, profile, texSize) + '</svg>';
+    _starSvgNoLive = false;
+    if (_starSvgUsedLive || texSize !== 1024) {
       _addTexWaiter('z3-' + b.id, function () {
         var sw = zoomZone3.querySelector('.bubble-star');
         if (sw) sw.setAttribute('data-fp', '');
