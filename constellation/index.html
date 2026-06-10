@@ -7998,6 +7998,8 @@ function renderZoomAtmosphere(b, atmosDiam) {
     warmStarTextures(cfg.movement, cfg.palette, 1024);
     if (cfg.border === 'corona') getCoronaTexture(cfg.palette, pal.halo || pal.colors[0], 1024, true);
   }
+  DIAG.tier = String(texSize); // TEMP DIAG
+  DIAG.sampleKey = cfg.movement + '|' + cfg.palette + '|0|' + texSize; // TEMP DIAG
   var fp = cfg.movement + '|' + cfg.palette + '|' + cfg.border + '|' + texSize;
   if (starWrap.getAttribute('data-fp') !== fp) {
     starWrap.setAttribute('data-fp', fp);
@@ -8007,6 +8009,7 @@ function renderZoomAtmosphere(b, atmosDiam) {
     sphere.innerHTML = '<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">' +
       buildStarSvg(uid, pal, cfg.movement, cfg.border, profile, texSize) + '</svg>';
     _starSvgNoLive = false;
+    DIAG.miss = _starSvgUsedLive ? '/miss' : ''; // TEMP DIAG
     if (_starSvgUsedLive || texSize !== 1024) {
       _addTexWaiter('z3-' + b.id, function () {
         var sw = zoomZone3.querySelector('.bubble-star');
@@ -8037,6 +8040,71 @@ function applyZoomPageStyle(b, isFull, geom) {
   zoomZone1Halo.style.background  = 'radial-gradient(ellipse 72% 66% at 50% 48%, rgba(252,250,246,' + haloAlpha + ') 0%, rgba(252,250,246,0) 72%)';
   zoomZone1Halo.style.filter      = 'blur(' + haloBlur.toFixed(1) + 'px)';
 }
+
+// ── TEMP DIAG — remove after iPad zoom diagnosis ───────────
+// One-line on-screen readout after each zoom: longest main-thread block
+// during open/close (rAF gap), which texture tier the interior star used,
+// bake cache health, and whether a sampled baked texture has real pixels.
+// A "blank bake" (iOS bakes an empty image without erroring) is the one
+// failure the ready-checks can't see — the gas % exposes it.
+var DIAG = { open: 0, close: 0, tier: '-', miss: '', sampleKey: '', ok: 0, fail: 0, gas: '?', el: null, hideT: null };
+function _diagNow() { return (window.performance && performance.now) ? performance.now() : Date.now(); }
+function _diagWatch(slot, durMs) {
+  DIAG[slot] = 0;
+  var last = _diagNow();
+  var stopAt = last + durMs;
+  function step() {
+    var now = _diagNow();
+    var gap = now - last;
+    if (gap > DIAG[slot]) DIAG[slot] = gap;
+    last = now;
+    if (now >= stopAt) { _diagSample(); }
+    else { requestAnimationFrame(step); }
+  }
+  requestAnimationFrame(step);
+}
+function _diagSample() {
+  var ok = 0, fail = 0;
+  var keys = Object.keys(STAR_TEX);
+  for (var i = 0; i < keys.length; i++) {
+    if (STAR_TEX[keys[i]]) { ok++; } else { fail++; }
+  }
+  DIAG.ok = ok; DIAG.fail = fail;
+  var url = DIAG.sampleKey ? STAR_TEX[DIAG.sampleKey] : null;
+  if (!url) { DIAG.gas = 'n/a'; _diagShow(); return; }
+  var img = new Image();
+  img.onload = function () {
+    try {
+      var cv = document.createElement('canvas');
+      cv.width = 32; cv.height = 32;
+      var c2 = cv.getContext('2d');
+      c2.drawImage(img, 0, 0, 32, 32);
+      var d = c2.getImageData(0, 0, 32, 32).data;
+      var lit = 0;
+      for (var p = 3; p < d.length; p += 4) { if (d[p] > 8) lit++; }
+      DIAG.gas = Math.round((lit / 1024) * 100) + '%';
+    } catch (e) { DIAG.gas = 'err'; }
+    _diagShow();
+  };
+  img.onerror = function () { DIAG.gas = 'load-err'; _diagShow(); };
+  img.src = url;
+}
+function _diagShow() {
+  if (!DIAG.el) {
+    DIAG.el = document.createElement('div');
+    DIAG.el.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:9999;' +
+      'font:11px/1.5 monospace;color:#9fd8ff;background:rgba(4,6,18,0.82);' +
+      'padding:4px 8px;border-radius:6px;pointer-events:none;white-space:nowrap;';
+    document.body.appendChild(DIAG.el);
+  }
+  DIAG.el.textContent = 'diag · open ' + Math.round(DIAG.open) + 'ms · close ' +
+    Math.round(DIAG.close) + 'ms · tier ' + DIAG.tier + DIAG.miss +
+    ' · tex ' + DIAG.ok + 'ok/' + DIAG.fail + 'fail · gas ' + DIAG.gas;
+  DIAG.el.style.display = 'block';
+  if (DIAG.hideT) { window.clearTimeout(DIAG.hideT); }
+  DIAG.hideT = window.setTimeout(function () { DIAG.el.style.display = 'none'; }, 12000);
+}
+// ── END TEMP DIAG ──────────────────────────────────────────
 
 // applyZoomZone1Size: resize the page container (animated for full/framed toggle)
 function applyZoomZone1Size(geom, animated) {
@@ -8076,6 +8144,7 @@ function applyZoomFull(b, isFull, animated) {
 function openZoom(bubbleId) {
   var b = getBubbleById(bubbleId);
   if (!b || state.zoomAnimating) return;
+  _diagWatch('open', 2600); // TEMP DIAG
   // One transient overlay at a time — a compass left open on another bubble
   // would otherwise fire its action on the wrong star on the next finger-lift.
   if (state.activeCompassId !== null) closeCompass();
@@ -8392,6 +8461,7 @@ zoomFullToggle.addEventListener('click', function(e) {
 
 function closeZoom() {
   if (!state.zoomTargetId || state.zoomAnimating) return;
+  _diagWatch('close', 2600); // TEMP DIAG
   state.zoomAnimating = true;
   document.body.classList.add('zoom-animating');
 

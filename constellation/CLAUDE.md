@@ -67,6 +67,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-10] feat | TEMP zoom diag readout — on-screen block-ms/tier/bake-health line; REMOVE after iPad diagnosis | touches: ZOOM
 [2026-06-10] fix | iPad 2s zoom freeze — zoom never renders live feTurbulence; baked-tier fallback 1024→384 | touches: ZOOM, STAR-BAKE
 [2026-06-10] fix | iPad zoom-camera jank — zone3 star anims pause while camera flies (zoom-animating class) | touches: ZOOM, STAR-RENDERER
 [2026-06-10] fix | iPad laggy resume — load gate fast-drains bake queue; loop idles while frozen | touches: STAR-BAKE, LOAD-GATE, ANIMATION-LOOP
