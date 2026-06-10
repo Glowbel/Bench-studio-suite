@@ -67,6 +67,9 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-10] fix | orbit cycles — commitLink cycle guard ×3 sites + load-time heal | touches: PHYSICS, CONTACT-DWELL-LINK, PERSISTENCE
+[2026-06-10] fix | moon release — mouse moon follows pointer, touch shows zone, induced sweep | touches: DRAG-HANDLERS, INDUCED-ORBIT-CLEANUP
+[2026-06-10] fix | drift-speed restore 3× too fast; bloom target-gone state clear; mass-minus autosave | touches: PERSISTENCE, GRAVITY-SUBMENU
 [2026-06-09] fix | zone registry rebuilt + rebuilder hardened (fail-loud on bad markers, single-pass); STAR-BAKE marker repaired | touches: REGISTRY, STAR-BAKE
 [2026-06-08] feat | corona border baked — corona-fx rings rasterized once via generalized bake queue (job carries svg markup); no live feTurbulence left in stars | touches: STAR-BAKE, STAR-RENDERER
 [2026-06-08] feat | resume warming gate — loadSession bakes all present combos (field 384 + atm 1024) behind a brief frozen-field loader, reveals on queue-drain or 8s cap; resumed project opens already baked | touches: STAR-BAKE, LOAD-GATE
@@ -78,12 +81,6 @@ phase milestone → MASTER RECORD entry
 [2026-06-08] feat | starfield swap — CSS twinkle dots replace canvas drift field; +density slider 0.5-2.5× | touches: AMBIENT-STARS, SETTINGS-PANEL, PERSISTENCE
 [2026-06-08] ref  | zoom interior settings pruned — baked 5 constants (anchor/atm-opacity/sharp/pullback/melt), +zoom-out-speed, removed dead vignette (invalid gradient %) | touches: ZOOM, SETTINGS-PANEL, PERSISTENCE
 [2026-06-06] fix  | bg star lag — pause field gas-anims on drag/zoom/compass/dial + reduced-motion | touches: BUBBLES, STAR-SYSTEM, ZOOM
-[2026-06-03] fix  | star dial center — scale 1.0→1.6; transform centering; mass tab parity | touches: COMPASS, VISUAL-SETTINGS-STATE
-[2026-06-03] fix  | bubble-star body missing — renderBubbleStar moved after appendChild so getElementById finds el | touches: BUBBLES
-[2026-06-03] fix  | swirl canvas bleed removed; paintCrystalSwirl on-demand; starDefaults moved to VISUAL-SETTINGS-STATE; dial 320→420px full-size preview | touches: BUBBLES, CRYSTAL-SWIRL, VISUAL-SETTINGS-STATE, STAR-DIAL
-[2026-06-03] feat | gaseous-star system — SVG renderer replaces swirl canvas; 8 movements × 8 palettes × 5 edges | touches: BUBBLES, COMPASS, PERSISTENCE, VISUAL-SETTINGS-STATE
-[2026-06-03] fix  | mass scale extended 0-3 → 0-10; bubbleRadius normalized; --bubble-mass-t CSS var added | touches: BUBBLE-DATA, BUBBLES
-[2026-06-03] feat | per-bubble star dial (compass customize); global modal in visual settings; override confirm | touches: COMPASS, SETTINGS-PANEL
 ```
 
 ---
@@ -118,6 +115,9 @@ two-pass: free bubbles processed first, then moons
 global orbit speed | tier-based multipliers
 no DOM rebuilds during physics tick | in-place updates only
 flash-free principle is locked
+orbit chains must be acyclic — EVERY orbitOf assignment goes through
+  orbitChainContains() guard (commitLink ×3 sites) | loadSession heals
+  cycled saves | a cycle compounds positions per frame → runaway (Jun 2026 audit)
 
 [persistence] (three-layer)
 localStorage: primary, fast, immediate writes
