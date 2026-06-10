@@ -3783,6 +3783,13 @@
   filter: blur(6px);
   pointer-events: none;
 }
+/* zone3 (zoom interior) renders the star at near-screen size: there the
+   halo/aura runtime blurs are under 1% of radius — invisible — but the
+   ~2000px filter raster stalls older iPads ~2s at open AND teardown
+   (measured, diag 2026-06-10). The gradients are already soft; kill the
+   filters at zoom scale only. Field stars keep theirs (small + visible). */
+#zoom-zone3 .bubble-star .halo { filter: none; }
+#zoom-zone3 .bubble-star .aura { filter: none; }
 .bubble-star .sphere { width: 100%; height: 100%; position: relative; }
 .bubble-star .sphere svg { width: 100%; height: 100%; overflow: visible; display: block; }
 .bubble-star .gas-layer,
@@ -8032,13 +8039,18 @@ function applyZoomPageStyle(b, isFull, geom) {
   var pa = 'rgba(252,250,246,' + alpha + ')';
   var pt = 'rgba(252,250,246,0)';
   zoomZone1.style.background      = 'radial-gradient(ellipse ' + ex + '% ' + ey + '% at 50% ' + pcy + '%, ' + pa + ' 0%, ' + pa + ' ' + fill + '%, ' + pt + ' 100%)';
-  zoomZone1.style.backdropFilter  = 'blur(7px) saturate(116%)';
-  zoomZone1.style.webkitBackdropFilter = 'blur(7px) saturate(116%)';
+  // backdrop-filter removed: iOS snapshots + re-filters the whole region
+  // behind the page at open AND teardown — part of the measured ~2s iPad
+  // stall (diag 2026-06-10). The page interior is high-alpha already;
+  // the feathered edge reads nearly the same without it.
+  zoomZone1.style.backdropFilter  = 'none';
+  zoomZone1.style.webkitBackdropFilter = 'none';
   zoomZone1.style.borderRadius    = '18px';
   var haloAlpha = alpha * 0.5;
-  var haloBlur  = 18 + feather * 36;
-  zoomZone1Halo.style.background  = 'radial-gradient(ellipse 72% 66% at 50% 48%, rgba(252,250,246,' + haloAlpha + ') 0%, rgba(252,250,246,0) 72%)';
-  zoomZone1Halo.style.filter      = 'blur(' + haloBlur.toFixed(1) + 'px)';
+  // page halo: softness baked into the gradient ramp instead of a runtime
+  // blur(18-54px) over a huge element (same iPad stall class)
+  zoomZone1Halo.style.background  = 'radial-gradient(ellipse 72% 66% at 50% 48%, rgba(252,250,246,' + haloAlpha.toFixed(3) + ') 0%, rgba(252,250,246,' + (haloAlpha * 0.45).toFixed(3) + ') 42%, rgba(252,250,246,0) 80%)';
+  zoomZone1Halo.style.filter      = 'none';
 }
 
 // ── TEMP DIAG — remove after iPad zoom diagnosis ───────────

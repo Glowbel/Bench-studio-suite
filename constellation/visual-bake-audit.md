@@ -51,6 +51,23 @@ note: requestIdleCallback exists only iPadOS 18+ — older iPads use the
 ### 2. Zoom star animations repaint on WebKit instead of compositing
 
 ```
+[update 2026-06-10 #2 — DIAG NUMBERS IN, star acquitted]
+iPad readout: open 1749-1982ms | close 1336-1957ms | tier 1024 | tex 8ok/0fail
+| gas 58%. bakes healthy, sharp tier used, NO live turbulence — and the stall
+persists, SYMMETRIC open/close. that profile = big filter surfaces created at
+open + torn down at close:
+  .bubble-star .halo = 240% of star size + blur(18px) → at zone3 scale a
+    ~2000px Gaussian raster (blur <1% of radius = invisible there)
+  .bubble-star .aura = 130% + blur(6px) → same class
+  zoomZone1 backdrop-filter blur(7px) saturate(116%) → iOS snapshot stall
+  zoomZone1Halo filter blur(18-54px) over a huge element
+[fix — SHIPPED 2026-06-10] #zoom-zone3 halo/aura filter:none (field stars
+keep theirs — small + visible); backdrop-filter removed; page-halo softness
+baked into the gradient ramp. diag left in for the confirm round.
+[follow-up if confirmed] the star dial / editor + other modals use
+backdrop-filter blur(8-18px) too — "textures not working well in the editor"
+is probably the same stall class smearing previews. sweep them next.
+
 [update 2026-06-10 — field report after steps 1+2 shipped]
 iPad symptom sharpened: zoom freezes HARD ~2s then SKIPS the camera animation
 (both directions). field interaction fine. that profile = main-thread BLOCK,
