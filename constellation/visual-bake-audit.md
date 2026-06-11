@@ -108,13 +108,18 @@ quick stage (SHIPPED 2026-06-10): zone3 .bubble-star anims pause under
   body.zoom-animating — class set when either camera move starts (openZoom
   main path, closeZoom), removed on settle (+ clearField safety). reduced-
   motion open path skips the class (media query already pauses everything).
-  if iPad zoom is now smooth → diagnosis confirmed; HTML restructure below
-  becomes optional polish (star motion during the fly itself stays paused).
-real fix (NOT YET — do only if lag persists while zoomed/reading inside):
-  restructure baked layers as stacked HTML <img> elements
-  (wrapper div: clip-path circle | img: mix-blend-mode screen + CSS anim)
-  HTML transforms ARE composited on WebKit → identical look, GPU-cheap
-  applies to field stars too (384px × N bubbles repainting on iPad)
+real fix (SHIPPED 2026-06-10 — buildStarComposited): zoom-interior star
+  rebuilt as HTML layers — gas = <img> of the same baked textures inside a
+  border-radius-clipped .star-comp (isolation:isolate, sphere-deep CSS bg);
+  shade/light/core/binary = CSS gradients; borders = paint-once SVG overlay;
+  spinning rings (dashed/corona) in their own wrapper divs. class parity
+  with the SVG build → all existing [data-movement] animation rules apply
+  unchanged, but WebKit composites HTML transforms → motion rides the GPU.
+  context: owner confirmed distribution = Capacitor (WKWebView) → WebKit is
+  the production engine on ALL Apple devices; Chrome-on-iPad is WebKit too.
+  the earlier freeze+breathe stopgap is removed — real motion is back.
+  field stars + dial previews still SVG (small / frozen stills) — port the
+  field to buildStarComposited later if field-gas chop bothers on iPad.
 
 [secondary suspect — only if lag persists after both]
 zoomZone1 backdrop-filter blur(7px) fades in at 76% of camera move —

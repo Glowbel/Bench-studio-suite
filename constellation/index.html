@@ -3917,29 +3917,48 @@ body.zoom-animating #zoom-zone3 .bubble-star,
 body.zoom-animating #zoom-zone3 .bubble-star * {
   animation-play-state: paused !important;
 }
-/* Interior gas frozen while zoomed (Jordan, 2026-06-10): every frame of the
-   gas swirl repaints the whole near-screen-size star on the main thread in
-   WebKit — it cannot be smooth on iPad, and choppy reads worse than still.
-   All SVG-internal animations off; a single slow composited breathe of the
-   whole star (HTML wrap, GPU-cheap) keeps it alive. Delete the breathe rule
-   for total stillness. Field stars are untouched. */
-#zoom-zone3 .bubble-star .gas-anim,
-#zoom-zone3 .bubble-star .gas-layer,
-#zoom-zone3 .bubble-star .sphere,
-#zoom-zone3 .bubble-star .core-glow,
-#zoom-zone3 .bubble-star .corona-ring,
-#zoom-zone3 .bubble-star .dashed-ring,
-#zoom-zone3 .bubble-star .binary-orbit-a,
-#zoom-zone3 .bubble-star .binary-orbit-b {
-  animation: none !important;
+/* ── COMPOSITED ZOOM STAR ──────────────────────────────────
+   The zoom-interior star builds its gas as HTML <img> layers (the same
+   baked textures) instead of SVG <image>: WebKit only GPU-composites
+   transforms on HTML elements — SVG-inner motion repaints the whole star
+   on the CPU every frame (the iPad jank; WebKit is also the engine of
+   the future Capacitor App-Store build). Class names match the SVG build
+   so every existing [data-movement] animation rule applies unchanged. */
+.star-comp {
+  position: absolute; left: 50%; top: 50%;
+  width: 94%; height: 94%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  overflow: hidden;
+  isolation: isolate;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, rgb(40,40,90) 0%, rgb(10,12,32) 100%);
 }
-#zoom-zone3 .bubble-star {
-  animation: zoom-star-breathe 9s ease-in-out infinite;
+.star-comp .gas-layer, .star-comp .gas-anim { position: absolute; inset: 0; }
+.star-comp .gas-anim { will-change: transform; }
+.star-comp .gas-img {
+  position: absolute; left: 50%; top: 50%;
+  width: 106.4%; height: 106.4%;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
 }
-@keyframes zoom-star-breathe {
-  0%, 100% { transform: scale(1); }
-  50%      { transform: scale(1.015); }
+.star-comp .sc-shade, .star-comp .sc-light { position: absolute; inset: 0; pointer-events: none; }
+.star-comp .sc-shade { background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.55) 92%, rgba(0,0,0,0.9) 100%); }
+.star-comp .sc-light { background: radial-gradient(ellipse 50% 50% at 38% 32%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 40%, rgba(255,255,255,0) 100%); }
+.star-comp .core-glow,
+.star-comp .binary-orbit-a,
+.star-comp .binary-orbit-b { position: absolute; inset: 0; }
+.star-comp .binary-shift { position: absolute; inset: 0; transform: translateX(-11.702%); }
+.star-comp .sc-core, .star-comp .sc-pin, .star-comp .sc-dot {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  mix-blend-mode: screen;
 }
+.star-comp .sc-dot { mix-blend-mode: normal; background: #fff; opacity: 0.95; }
+.sphere .star-comp-border { position: absolute; inset: 0; pointer-events: none; }
+.sphere .star-comp-border .corona-ring,
+.sphere .star-comp-border .dashed-ring { position: absolute; inset: 0; }
+.sphere .star-comp-border .corona-ring img { position: absolute; inset: 0; width: 100%; height: 100%; }
 @media (prefers-reduced-motion: reduce) {
   .bubble-star,
   .bubble-star * { animation-play-state: paused !important; }
@@ -7995,6 +8014,99 @@ function computeInteriorGeom(iStage, atm, anchor, full) {
   return { bubbleW: fw, bubbleH: fh, scaleBoost: maxStarBox / framedStarBox };
 }
 
+function _rgba(hex, a) {
+  var h = String(hex).replace('#', '');
+  if (h.length === 3) { h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2); }
+  var n = parseInt(h, 16);
+  if (isNaN(n)) { return hex; }
+  return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+}
+
+// Core glow as CSS gradients. Radii are buildStarSvg's 200-space units;
+// percent of the 188-unit clip box = (r * 2 / 188) * 100.
+function _scCoreMarkup(colors, coreR, mult, opGlow) {
+  var c0 = colors[0], c1 = colors[1] || colors[0];
+  var glowPct = (coreR * mult[0] * 2 / 188 * 100).toFixed(2);
+  var pinPct  = (coreR * mult[1] * 2 / 188 * 100).toFixed(2);
+  var dotPct  = (coreR * mult[2] * 2 / 188 * 100).toFixed(2);
+  return '<div class="sc-core" style="width:' + glowPct + '%;height:' + glowPct + '%;opacity:' + opGlow + ';' +
+           'background:radial-gradient(circle, #ffffff 0%, ' + _rgba(c0, 0.95) + ' 30%, ' + _rgba(c1, 0.4) + ' 70%, ' + _rgba(c0, 0) + ' 100%)"></div>' +
+         '<div class="sc-pin" style="width:' + pinPct + '%;height:' + pinPct + '%;' +
+           'background:radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 60%, rgba(255,255,255,0) 100%)"></div>' +
+         '<div class="sc-dot" style="width:' + dotPct + '%;height:' + dotPct + '%"></div>';
+}
+
+// buildStarComposited: the zoom-interior star as HTML layers — same baked
+// textures, same animation rules (class parity with the SVG build), but the
+// motion is GPU-composited on WebKit. Never emits live feTurbulence; a
+// missing texture renders gas-less and sets _starSvgUsedLive so the zone3
+// waiter re-renders when the bake lands. Borders are a paint-once SVG
+// overlay; spinning rings (dashed, corona) live in their own wrapper divs
+// so the existing rotation rules ride the GPU too.
+function buildStarComposited(pal, movement, border, profile, texSize) {
+  _starSvgUsedLive = false;
+  var preset = STAR_MOVEMENT_PRESETS[movement] || STAR_MOVEMENT_PRESETS.vortex;
+  var gp     = STAR_GRAD_LAYOUTS[preset.grad] || STAR_GRAD_LAYOUTS['default'];
+  var colors = pal.colors;
+  var haloColor = pal.halo || colors[0];
+
+  var s = '<div class="star-comp">';
+  for (var li = 0; li < 4; li++) {
+    var tex = getStarTexture(movement, pal.id, li, texSize, colors[li] || colors[0], gp[li] || gp[0], preset.filters[li]);
+    s += '<div class="gas-layer gas-' + (li + 1) + '"><div class="gas-anim" style="--lo:' + profile.layerOp[li] + '">';
+    if (tex) {
+      s += '<img class="gas-img" src="' + tex + '" alt="" style="opacity:' + profile.layerOp[li] + '"/>';
+    } else {
+      _starSvgUsedLive = true; // gas-less until its bake lands
+    }
+    s += '</div></div>';
+  }
+  s += '<div class="sc-shade"></div><div class="sc-light"></div>';
+  if (movement === 'binary') {
+    s += '<div class="binary-orbit-a"><div class="binary-shift">' + _scCoreMarkup(colors, profile.coreR, [2.4, 1.1, 0.45], 0.85) + '</div></div>';
+    s += '<div class="binary-orbit-b"><div class="binary-shift">' + _scCoreMarkup(colors, profile.coreR, [2.2, 1.0, 0.40], 0.80) + '</div></div>';
+  } else {
+    s += '<div class="core-glow">' + _scCoreMarkup(colors, profile.coreR, [3.2, 1.6, 0.5], 0.85) + '</div>';
+  }
+  s += '</div>';
+
+  s += '<div class="star-comp-border">';
+  var bsvg = '';
+  if (border === 'soft') {
+    bsvg = '<circle cx="100" cy="100" r="94" fill="url(#rim-glow)"/>';
+  } else if (border === 'crisp') {
+    bsvg = '<circle cx="100" cy="100" r="94" fill="url(#rim-glow)" opacity="0.6"/>' +
+           '<circle cx="100" cy="100" r="94" fill="none" stroke="' + haloColor + '" stroke-width="1" opacity="0.95"/>';
+  } else if (border === 'halo') {
+    bsvg = '<circle cx="100" cy="100" r="94" fill="url(#rim-glow)"/>' +
+           '<circle cx="100" cy="100" r="94"  fill="none" stroke="' + haloColor + '" stroke-width="0.8" opacity="0.9"/>' +
+           '<circle cx="100" cy="100" r="98"  fill="none" stroke="' + haloColor + '" stroke-width="0.5" opacity="0.55"/>' +
+           '<circle cx="100" cy="100" r="102" fill="none" stroke="' + haloColor + '" stroke-width="0.3" opacity="0.30"/>';
+  } else if (border === 'dashed') {
+    bsvg = '<circle cx="100" cy="100" r="94" fill="url(#rim-glow)" opacity="0.55"/>';
+  } else if (border === 'corona') {
+    bsvg = '<circle cx="100" cy="100" r="94" fill="url(#rim-glow)"/>' +
+           '<circle cx="100" cy="100" r="94" fill="none" stroke="' + haloColor + '" stroke-width="0.4" opacity="0.6"/>';
+  }
+  if (bsvg) {
+    s += '<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">' + bsvg + '</svg>';
+  }
+  if (border === 'dashed') {
+    s += '<div class="dashed-ring"><svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">' +
+         '<circle cx="100" cy="100" r="95.5" fill="none" stroke="' + haloColor + '" stroke-width="0.9" stroke-dasharray="3 2.5" opacity="0.9"/>' +
+         '</svg></div>';
+  } else if (border === 'corona') {
+    var coronaTex = getCoronaTexture(pal.id, haloColor, texSize);
+    if (coronaTex) {
+      s += '<div class="corona-ring"><img src="' + coronaTex + '" alt=""/></div>';
+    } else {
+      _starSvgUsedLive = true;
+    }
+  }
+  s += '</div>';
+  return s;
+}
+
 // renderZoomAtmosphere: build/update the bubble-star inside #zoom-zone3
 function renderZoomAtmosphere(b, atmosDiam) {
   var cfg     = getBubbleStar(b);
@@ -8044,12 +8156,8 @@ function renderZoomAtmosphere(b, atmosDiam) {
   var fp = cfg.movement + '|' + cfg.palette + '|' + cfg.border + '|' + texSize;
   if (starWrap.getAttribute('data-fp') !== fp) {
     starWrap.setAttribute('data-fp', fp);
-    var uid    = 'z3-' + b.id;
     var sphere = starWrap.querySelector('.sphere');
-    _starSvgNoLive = true;
-    sphere.innerHTML = '<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">' +
-      buildStarSvg(uid, pal, cfg.movement, cfg.border, profile, texSize) + '</svg>';
-    _starSvgNoLive = false;
+    sphere.innerHTML = buildStarComposited(pal, cfg.movement, cfg.border, profile, texSize);
     DIAG.miss = _starSvgUsedLive ? '/miss' : ''; // TEMP DIAG
     if (_starSvgUsedLive || texSize !== 1024) {
       _addTexWaiter('z3-' + b.id, function () {
