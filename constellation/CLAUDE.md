@@ -67,6 +67,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-10] fix | zoom-in first-third skip + laggy maximize — paint-before-fly double-rAF; gas pause on full toggle | touches: ZOOM
 [2026-06-10] fix | iPad 2s zoom stall — zone3 halo/aura blur + page backdrop-filter killed (invisible at zoom scale) | touches: ZOOM
 [2026-06-10] feat | TEMP zoom diag readout — on-screen block-ms/tier/bake-health line; REMOVE after iPad diagnosis | touches: ZOOM
 [2026-06-10] fix | iPad 2s zoom freeze — zoom never renders live feTurbulence; baked-tier fallback 1024→384 | touches: ZOOM, STAR-BAKE

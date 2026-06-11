@@ -8139,6 +8139,14 @@ function applyZoomFull(b, isFull, animated) {
   applyZoomPageStyle(b, isFull, geom);
   var boost = geom.scaleBoost || 1;
   if (animated) {
+    // pause the interior star's gas during the toggle: the page resize is a
+    // per-frame layout animation, and giant-SVG gas repaints on top of it
+    // made maximize crawl on iPad. Don't clear the class if a camera move
+    // owns it (zoomAnimating) — its own settle handler removes it.
+    document.body.classList.add('zoom-animating');
+    window.setTimeout(function() {
+      if (!state.zoomAnimating) document.body.classList.remove('zoom-animating');
+    }, 460);
     zoomZone3.style.transition = 'transform 0.42s cubic-bezier(0.25,0.8,0.25,1)';
   } else {
     zoomZone3.style.transition = 'none';
@@ -8251,7 +8259,17 @@ function openZoom(bubbleId) {
     return;
   }
 
-  // Surgical zoom-in: translate + scale stage to center
+  // Surgical zoom-in: translate + scale stage to center.
+  // zoomAnimating goes true NOW (synchronously) so close/re-open are blocked,
+  // then the flight starts two rAFs later: the start pose — visually identical
+  // to the field (overlay transparent, star covering the bubble) — gets one
+  // painted frame first. zone3's first rasterization (4 decoded 1024px
+  // textures) is a one-off main-thread cost that used to land exactly as the
+  // transition clock started, eating the first third of the flight on iPad.
+  state.zoomAnimating = true;
+  document.body.classList.add('zoom-animating');
+  requestAnimationFrame(function() { requestAnimationFrame(function() {
+
   var easing = 'cubic-bezier(0.45,0.05,0.55,0.95)';
   zoomStage.style.transition = 'transform ' + dur + 'ms ' + easing;
   zoomStage.style.transform  = 'translate(0,0) scale(1)';
@@ -8265,8 +8283,6 @@ function openZoom(bubbleId) {
   // interior (zone1+zone2) crossfades in at 76% of duration
   var intDelay = Math.round(dur * 0.76);
   var intDur   = Math.round(dur * 0.45);
-  state.zoomAnimating      = true;
-  document.body.classList.add('zoom-animating');
   state.zoomTimerInterior  = window.setTimeout(function() {
     zoomZone2.style.transition     = 'opacity ' + intDur + 'ms ' + easing;
     zoomZone2.style.opacity        = '1';
@@ -8287,6 +8303,8 @@ function openZoom(bubbleId) {
       zoomZone3.style.transform  = 'translate(-50%,-50%) scale(' + boost + ')';
     }
   }, dur + 20);
+
+  }); }); // end paint-before-fly double-rAF
 }
 
 function renderZoomThoughts(b) {
