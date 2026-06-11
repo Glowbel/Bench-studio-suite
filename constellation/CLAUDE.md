@@ -36,9 +36,9 @@ Ideas are minerals. Interaction is pressure. Crystallization is commitment. The 
 ## CURRENT STATE
 ```
 file: index.html
-lines: ~11,759
-zones: 110 top-level zones | in-file registry + rebuilder (line 2)
-state: mid-build | stable but finding unusual bugs | hardcore audit underway
+lines: ~12,131
+zones: 110 top-level zones | in-file registry + rebuilder (line 2) | rebuilt 2026-06-11
+state: mid-build | full-file audit complete (core-audit.md) | fixes pending
 phase: 1 shipped | 1.5/2 active (bug fixes + core audit + phase-change rethink)
 external-work: file split in progress (developer friend, testing in Claude artifacts)
 proximate-target: early beta testing for functions and export
@@ -67,6 +67,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-11] ref  | full-file core audit — 3-track deep pass → core-audit.md (ranked fixes); registry rebuilt | touches: REGISTRY
 [2026-06-10] feat | touch + field smoothness — bubble/ring/path motion via translate3d (no per-frame layout); touch-action manipulation; tether skip when no links | touches: PHYSICS, DRAG-HANDLERS, CREATE-BUBBLE
 [2026-06-10] feat | composited zoom star — gas as HTML <img> layers, GPU motion on WebKit; freeze+breathe removed | touches: ZOOM, STAR-RENDERER
 [2026-06-10] fix | star editor sweep — previews never-live + bake waiters; dial/gsm backdrop blurs out; previews frozen | touches: STAR-DIAL, GLOBAL-STARS-MODAL
@@ -356,6 +357,7 @@ phase 1.5 / 2 [active]: see PHASE 1.5 / 2 section above
 - **Hard rules** — see root `CLAUDE.md → HARD RULES`
 - **`constellation-bubble-tools.md`** — fetch when working on bubble tool design or the core interaction interface
 - **`visual-bake-audit.md`** — visual systems + bake logic audit (Jun 2026); ranked fix list for the iPad load/zoom lag. Step 1 (gate fast-drain) shipped; fetch before any STAR-BAKE / ZOOM / physics-smoothness work. Distill + delete when all steps ship.
+- **`core-audit.md`** — full-file core audit (2026-06-11); ranked findings for stability, data safety, gestures, memory, scale. Fetch before ANY fix session until its batches ship. Distill + delete when fixes land.
 - **External bug list** — Jordan tracks bugs 12, 13, 14 (and others) separately; fetch when ready to address them
 - **`bench/CLAUDE.md`** — when constellation → bench integration design begins, fetch Bench's leads[] data shape and integration flags
 - **Session close** — delete the auto-created session branch: `git push origin --delete [your claude/* branch name]` (branch name is in your session instructions)
