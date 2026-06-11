@@ -67,6 +67,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-10] fix | star editor sweep — previews never-live + bake waiters; dial/gsm backdrop blurs out; previews frozen | touches: STAR-DIAL, GLOBAL-STARS-MODAL
 [2026-06-10] fix | maximize jolt+desync — FLIP page resize (composited); interior gas frozen + slow breathe | touches: ZOOM
 [2026-06-10] fix | zoom-in first-third skip + laggy maximize — paint-before-fly double-rAF; gas pause on full toggle | touches: ZOOM
 [2026-06-10] fix | iPad 2s zoom stall — zone3 halo/aura blur + page backdrop-filter killed (invisible at zoom scale) | touches: ZOOM

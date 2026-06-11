@@ -3985,14 +3985,21 @@ body.zoom-animating #zoom-zone3 .bubble-star * {
 .star-dial {
   position: fixed; inset: 0; z-index: 9000;
   display: grid; place-items: center;
+  /* backdrop-filter removed (iPad stall class — full-screen blur snapshot);
+     the backdrop was already 85-96% opaque, deepened slightly to compensate */
   background:
-    radial-gradient(circle at 50% 50%, rgba(8, 6, 22, 0.85) 0%, rgba(2, 3, 10, 0.96) 80%);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+    radial-gradient(circle at 50% 50%, rgba(8, 6, 22, 0.92) 0%, rgba(2, 3, 10, 0.985) 80%);
   color: #c8cfe8;
   animation: dial-bd-in 0.3s ease;
 }
 .star-dial.hidden { display: none; }
+/* Editor previews render baked bitmaps, frozen — same owner call as the
+   zoom interior: choppy reads worse than still, and the movement ring is
+   up to 9 mini-SVGs animating at once (WebKit repaints each per frame). */
+.star-dial .bubble-star, .star-dial .bubble-star *,
+.gsm-backdrop .bubble-star, .gsm-backdrop .bubble-star * {
+  animation: none !important;
+}
 @keyframes dial-bd-in { from { opacity: 0; } to { opacity: 1; } }
 .dial-close {
   position: absolute; top: 22px; right: 22px;
@@ -4055,7 +4062,8 @@ body.dial-open .field-motion { animation-play-state: paused; }
 
 /* Global stars modal */
 .gsm-backdrop { position: fixed; inset: 0; z-index: 9100; display: grid; place-items: center;
-  background: rgba(2, 3, 10, 0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  /* backdrop-filter removed (iPad stall class) — tint deepened to compensate */
+  background: rgba(2, 3, 10, 0.78);
   color: #c8cfe8; animation: dial-bd-in 0.25s ease; }
 .gsm-backdrop.hidden { display: none; }
 .gsm-card {
@@ -5955,6 +5963,9 @@ var _starSvgNoLive = false;   // zone3 render: unbaked layers emit NOTHING inste
                               // live feTurbulence — a live raster at atmosphere size
                               // blocks the main thread for seconds on iPad and the
                               // zoom camera animation gets skipped entirely
+var _miniUsedLive = false;    // accumulates across _miniStarMarkup calls (a dial/gsm
+                              // render builds many previews) — true = some preview
+                              // is missing its bake, re-render when textures land
 
 var _starBakeOK = (function () {
   try {
@@ -11407,6 +11418,13 @@ function _renderStarDial() {
   stage.innerHTML = '';
   if (starDialMode === 'mass') _renderStarDialMass(stage);
   else _renderStarDialRing(stage);
+  // some preview lacked its baked texture — re-render as bakes land
+  if (_miniUsedLive) {
+    _miniUsedLive = false;
+    _addTexWaiter('star-dial', function () {
+      if (starDialEl && !starDialEl.classList.contains('hidden')) _renderStarDial();
+    });
+  }
 }
 
 function _renderStarDialRing(stage) {
@@ -11508,6 +11526,13 @@ function _renderStarDialMass(stage) {
     var phaseEl   = stage.querySelector('.dial-mass-phase');
     if (previewEl) previewEl.innerHTML = _miniStarMarkup(starDialDraft.starMovement, palObj, starDialDraft.starBorder, mass01, 'mass-' + starDialOriginalId, 1.2);
     if (phaseEl)   phaseEl.innerHTML   = 'phase &middot; ' + phase.name;
+    // slider fast path bypasses _renderStarDial — own waiter check
+    if (_miniUsedLive) {
+      _miniUsedLive = false;
+      _addTexWaiter('star-dial', function () {
+        if (starDialEl && !starDialEl.classList.contains('hidden')) _renderStarDial();
+      });
+    }
     return;
   }
 
@@ -11543,12 +11568,19 @@ function _miniStarMarkup(movement, palette, border, mass01, idHint, scale) {
                 '--aura-opacity:' + profile.aura + ';' +
                 '--spd:1.3;' +
                 'filter:brightness(' + profile.bloom.toFixed(3) + ') saturate(' + profile.sat.toFixed(3) + ');';
+  // previews never render live turbulence (same rule as the zoom interior —
+  // 8+ live-filtered mini stars at once was the editor's iPad meltdown);
+  // an unbaked preview renders gas-less and the host re-renders on bake
+  _starSvgNoLive = true;
+  var sphereSvg = buildStarSvg(uid, palette, movement, border, profile);
+  _starSvgNoLive = false;
+  if (_starSvgUsedLive) _miniUsedLive = true;
   return '<div class="bubble-star" data-movement="' + movement + '" style="position:relative;left:0;top:0;transform:none;' + sizeCss + '">' +
            '<div class="halo"></div>' +
            '<div class="aura"></div>' +
            '<div class="sphere">' +
              '<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">' +
-               buildStarSvg(uid, palette, movement, border, profile) +
+               sphereSvg +
              '</svg>' +
            '</div>' +
          '</div>';
@@ -11672,6 +11704,13 @@ function _renderGsm() {
   if (gsmTab === 'movement') body.appendChild(_gsmBuildMovement(palObj));
   if (gsmTab === 'palette')  body.appendChild(_gsmBuildPalette());
   if (gsmTab === 'border')   body.appendChild(_gsmBuildBorder());
+  // some preview lacked its baked texture — re-render as bakes land
+  if (_miniUsedLive) {
+    _miniUsedLive = false;
+    _addTexWaiter('gsm', function () {
+      if (gsmEl && !gsmEl.classList.contains('hidden')) _renderGsm();
+    });
+  }
 }
 
 function _gsmBuildMovement(palObj) {
