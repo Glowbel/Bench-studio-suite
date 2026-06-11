@@ -67,6 +67,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-10] feat | touch + field smoothness — bubble/ring/path motion via translate3d (no per-frame layout); touch-action manipulation; tether skip when no links | touches: PHYSICS, DRAG-HANDLERS, CREATE-BUBBLE
 [2026-06-10] feat | composited zoom star — gas as HTML <img> layers, GPU motion on WebKit; freeze+breathe removed | touches: ZOOM, STAR-RENDERER
 [2026-06-10] fix | star editor sweep — previews never-live + bake waiters; dial/gsm backdrop blurs out; previews frozen | touches: STAR-DIAL, GLOBAL-STARS-MODAL
 [2026-06-10] fix | maximize jolt+desync — FLIP page resize (composited); interior gas frozen + slow breathe | touches: ZOOM

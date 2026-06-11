@@ -399,7 +399,7 @@
     --font-italic: 'IM Fell English', serif;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; touch-action: manipulation; }
 
   body {
     background: var(--void);
@@ -502,6 +502,10 @@
   /* ── BUBBLES ── */
   .bubble {
     position: absolute;
+    /* left/top pinned — position is applied via translate3d (GPU), so
+       per-frame motion never triggers layout (see placeXY) */
+    left: 0;
+    top: 0;
     border-radius: 50%;
     transform: translate(-50%, -50%);
     cursor: pointer;
@@ -2285,6 +2289,8 @@
   .orbital-path {
     --ring-color: 201,168,76;
     position: absolute;
+    left: 0;
+    top: 0;
     border-radius: 50%;
     border: 1px dotted rgba(201, 168, 76, 0.55);
     transform: translate(-50%, -50%);
@@ -2302,6 +2308,8 @@
   /* Mutual link boundary ring — thin white edge on each linked bubble */
   .mutual-ring {
     position: absolute;
+    left: 0;
+    top: 0;
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.18);
     transform: translate(-50%, -50%);
@@ -5367,7 +5375,17 @@ requestAnimationFrame(function() {
 /* === END AMBIENT-STARS === */
 /* === BEGIN TETHER-LINES === */
 // ── TETHER LINES ─────────────────────────────────────────
+var _tetherHadLinks = false;
 function drawTethers() {
+  // no links: clear once, then skip the per-frame full-canvas repaint
+  if (!state.links.length) {
+    if (_tetherHadLinks) {
+      tetherCtx.clearRect(0, 0, tetherCanvas.width, tetherCanvas.height);
+      _tetherHadLinks = false;
+    }
+    return;
+  }
+  _tetherHadLinks = true;
   tetherCtx.clearRect(0, 0, tetherCanvas.width, tetherCanvas.height);
   for (var i = 0; i < state.links.length; i++) {
     var lnk = state.links[i];
@@ -5418,6 +5436,14 @@ function drawTethers() {
   tetherCtx.setLineDash([]);
 }
 
+// GPU positioning for field elements (.bubble / .mutual-ring / .orbital-path):
+// translate3d replaces left/top so per-frame motion (physics, drag) never
+// triggers layout — left/top are pinned to 0 in CSS; the trailing
+// translate(-50%,-50%) keeps the center-anchor convention.
+function placeXY(el, x, y) {
+  el.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0) translate(-50%,-50%)';
+}
+
 /* === END TETHER-LINES === */
 /* === BEGIN ANIMATION-LOOP === */
 // ── ANIMATION LOOP ────────────────────────────────────────
@@ -5462,9 +5488,9 @@ function updateBubblePhysics() {
         b.orbitAngle = (b.orbitAngle || 0) + orbitSpd;
         b.x = planet.x + Math.cos(b.orbitAngle) * b.orbitRadius;
         b.y = planet.y + Math.sin(b.orbitAngle) * b.orbitRadius;
-        if (b.el) { b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px'; }
-        if (b.mutualRingEl) { b.mutualRingEl.style.left = b.x + 'px'; b.mutualRingEl.style.top = b.y + 'px'; }
-        if (b.orbitalPathEl) { b.orbitalPathEl.style.left = planet.x + 'px'; b.orbitalPathEl.style.top = planet.y + 'px'; }
+        if (b.el) { placeXY(b.el, b.x, b.y); }
+        if (b.mutualRingEl) { placeXY(b.mutualRingEl, b.x, b.y); }
+        if (b.orbitalPathEl) { placeXY(b.orbitalPathEl, planet.x, planet.y); }
         continue; // skip normal drift for moons
       } else {
         // Planet gone — release from orbit
@@ -5478,7 +5504,7 @@ function updateBubblePhysics() {
     if (b.orbitAnchor) {
       b.x = b.homeX;
       b.y = b.homeY;
-      if (b.el) { b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px'; }
+      if (b.el) { placeXY(b.el, b.x, b.y); }
       continue;
     }
 
@@ -5540,8 +5566,8 @@ function updateBubblePhysics() {
       b.viewed = false;
     }
 
-    if (b.el) { b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px'; }
-    if (b.mutualRingEl) { b.mutualRingEl.style.left = b.x + 'px'; b.mutualRingEl.style.top = b.y + 'px'; }
+    if (b.el) { placeXY(b.el, b.x, b.y); }
+    if (b.mutualRingEl) { placeXY(b.mutualRingEl, b.x, b.y); }
   }
   } // end pass loop
 
@@ -5710,8 +5736,7 @@ function renderBubble(b) {
   el.setAttribute('data-mass', '0');
   el.style.width = (r * 2) + 'px';
   el.style.height = (r * 2) + 'px';
-  el.style.left = b.x + 'px';
-  el.style.top = b.y + 'px';
+  placeXY(el, b.x, b.y);
 
   el.innerHTML =
     '<div class="bubble-inner">' +
@@ -5877,8 +5902,7 @@ function renderBubble(b) {
       if (!b2) return;
       b2.x = t.clientX - state.dragOffsetX;
       b2.y = t.clientY - state.dragOffsetY;
-      el.style.left = b2.x + 'px';
-      el.style.top  = b2.y + 'px';
+      placeXY(el, b2.x, b2.y);
     }
   }, { passive: true });
 
@@ -7577,8 +7601,7 @@ function spawnOrbitalPath(moon, radius) {
   var diameter = radius * 2;
   el.style.width  = diameter + 'px';
   el.style.height = diameter + 'px';
-  el.style.left   = planet.x + 'px';
-  el.style.top    = planet.y + 'px';
+  placeXY(el, planet.x, planet.y);
   bubbleLayer.appendChild(el);
   moon.orbitalPathEl = el;
   applyOrbitalRingSettings();
@@ -7594,8 +7617,7 @@ function spawnMutualRing(b) {
   var ringSize = (r + 8) * 2; // slightly outside bubble edge
   el.style.width  = ringSize + 'px';
   el.style.height = ringSize + 'px';
-  el.style.left   = b.x + 'px';
-  el.style.top    = b.y + 'px';
+  placeXY(el, b.x, b.y);
   bubbleLayer.appendChild(el);
   b.mutualRingEl = el;
 }
@@ -7733,7 +7755,7 @@ document.addEventListener('mousemove', function(e) {
       }
       b.x = e.clientX - state.dragOffsetX;
       b.y = e.clientY - state.dragOffsetY;
-      if (b.el) { b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px'; }
+      if (b.el) { placeXY(b.el, b.x, b.y); }
       return;
     }
   }
@@ -7745,12 +7767,9 @@ document.addEventListener('mousemove', function(e) {
   b.x = e.clientX - state.dragOffsetX;
   b.y = e.clientY - state.dragOffsetY;
   var el = document.getElementById('bubble-' + b.id);
-  if (el) {
-    el.style.left = b.x + 'px';
-    el.style.top  = b.y + 'px';
-  }
+  if (el) { placeXY(el, b.x, b.y); }
   var mRingD = document.getElementById('mutual-ring-' + b.id);
-  if (mRingD) { mRingD.style.left = b.x + 'px'; mRingD.style.top = b.y + 'px'; }
+  if (mRingD) { placeXY(mRingD, b.x, b.y); }
   if (!b.crystallized) { checkLinkProximity(b); updateZoneSensing(b); }
 });
 
@@ -7786,12 +7805,9 @@ document.addEventListener('touchmove', function(e) {
   b.x = t.clientX - state.dragOffsetX;
   b.y = t.clientY - state.dragOffsetY;
   var el = document.getElementById('bubble-' + b.id);
-  if (el) {
-    el.style.left = b.x + 'px';
-    el.style.top = b.y + 'px';
-  }
+  if (el) { placeXY(el, b.x, b.y); }
   var mRingT = document.getElementById('mutual-ring-' + b.id);
-  if (mRingT) { mRingT.style.left = b.x + 'px'; mRingT.style.top = b.y + 'px'; }
+  if (mRingT) { placeXY(mRingT, b.x, b.y); }
   if (!b.crystallized) { checkLinkProximity(b); updateZoneSensing(b); }
 }, { passive: true });
 document.addEventListener('mouseup', function() {

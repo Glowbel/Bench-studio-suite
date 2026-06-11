@@ -146,7 +146,15 @@ optional: device-aware zoom texture size — 768px on iPad ≈ visually identica
 
 ## FIELD SMOOTHNESS — ALL PLATFORMS
 
-### 4. Bubble motion via style.left/top = layout every frame (biggest single win)
+### 4. Bubbles move via style.left/top = layout every frame (biggest single win)
+
+```
+[SHIPPED 2026-06-10] placeXY(el,x,y) → translate3d + translate(-50%,-50%);
+left/top pinned 0 in CSS for .bubble/.mutual-ring/.orbital-path; all 15
+write sites converted (physics ×3 passes, both drag paths, creators).
+plus: * { touch-action: manipulation } (kills iOS double-tap click delay
+on all click-driven UI) and drawTethers early-out when links are empty.
+```
 
 ```
 [cause]
