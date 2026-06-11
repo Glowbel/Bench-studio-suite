@@ -3917,6 +3917,29 @@ body.zoom-animating #zoom-zone3 .bubble-star,
 body.zoom-animating #zoom-zone3 .bubble-star * {
   animation-play-state: paused !important;
 }
+/* Interior gas frozen while zoomed (Jordan, 2026-06-10): every frame of the
+   gas swirl repaints the whole near-screen-size star on the main thread in
+   WebKit — it cannot be smooth on iPad, and choppy reads worse than still.
+   All SVG-internal animations off; a single slow composited breathe of the
+   whole star (HTML wrap, GPU-cheap) keeps it alive. Delete the breathe rule
+   for total stillness. Field stars are untouched. */
+#zoom-zone3 .bubble-star .gas-anim,
+#zoom-zone3 .bubble-star .gas-layer,
+#zoom-zone3 .bubble-star .sphere,
+#zoom-zone3 .bubble-star .core-glow,
+#zoom-zone3 .bubble-star .corona-ring,
+#zoom-zone3 .bubble-star .dashed-ring,
+#zoom-zone3 .bubble-star .binary-orbit-a,
+#zoom-zone3 .bubble-star .binary-orbit-b {
+  animation: none !important;
+}
+#zoom-zone3 .bubble-star {
+  animation: zoom-star-breathe 9s ease-in-out infinite;
+}
+@keyframes zoom-star-breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.015); }
+}
 @media (prefers-reduced-motion: reduce) {
   .bubble-star,
   .bubble-star * { animation-play-state: paused !important; }
@@ -8120,13 +8143,31 @@ function _diagShow() {
 
 // applyZoomZone1Size: resize the page container (animated for full/framed toggle)
 function applyZoomZone1Size(geom, animated) {
+  var W = Math.round(geom.bubbleW);
+  var H = Math.round(geom.bubbleH);
   if (animated) {
-    zoomZone1Wrap.style.transition = 'width 0.42s cubic-bezier(0.25,0.8,0.25,1), height 0.42s cubic-bezier(0.25,0.8,0.25,1)';
+    // FLIP resize: snap the layout to the target size, start visually at the
+    // current size via an inverse composited scale, glide to identity. The
+    // old width/height transition re-laid-out the page every frame on the
+    // main thread — on iPad it stuttered AND desynced from the star's
+    // composited scale (the star moved before the text box). A transform
+    // glide rides the GPU with the star, so they cannot desync.
+    var rect = zoomZone1Wrap.getBoundingClientRect();
+    var sx = (rect.width  && W) ? rect.width  / W : 1;
+    var sy = (rect.height && H) ? rect.height / H : 1;
+    zoomZone1Wrap.style.transition = 'none';
+    zoomZone1Wrap.style.width  = W + 'px';
+    zoomZone1Wrap.style.height = H + 'px';
+    zoomZone1Wrap.style.transform = 'translate(-50%,-50%) scale(' + sx.toFixed(4) + ',' + sy.toFixed(4) + ')';
+    void zoomZone1Wrap.offsetWidth;
+    zoomZone1Wrap.style.transition = 'transform 0.42s cubic-bezier(0.25,0.8,0.25,1)';
+    zoomZone1Wrap.style.transform  = 'translate(-50%,-50%)';
   } else {
     zoomZone1Wrap.style.transition = 'none';
+    zoomZone1Wrap.style.transform  = 'translate(-50%,-50%)';
+    zoomZone1Wrap.style.width  = W + 'px';
+    zoomZone1Wrap.style.height = H + 'px';
   }
-  zoomZone1Wrap.style.width  = Math.round(geom.bubbleW) + 'px';
-  zoomZone1Wrap.style.height = Math.round(geom.bubbleH) + 'px';
 }
 
 // applyZoomFull: toggle full/framed state — sizes page + scales zone3 star
