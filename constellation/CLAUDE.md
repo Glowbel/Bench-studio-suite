@@ -257,6 +257,16 @@ file split → external work in progress | don't restructure file inline
 ### Approaching — warn on approach
 
 ```
+field-lookup-scale: physics finds bubbles by scanning the whole list top-down,
+  every time (getBubbleById per frame; per-bubble link scans) — free at ~30
+  bubbles, compounds past ~hundreds of bubbles + many links
+  NOT an issue today (Jordan-confirmed Jun 2026) | trigger: a big session
+  FEELS heavy → the fix is an id→bubble index + link counts cached on link
+  change (audit P1) | touches the moving heart of the field — needs a
+  dedicated, careful session | never a casual patch, a stale index makes
+  bubbles drift subtly wrong before anything looks broken
+
+
 star-turbulence-cost: animated SVG turbulence (feTurbulence) on every bubble star
   re-rasterized every frame — was root of the post-zoom background lag (Jun 2026 audit)
   field-star gas-anims PAUSE on drag/zoom/compass/dial + reduced-motion
