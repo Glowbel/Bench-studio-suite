@@ -8589,6 +8589,13 @@ function applyZoomZone1Size(geom, animated) {
     var rect = zoomZone1Wrap.getBoundingClientRect();
     var sx = (rect.width  && W) ? rect.width  / W : 1;
     var sy = (rect.height && H) ? rect.height / H : 1;
+    // Promote the layer before it scales (avoids a layer-creation snap on the
+    // first toggle), then demote it once the glide settles — see the timer
+    // below. A scaled will-change layer can otherwise leave a stale full-size
+    // compositor tile behind when it shrinks back: the ghost-panel rectangle
+    // bleeding past the framed edge on full->framed (Jun 2026, all engines).
+    if (state.zone1FlipTimer) { window.clearTimeout(state.zone1FlipTimer); state.zone1FlipTimer = null; }
+    zoomZone1Wrap.style.willChange = 'transform';
     zoomZone1Wrap.style.transition = 'none';
     zoomZone1Wrap.style.width  = W + 'px';
     zoomZone1Wrap.style.height = H + 'px';
@@ -8596,6 +8603,12 @@ function applyZoomZone1Size(geom, animated) {
     void zoomZone1Wrap.offsetWidth;
     zoomZone1Wrap.style.transition = 'transform 0.42s cubic-bezier(0.25,0.8,0.25,1)';
     zoomZone1Wrap.style.transform  = 'translate(-50%,-50%)';
+    // Demote after the glide: discards the stale tile, forces one clean repaint
+    // at the true framed bounds. The next animated resize re-promotes above.
+    state.zone1FlipTimer = window.setTimeout(function() {
+      zoomZone1Wrap.style.willChange = 'auto';
+      state.zone1FlipTimer = null;
+    }, 480);
   } else {
     zoomZone1Wrap.style.transition = 'none';
     zoomZone1Wrap.style.transform  = 'translate(-50%,-50%)';

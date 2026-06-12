@@ -67,6 +67,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-12] fix | mobile ghost-panel after maximize→framed — FLIP wrap demotes will-change on settle (drops stale GPU tile, all engines) | touches: ZOOM
 [2026-06-12] feat | temp expiry sweep + two-tab notice + autosave debounce; FIX delete-other-session wiped live field | touches: PERSISTENCE, SESSION-INIT
 [2026-06-12] ref  | compass hold 950→800ms (snappier, Jordan); drag feel kept as-is | touches: CREATE-BUBBLE
 [2026-06-12] feat | hardcore timer-zero export modal — final save, export .zip | release deletes; expired-on-load too | touches: HARDCORE-INIT, PERSISTENCE
