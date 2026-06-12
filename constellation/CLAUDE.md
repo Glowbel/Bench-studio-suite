@@ -67,6 +67,8 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-12] feat | temp expiry sweep + two-tab notice + autosave debounce; FIX delete-other-session wiped live field | touches: PERSISTENCE, SESSION-INIT
+[2026-06-12] ref  | compass hold 950→800ms (snappier, Jordan); drag feel kept as-is | touches: CREATE-BUBBLE
 [2026-06-12] feat | hardcore timer-zero export modal — final save, export .zip | release deletes; expired-on-load too | touches: HARDCORE-INIT, PERSISTENCE
 [2026-06-12] feat | JSZip vendored (jszip.min.js sibling, local-first + CDN fallback) — export/import works offline | touches: PERSISTENCE
 [2026-06-12] fix | gesture ghosts (audit G1-G4) — doc mouseup, touchcancel, dissolve guard, glow compare | touches: CREATE-BUBBLE, DISSOLUTION, COMPASS
@@ -123,7 +125,9 @@ orbit chains must be acyclic — EVERY orbitOf assignment goes through
 localStorage: primary, fast, immediate writes
 IndexedDB: binary assets (images, audio if/when added)
 ZIP export/import: portable session, full state capture
-expiry: temporary sessions have expiresAt stored | logic for checking it pending
+expiry ✓ (Jun 2026): temp sessions self-delete 24h from beginning —
+  sweepExpiredSessions at boot (before resume) + dashboard open | the
+  on-screen session is never swept | only reminder is at creation, by design
 
 [export + crystallization]
 purpose: divergent → convergent | the bridge to action
@@ -216,7 +220,7 @@ bug-fixes: 12, 13, 14 (tracked separately by Jordan) | fetch when ready to addre
 phase-change-rethink: how do phases transition? | current model under review
   may shift how phase work gets framed in this doc going forward
 export-readiness: export shape carries enough state | hardcore export modal at timer zero ✓ (Jun 2026)
-session-expiry: expiresAt is stored but not checked | needs implementation
+session-expiry: ✓ shipped Jun 2026 — self-clean sweep, creation-time reminder only
 
 [1.5.proximate-target]
 early beta testing for functions and export
@@ -236,7 +240,7 @@ mode transition (creative ↔ struct) → state preservation across switch | bot
 manual completion circle → required trigger for crystallization | no auto-trigger
 export work → carries enough state to rebuild or hand off
 persistence work → three-layer model (localStorage + IndexedDB + ZIP)
-session expiry → expiresAt stored but not yet checked
+session expiry → swept at boot + dashboard open | never sweeps the on-screen session
 bubble tools UI → fetch constellation-bubble-tools.md before deep work
 visual embellishment → DEFERRED until geometry + core functions locked
 file split → external work in progress | don't restructure file inline

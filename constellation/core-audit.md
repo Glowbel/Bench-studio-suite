@@ -194,9 +194,27 @@ shipped file violates 3 written rules yet works everywhere it runs:
 4. R1+R2 resume + pagehide save — ✓ SHIPPED 2026-06-12
 5. P3 cached refs               — ✓ SHIPPED 2026-06-12
 6. R3 import hardening + M1 LRU — ✓ SHIPPED 2026-06-12 (+R6+R7+R8+R9 sweep)
-7. P1/P2 scale work             — OPEN (Jordan 2026-06-12: leave for the moment)
-8. R4 expiry + R5 multi-tab     — OPEN (Jordan 2026-06-12: leave for the moment)
-   G5 mouse MOVE_DELAY          — OPEN | feel change, Jordan's call
+7. P2 autosave debounce         — ✓ SHIPPED 2026-06-12 (250ms trailing; direct
+                                  saves flush; pagehide-verified). P1 (id→map,
+                                  physics scan caching) remains the ONLY open
+                                  scale item — defer until a big session is felt
+8. R4 expiry                    — ✓ SHIPPED 2026-06-12 per Jordan's spec:
+                                  temp sessions self-delete 24h from beginning
+                                  (sweep at boot + dashboard; on-screen session
+                                  never swept); reminder at creation ONLY
+   R5 multi-tab                 — ✓ SHIPPED 2026-06-12 (lightweight, Claude's
+                                  call per Jordan): storage-event notice in the
+                                  other tab, once per session. Cross-device
+                                  copies are separate storage = duplicates by
+                                  design until any backend exists
+   G5 mouse MOVE_DELAY          — ✓ RESOLVED 2026-06-12: keep drag feel as-is
+                                  (Jordan); compass hold 950→800ms
+   NEW finding (fixed same day): commitDeleteSession cleared the live field on
+                                  ANY deletion — next autosave would write an
+                                  empty field over the still-open session.
+                                  clearField now runs only when deleting the
+                                  on-screen session (removeSessionData factored
+                                  out for the expiry sweep)
    M4 TEMP diag                 — KEEP (Jordan 2026-06-12: iPad visual issues
                                   persist — diag is the instrument; possible
                                   iPad-specific design pass ahead)
@@ -206,8 +224,8 @@ shipped file violates 3 written rules yet works everywhere it runs:
    JSZip local bundling         — ✓ SHIPPED 2026-06-12 | vendored as sibling
                                   jszip.min.js, local-first loader w/ CDN
                                   fallback; offline round trip verified.
-                                  NOTE (Jordan): file may NEVER split — plan
-                                  in question, confirm before any restructure
+                                  NOTE (Jordan 2026-06-12): split only out of
+                                  necessity — single-file is the working plan
 ```
 
 All shipped batches verified by driving the app in headless Chromium
