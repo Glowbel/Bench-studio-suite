@@ -37,7 +37,13 @@ bake-queue: STAR_TEX_PENDING cleared on every path | dedup correct | gate poll c
 
 ## FINDINGS — ranked
 
-### S — data safety (fix first; silent-loss class)
+### S — data safety (fix first; silent-loss class) — ALL SHIPPED 2026-06-12
+
+*S1: safeSetItem + tap-to-dashboard banner (new SAVE-FAIL-BANNER zone + PERSISTENCE:SAVE-FAIL).
+S2: starEl.id set in spawnResidueStar. S3: clearField on deserialize early-returns + initial
+empty blob written at creation (si-begin AND hc-begin). S4: corrupt list → raw backed up to
+constellation-sessions-corrupt + list rebuilt from state blobs ("Recovered <date>" entries).
+S5: hcIntervalHandle global + stopHardcoreCountdown() + tick session-guard.*
 
 ```
 S1  quota failure silent — saveCurrentSession 10295 + saveSessionList 10679 setItem UNCAUGHT
@@ -178,7 +184,7 @@ shipped file violates 3 written rules yet works everywhere it runs:
 ## RECOMMENDED ORDER
 
 ```
-1. S1-S5 data-safety batch     — small surgical fixes, worst-case-loss class
+1. S1-S5 data-safety batch     — ✓ SHIPPED 2026-06-12
 2. G1-G4 gesture batch          — each 1-5 lines, user-visible ghosts
 3. M2+M3 bake resilience        — cheap insurance before beta
 4. R1+R2 resume + pagehide save — biggest perceived-reliability win for beta

@@ -67,6 +67,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-12] fix | data-safety batch (audit S1-S5) — quota banner, residue id, session contamination, list recovery, hc timer | touches: PERSISTENCE, HARDCORE-INIT, DISSOLUTION
 [2026-06-11] ref  | full-file core audit — 3-track deep pass → core-audit.md (ranked fixes); registry rebuilt | touches: REGISTRY
 [2026-06-10] feat | touch + field smoothness — bubble/ring/path motion via translate3d (no per-frame layout); touch-action manipulation; tether skip when no links | touches: PHYSICS, DRAG-HANDLERS, CREATE-BUBBLE
 [2026-06-10] feat | composited zoom star — gas as HTML <img> layers, GPU motion on WebKit; freeze+breathe removed | touches: ZOOM, STAR-RENDERER
