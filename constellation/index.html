@@ -74,53 +74,53 @@
     PHYSICS                     5492 — 5649 
     BUBBLE-DATA                 5650 — 5717 
     CREATE-BUBBLE               5718 — 5990 
-    STAR-RENDERER               5991 — 6540 
-    STAR-BAKE                   6047 — 6372 
-    CRYSTAL-SWIRL               6541 — 6574 
-    COMPASS (JS)                6576 — 7057 
-    GRAVITY-SUBMENU (JS)        7058 — 7100 
-    DISSOLUTION (JS)            7101 — 7340 
-    LINKING-AUTO                7341 — 7350 
-    CONTACT-DWELL-LINK          7352 — 7742 
-    INDUCED-ORBIT-CLEANUP       7743 — 7831 
-    DRAG-HANDLERS               7832 — 7997 
-    CRYSTALLIZATION (JS)        7998 — 8055 
-    ZOOM-VIEW (JS)              8056 — 8890 
-    PREVIEW-BRIDGE (JS)         8891 — 8947 
-    UNLINKED-DRAWER (JS)        8948 — 8983 
-    SUMMON-MENU (JS)            8984 — 9059 
-    AUTO-SESSION                9060 — 9128 
-    TEXT-INPUT (JS)             9129 — 9151 
-    VOICE-SKETCH-STUBS          9152 — 9170 
-    SELF-AWARENESS (JS)         9171 — 9195 
-    HINT                        9196 — 9204 
-    SEED-CONSTELLATION          9205 — 9210 
-    STAR-TOOLBAR (JS)           9211 — 9280 
-    VISUAL-SETTINGS-STATE       9281 — 9461 
-    STAR-DATA-MODEL             9463 — 9576 
-    TITLE-PILL (JS)             9578 — 9600 
-    SETTINGS-NAV (JS)           9601 — 9672 
-    SELF-AWARENESS-CTRLS        9673 — 9714 
-    SETTINGS-PANEL-DRAG         9715 — 9859 
-    CASCADE-SUBOPTIONS          9860 — 9880 
-    TOGGLE-GROUPS               9881 — 9917 
-    SLIDERS                     9918 — 9941 
-    ZOOM-INTERIOR-SETTINGS-LISTENERS  9942 — 10027
-    ORBIT-SPEED-DIRECTION      10028 — 10112
-    SESSION-DECAY              10113 — 10175
-    SESSION-PROMPT (JS)        10176 — 10219
-    DASHBOARD-DRAWER (JS)      10220 — 10335
-    PERSISTENCE                10336 — 11280
-    SESSION-INIT (JS)          11281 — 11406
-    HARDCORE-INIT (JS)         11407 — 11705
-    STAR-DIAL                  11709 — 11987
-    GLOBAL-STARS-MODAL         11989 — 12172
-    OVERRIDE-CONFIRM           12174 — 12223
-    BOOT-RESUME                12224 — 12247
-    STAR-TOOLBAR (HTML)        12250 — 12293
-    STAR-DIAL-DOM              12295 — 12319
-    GLOBAL-STARS-MODAL-DOM     12321 — 12356
-    OVERRIDE-CONFIRM-DOM       12358 — 12377
+    STAR-RENDERER               5991 — 6633 
+    STAR-BAKE                   6047 — 6465 
+    CRYSTAL-SWIRL               6634 — 6667 
+    COMPASS (JS)                6669 — 7150 
+    GRAVITY-SUBMENU (JS)        7151 — 7193 
+    DISSOLUTION (JS)            7194 — 7433 
+    LINKING-AUTO                7434 — 7443 
+    CONTACT-DWELL-LINK          7445 — 7835 
+    INDUCED-ORBIT-CLEANUP       7836 — 7924 
+    DRAG-HANDLERS               7925 — 8090 
+    CRYSTALLIZATION (JS)        8091 — 8148 
+    ZOOM-VIEW (JS)              8149 — 8983 
+    PREVIEW-BRIDGE (JS)         8984 — 9040 
+    UNLINKED-DRAWER (JS)        9041 — 9076 
+    SUMMON-MENU (JS)            9077 — 9152 
+    AUTO-SESSION                9153 — 9221 
+    TEXT-INPUT (JS)             9222 — 9244 
+    VOICE-SKETCH-STUBS          9245 — 9263 
+    SELF-AWARENESS (JS)         9264 — 9288 
+    HINT                        9289 — 9297 
+    SEED-CONSTELLATION          9298 — 9303 
+    STAR-TOOLBAR (JS)           9304 — 9373 
+    VISUAL-SETTINGS-STATE       9374 — 9554 
+    STAR-DATA-MODEL             9556 — 9669 
+    TITLE-PILL (JS)             9671 — 9693 
+    SETTINGS-NAV (JS)           9694 — 9765 
+    SELF-AWARENESS-CTRLS        9766 — 9807 
+    SETTINGS-PANEL-DRAG         9808 — 9952 
+    CASCADE-SUBOPTIONS          9953 — 9973 
+    TOGGLE-GROUPS               9974 — 10010
+    SLIDERS                    10011 — 10034
+    ZOOM-INTERIOR-SETTINGS-LISTENERS 10035 — 10120
+    ORBIT-SPEED-DIRECTION      10121 — 10205
+    SESSION-DECAY              10206 — 10268
+    SESSION-PROMPT (JS)        10269 — 10312
+    DASHBOARD-DRAWER (JS)      10313 — 10428
+    PERSISTENCE                10429 — 11413
+    SESSION-INIT (JS)          11414 — 11539
+    HARDCORE-INIT (JS)         11540 — 11838
+    STAR-DIAL                  11842 — 12120
+    GLOBAL-STARS-MODAL         12122 — 12305
+    OVERRIDE-CONFIRM           12307 — 12356
+    BOOT-RESUME                12357 — 12380
+    STAR-TOOLBAR (HTML)        12383 — 12426
+    STAR-DIAL-DOM              12428 — 12452
+    GLOBAL-STARS-MODAL-DOM     12454 — 12489
+    OVERRIDE-CONFIRM-DOM       12491 — 12510
   ════════════════════════════════════════════════════════════════════
 -->
 <!--
@@ -6126,6 +6126,95 @@ function _noteBakeFailure(key, size, svg) {
   }, 3000);
 }
 
+/* === BEGIN STAR-BAKE:LRU === */
+// 1024px textures are ~4.2MB decoded × 4 layers per combo and the cache
+// had no ceiling (the CLAUDE.md "no eviction yet" watch). Many distinct
+// movement|palette combos in one long session squeeze iPad Safari until
+// the compositor drops layers. Cap distinct 1024 GAS combos; evict the
+// least-recently-used (revoking urls), keep corona only while some
+// surviving gas combo still uses its palette, and clear the zoom star's
+// fingerprint so an evicted combo re-bakes cleanly on its next zoom.
+var STAR_TEX_LRU = {};          // 'movement|palette' -> last-use ts, 1024 tier
+var STAR_TEX_1024_CAP = 6;
+var STAR_TEX_EVICT_GRACE = 30000; // never evict a combo touched this recently
+
+function _dropTexKey(key) {
+  var url = STAR_TEX[key];
+  if (typeof url === 'string') { try { URL.revokeObjectURL(url); } catch (e) {} }
+  delete STAR_TEX[key];
+  delete STAR_TEX_PENDING[key];
+  delete STAR_TEX_FAILS[key];
+}
+
+function _touchTexCombo(key) {
+  var p = key.split('|');
+  if (p[p.length - 1] !== '1024' || p[0] === 'corona') return;
+  STAR_TEX_LRU[p[0] + '|' + p[1]] = Date.now();
+  _evictStale1024();
+}
+
+function _zoomProtectedCombo() {
+  if (!state.zoomTargetId) return null;
+  var b = getBubbleById(state.zoomTargetId);
+  if (!b) return null;
+  var cfg = getBubbleStar(b);
+  return cfg.movement + '|' + cfg.palette;
+}
+
+function _evictStale1024() {
+  var keys = Object.keys(STAR_TEX);
+  var combos = [], seen = {}, i, p, combo;
+  for (i = 0; i < keys.length; i++) {
+    p = keys[i].split('|');
+    if (p[p.length - 1] !== '1024' || p[0] === 'corona') continue;
+    combo = p[0] + '|' + p[1];
+    if (!seen[combo]) { seen[combo] = true; combos.push(combo); }
+  }
+  if (combos.length <= STAR_TEX_1024_CAP) return;
+  combos.sort(function (a, b) { return (STAR_TEX_LRU[a] || 0) - (STAR_TEX_LRU[b] || 0); });
+
+  var protectedCombo = _zoomProtectedCombo();
+  var now = Date.now();
+  var toEvict = combos.length - STAR_TEX_1024_CAP;
+  var evictedAny = false;
+  for (i = 0; i < combos.length && toEvict > 0; i++) {
+    combo = combos[i];
+    if (combo === protectedCombo) continue;                       // on screen in the zoom
+    if (now - (STAR_TEX_LRU[combo] || 0) < STAR_TEX_EVICT_GRACE) continue;
+    var li, pending = false;
+    for (li = 0; li < 4; li++) {
+      if (STAR_TEX_PENDING[combo + '|' + li + '|1024']) { pending = true; break; }
+    }
+    if (pending) continue;                                        // mid-bake — next round
+    for (li = 0; li < 4; li++) { _dropTexKey(combo + '|' + li + '|1024'); }
+    delete STAR_TEX_LRU[combo];
+    evictedAny = true;
+    toEvict--;
+  }
+  if (!evictedAny) return;
+
+  // Corona pass: a corona 1024 is keyed by palette only — drop it once no
+  // surviving 1024 gas combo still uses that palette
+  keys = Object.keys(STAR_TEX);
+  var livePalettes = {};
+  for (i = 0; i < keys.length; i++) {
+    p = keys[i].split('|');
+    if (p[p.length - 1] === '1024' && p[0] !== 'corona') { livePalettes[p[1]] = true; }
+  }
+  for (i = 0; i < keys.length; i++) {
+    p = keys[i].split('|');
+    if (p[0] === 'corona' && p[p.length - 1] === '1024' && !livePalettes[p[1]] &&
+        !STAR_TEX_PENDING[keys[i]]) {
+      _dropTexKey(keys[i]);
+    }
+  }
+  // The (closed) zoom star may hold evicted bitmaps — force a fresh render
+  // + re-bake on the next open instead of showing broken images
+  var sw = document.querySelector('#zoom-zone3 .bubble-star');
+  if (sw) { sw.setAttribute('data-fp', ''); }
+}
+/* === END STAR-BAKE:LRU === */
+
 function _startStarBake(key, size, svg, done) {
   // settle() is the ONLY exit — success or failure, it runs exactly once,
   // clears pending state, and advances the serialized queue. The watchdog
@@ -6143,6 +6232,7 @@ function _startStarBake(key, size, svg, done) {
     if (url) {
       STAR_TEX[key] = url;
       if (STAR_TEX_FAILS[key]) { delete STAR_TEX_FAILS[key]; }
+      _touchTexCombo(key);   // LRU stamp + soft-cap eviction (1024 tier)
     } else {
       _noteBakeFailure(key, size, svg);
     }
@@ -6216,7 +6306,10 @@ function _drainBake() {
 function getStarTexture(movement, paletteId, li, size, colorHex, g, filterId, lowPri) {
   if (!_starBakeOK) return null;
   var key = movement + '|' + paletteId + '|' + li + '|' + size;
-  if (Object.prototype.hasOwnProperty.call(STAR_TEX, key)) return STAR_TEX[key];
+  if (Object.prototype.hasOwnProperty.call(STAR_TEX, key)) {
+    _touchTexCombo(key);   // keep actively-used 1024 combos off the evict list
+    return STAR_TEX[key];
+  }
   if (!STAR_TEX_PENDING[key]) {
     STAR_TEX_PENDING[key] = true;
     _enqueueBake({ key: key, size: size, svg: _bakeSvgMarkup(size, colorHex, g, filterId) }, lowPri);
@@ -10621,21 +10714,30 @@ function initIndexedDB(callback) {
   };
   req.onerror = function() {
     console.warn('Constellation: IndexedDB unavailable');
+    // Callers chain work off this callback (e.g. import's pending counter)
+    // — failing to call it stalled imports silently. constDB stays null;
+    // the asset helpers below no-op cleanly on that.
+    if (callback) { callback(); }
   };
 }
 
 function saveAsset(assetId, blob, callback) {
   initIndexedDB(function() {
+    if (!constDB) { if (callback) { callback(); } return; }
     var tx = constDB.transaction('assets', 'readwrite');
     var store = tx.objectStore('assets');
     store.put({ id: assetId, blob: blob, savedAt: Date.now() });
     tx.oncomplete = function() { if (callback) { callback(); } };
-    tx.onerror    = function() { console.warn('Asset save failed: ' + assetId); };
+    tx.onerror    = function() {
+      console.warn('Asset save failed: ' + assetId);
+      if (callback) { callback(); }
+    };
   });
 }
 
 function loadAsset(assetId, callback) {
   initIndexedDB(function() {
+    if (!constDB) { if (callback) { callback(null); } return; }
     var tx    = constDB.transaction('assets', 'readonly');
     var store = tx.objectStore('assets');
     var req   = store.get(assetId);
@@ -10648,6 +10750,7 @@ function loadAsset(assetId, callback) {
 
 function deleteAsset(assetId) {
   initIndexedDB(function() {
+    if (!constDB) { return; }
     var tx    = constDB.transaction('assets', 'readwrite');
     var store = tx.objectStore('assets');
     store.delete(assetId);
@@ -10661,6 +10764,7 @@ function deleteSessionAssets(sessionId, callback) {
   var data;
   try { data = JSON.parse(raw); } catch(e) { if (callback) { callback(); } return; }
   initIndexedDB(function() {
+    if (!constDB) { if (callback) { callback(); } return; }
     var ids = [];
     for (var i = 0; i < data.bubbles.length; i++) {
       var bd = data.bubbles[i];
@@ -10725,6 +10829,9 @@ function exportSessionZip(sessionId) {
     var script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
     script.onload = doZip;
+    script.onerror = function() {
+      alert("Export needs the zip engine and it couldn't load — are you offline? Try again once connected.");
+    };
     document.head.appendChild(script);
   } else {
     doZip();
@@ -10750,6 +10857,9 @@ function importSessionZip(file) {
     var script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
     script.onload = function() { doImport(file); };
+    script.onerror = function() {
+      alert("Import needs the zip engine and it couldn't load — are you offline? Try again once connected.");
+    };
     document.head.appendChild(script);
   } else {
     doImport(file);
@@ -10759,9 +10869,20 @@ function importSessionZip(file) {
 function doImport(file) {
   JSZip.loadAsync(file).then(function(zip) {
     // Read session.json first
-    zip.file('session.json').async('string').then(function(raw) {
+    var sj = zip.file('session.json');
+    if (!sj) {
+      alert("That file isn't a Constellation export — no session data inside.");
+      return;
+    }
+    return sj.async('string').then(function(raw) {
       var bundle;
       try { bundle = JSON.parse(raw); } catch(e) { alert('Invalid session file.'); return; }
+      // Validate shape before anything touches storage
+      if (!bundle || !bundle.meta || !bundle.state || !bundle.state.bubbles ||
+          Object.prototype.toString.call(bundle.state.bubbles) !== '[object Array]') {
+        alert('Invalid session file.');
+        return;
+      }
       var meta  = bundle.meta;
       var sdata = bundle.state;
 
@@ -10773,8 +10894,12 @@ function doImport(file) {
       }
       if (exists) { meta.id = Date.now(); }
 
-      // Save state JSON to localStorage
-      localStorage.setItem('constellation-state-' + meta.id, JSON.stringify(sdata));
+      // Save state JSON FIRST and abort if storage is full — a list entry
+      // must never point at a blob that didn't land
+      if (!safeSetItem('constellation-state-' + meta.id, JSON.stringify(sdata))) {
+        alert('Import failed — storage is full. Export or delete a session, then try again.');
+        return;
+      }
 
       // Load assets into IndexedDB
       var files = zip.files;
@@ -10790,12 +10915,14 @@ function doImport(file) {
       function onAllAssets() {
         // Add to session list
         meta.modified = Date.now();
+        if (!meta.type) { meta.type = 'saved'; }
         list.unshift(meta);
         saveSessionList(list);
-        // Load the session
-        state.currentSessionId = meta.id;
-        deserializeSession(meta.id);
         renderSessionList();
+        // Full parity with a dashboard load: saves the outgoing session,
+        // stops hardcore timers, records last-session, sets the session
+        // type, and runs the load gate so the project opens already baked
+        loadSession(meta);
       }
 
       if (pending === 0) { onAllAssets(); return; }
@@ -10809,10 +10936,16 @@ function doImport(file) {
               pending--;
               if (pending === 0) { onAllAssets(); }
             });
+          }, function() {
+            // unreadable asset — skip it rather than stalling the import
+            pending--;
+            if (pending === 0) { onAllAssets(); }
           });
         })(assetKeys[ai]);
       }
     });
+  }).catch(function() {
+    alert("Couldn't read that file — it may be damaged or not a Constellation export.");
   });
 }
 
