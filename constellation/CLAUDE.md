@@ -67,6 +67,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-12] feat | hardcore timer-zero export modal — final save, export .zip | release deletes; expired-on-load too | touches: HARDCORE-INIT, PERSISTENCE
 [2026-06-12] feat | JSZip vendored (jszip.min.js sibling, local-first + CDN fallback) — export/import works offline | touches: PERSISTENCE
 [2026-06-12] fix | gesture ghosts (audit G1-G4) — doc mouseup, touchcancel, dissolve guard, glow compare | touches: CREATE-BUBBLE, DISSOLUTION, COMPASS
 [2026-06-12] feat | bake resilience + 1024 LRU eviction (audit M1-M3) — retry ×3, 8s watchdog, cap 6 combos | touches: STAR-BAKE
@@ -127,7 +128,9 @@ expiry: temporary sessions have expiresAt stored | logic for checking it pending
 [export + crystallization]
 purpose: divergent → convergent | the bridge to action
 manual completion circle triggers crystallization (no auto-trigger)
-hardcore export modal at timer zero (pending implementation)
+hardcore export modal at timer zero ✓ (Jun 2026): final save → freeze →
+  modal (export .zip | release) | release = commitDeleteSession, field clears
+  | expired-while-away sessions get the same modal on load
 export shape carries enough state to rebuild or hand off
 
 [interaction-principles] (locked)
@@ -212,7 +215,7 @@ bug-fixes: 12, 13, 14 (tracked separately by Jordan) | fetch when ready to addre
   others surfaced by audit get their own entries
 phase-change-rethink: how do phases transition? | current model under review
   may shift how phase work gets framed in this doc going forward
-export-readiness: export shape carries enough state | hardcore export modal at timer zero
+export-readiness: export shape carries enough state | hardcore export modal at timer zero ✓ (Jun 2026)
 session-expiry: expiresAt is stored but not checked | needs implementation
 
 [1.5.proximate-target]
