@@ -67,34 +67,18 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-12] fix | gesture ghosts (audit G1-G4) — doc mouseup, touchcancel, dissolve guard, glow compare | touches: CREATE-BUBBLE, DISSOLUTION, COMPASS
+[2026-06-12] feat | bake resilience + 1024 LRU eviction (audit M1-M3) — retry ×3, 8s watchdog, cap 6 combos | touches: STAR-BAKE
+[2026-06-12] feat | boot resume + pagehide save; import → loadSession parity + error surfacing (R1-R3,R6-R9) | touches: PERSISTENCE
+[2026-06-12] ref  | drag move handlers use cached refs; link-zone els cached at bloom (audit P3) | touches: DRAG-HANDLERS, CONTACT-DWELL-LINK
 [2026-06-12] fix | data-safety batch (audit S1-S5) — quota banner, residue id, session contamination, list recovery, hc timer | touches: PERSISTENCE, HARDCORE-INIT, DISSOLUTION
 [2026-06-11] ref  | full-file core audit — 3-track deep pass → core-audit.md (ranked fixes); registry rebuilt | touches: REGISTRY
 [2026-06-10] feat | touch + field smoothness — bubble/ring/path motion via translate3d (no per-frame layout); touch-action manipulation; tether skip when no links | touches: PHYSICS, DRAG-HANDLERS, CREATE-BUBBLE
 [2026-06-10] feat | composited zoom star — gas as HTML <img> layers, GPU motion on WebKit; freeze+breathe removed | touches: ZOOM, STAR-RENDERER
-[2026-06-10] fix | star editor sweep — previews never-live + bake waiters; dial/gsm backdrop blurs out; previews frozen | touches: STAR-DIAL, GLOBAL-STARS-MODAL
-[2026-06-10] fix | maximize jolt+desync — FLIP page resize (composited); interior gas frozen + slow breathe | touches: ZOOM
 [2026-06-10] fix | zoom-in first-third skip + laggy maximize — paint-before-fly double-rAF; gas pause on full toggle | touches: ZOOM
 [2026-06-10] fix | iPad 2s zoom stall — zone3 halo/aura blur + page backdrop-filter killed (invisible at zoom scale) | touches: ZOOM
 [2026-06-10] feat | TEMP zoom diag readout — on-screen block-ms/tier/bake-health line; REMOVE after iPad diagnosis | touches: ZOOM
 [2026-06-10] fix | iPad 2s zoom freeze — zoom never renders live feTurbulence; baked-tier fallback 1024→384 | touches: ZOOM, STAR-BAKE
-[2026-06-10] fix | iPad zoom-camera jank — zone3 star anims pause while camera flies (zoom-animating class) | touches: ZOOM, STAR-RENDERER
-[2026-06-10] fix | iPad laggy resume — load gate fast-drains bake queue; loop idles while frozen | touches: STAR-BAKE, LOAD-GATE, ANIMATION-LOOP
-[2026-06-10] rm   | release-zone drop strip — CSS+HTML+JS+vis all out; compass west is the only link-break path | touches: DRAG-HANDLERS, COMPASS
-[2026-06-10] fix | mutual ring resizes with mass — updateBubbleVisualMass syncs ring to bubble edge | touches: BUBBLE-DATA
-[2026-06-10] fix | orbit cycles — commitLink cycle guard ×3 sites + load-time heal | touches: PHYSICS, CONTACT-DWELL-LINK, PERSISTENCE
-[2026-06-10] fix | moon release — mouse moon follows pointer, induced sweep | touches: DRAG-HANDLERS, INDUCED-ORBIT-CLEANUP
-[2026-06-10] fix | drift-speed restore 3× too fast; bloom target-gone state clear; mass-minus autosave | touches: PERSISTENCE, GRAVITY-SUBMENU
-[2026-06-09] fix | zone registry rebuilt + rebuilder hardened (fail-loud on bad markers, single-pass); STAR-BAKE marker repaired | touches: REGISTRY, STAR-BAKE
-[2026-06-08] feat | corona border baked — corona-fx rings rasterized once via generalized bake queue (job carries svg markup); no live feTurbulence left in stars | touches: STAR-BAKE, STAR-RENDERER
-[2026-06-08] feat | resume warming gate — loadSession bakes all present combos (field 384 + atm 1024) behind a brief frozen-field loader, reveals on queue-drain or 8s cap; resumed project opens already baked | touches: STAR-BAKE, LOAD-GATE
-[2026-06-08] fix  | bake flood on big projects — serialized bakes (1 at a time, idle-scheduled, visible-first/warm-last); was main-thread freeze + "loading movement" on maximize | touches: STAR-BAKE
-[2026-06-08] fix  | maximize jump — pre-promote zoom star + page to GPU layers (will-change/backface), kills Android layer-creation snap on full-screen toggle | touches: ZOOM
-[2026-06-08] feat | star gas-layers baked — feTurbulence rasterized once to blob-url <image>; cheap CSS transforms still animate; kills zoom lag (worst on iOS Safari) | touches: STAR-RENDERER, ZOOM, STAR-BAKE
-[2026-06-08] feat | interior-size control — zoomFramedScale (0.6-1.5×) multiplies framed atm; star+page combo scales as one locked unit, live-calibrates while zoomed open (_relayoutZoomLive) | touches: ZOOM, SETTINGS-PANEL, PERSISTENCE
-[2026-06-08] fix  | desktop maximize grows as one unit — uniform framed-page scale-up (was reshaping under 760×660 cap); mobile unchanged | touches: ZOOM
-[2026-06-08] feat | starfield swap — CSS twinkle dots replace canvas drift field; +density slider 0.5-2.5× | touches: AMBIENT-STARS, SETTINGS-PANEL, PERSISTENCE
-[2026-06-08] ref  | zoom interior settings pruned — baked 5 constants (anchor/atm-opacity/sharp/pullback/melt), +zoom-out-speed, removed dead vignette (invalid gradient %) | touches: ZOOM, SETTINGS-PANEL, PERSISTENCE
-[2026-06-06] fix  | bg star lag — pause field gas-anims on drag/zoom/compass/dial + reduced-motion | touches: BUBBLES, STAR-SYSTEM, ZOOM
 ```
 
 ---
@@ -168,8 +152,11 @@ baking (STAR-BAKE, locked Jun 2026): gas-layer feTurbulence rasterized ONCE to a
   bakes are SERIALIZED through a queue (concurrency 1, idle-scheduled): visible
   stars via _bakeQ (high), proactive warm via _bakeQLow (low). never parallel —
   a burst of 1024px feTurbulence rasters + PNG encodes froze big projects on
-  maximize (Jun 2026). watch: 1024px warm textures are ~16MB/combo — many
-  distinct combos in one project is a memory ceiling (no eviction yet).
+  maximize (Jun 2026). 1024 tier has LRU EVICTION (Jun 2026 audit): cap 6 gas
+  combos, 30s grace, open-zoom combo protected, corona dropped with its last
+  palette user, urls revoked, zone3 fp cleared. failed bakes RETRY ×3 (3s apart)
+  before permanent live fallback; 8s watchdog frees a hung decode (settle()
+  single-exit).
 compass 'customize' direction → openStarDial(b) — per-bubble dial
 settings panel 'customize stars' row → openGlobalStarsModal() — field defaults
 override confirm: 'unstyled' (default) | 'all' — only shown if any bubble customized

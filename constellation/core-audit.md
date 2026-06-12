@@ -75,7 +75,7 @@ S5  hardcore interval orphan — hcInterval 11447 is local, only self-clears at 
     guard endHardcoreSession on session id match
 ```
 
-### G — gesture/interaction edge cases
+### G — gesture/interaction edge cases — G1-G4 SHIPPED 2026-06-12 (G5 open: Jordan's call, feel change)
 
 ```
 G1  mouse released off-bubble → ghost drag + ghost compass — mousedown 5838 attaches
@@ -100,7 +100,8 @@ G5  MOVE_DELAY not enforced for mouse — onDocMove attached at mousedown not af
     timer → drag starts on first 18px regardless. behavior deviation, not instability
 ```
 
-### M — memory / long-term (hours-long iPad sessions)
+### M — memory / long-term (hours-long iPad sessions) — M1+M2+M3 SHIPPED 2026-06-12
+*(M4 TEMP diag stays until Jordan's iPad confirm round; M5 accepted as-is)*
 
 ```
 M1  STAR_TEX no eviction (known watch — now quantified): bound 528 blob urls max
@@ -126,7 +127,7 @@ M5  zone3 retains last combo's 4×1024 imgs + will-change permanently — accept
     (display:none drops GPU layers); only act if Safari profiling shows it pinned
 ```
 
-### P — performance at scale
+### P — performance at scale — P3 SHIPPED 2026-06-12 (P1/P2 open: defer until sessions grow past ~50 bubbles)
 
 ```
 P1  physics per-frame O(bubbles × links × bubbles) — mutual-moon wobble 5524-5537
@@ -144,7 +145,10 @@ P3  drag-move queries getElementById per event (7769-7772, 7807-7810 free-bubble
     fix: use cached refs | cache zone els in showLinkZone/clearLinkZones
 ```
 
-### R — resilience / parity gaps
+### R — resilience / parity gaps — R1,R2,R3*,R6,R7,R8,R9 SHIPPED 2026-06-12
+*(R3 shipped minus JSZip local bundling — vendoring ~96KB into the single file is a
+decision for Jordan, and the file split makes it cheaper later. R4 expiry + R5
+multi-tab still open: both need a design decision, see entries below.)*
 
 ```
 R1  no boot resume — reload → first tap silently creates "Untitled N"; prior work
@@ -185,13 +189,20 @@ shipped file violates 3 written rules yet works everywhere it runs:
 
 ```
 1. S1-S5 data-safety batch     — ✓ SHIPPED 2026-06-12
-2. G1-G4 gesture batch          — each 1-5 lines, user-visible ghosts
-3. M2+M3 bake resilience        — cheap insurance before beta
-4. R1+R2 resume + pagehide save — biggest perceived-reliability win for beta
-5. P3 cached refs               — mechanical, finishes the June smoothness work
-6. R3 import hardening + M1 LRU eviction — before beta export testing
-7. P1/P2 scale work             — when sessions actually grow past ~50 bubbles
-8. R4 expiry + R5 multi-tab     — design decisions needed (flag vs delete; warn vs lock)
+2. G1-G4 gesture batch          — ✓ SHIPPED 2026-06-12
+3. M2+M3 bake resilience        — ✓ SHIPPED 2026-06-12
+4. R1+R2 resume + pagehide save — ✓ SHIPPED 2026-06-12
+5. P3 cached refs               — ✓ SHIPPED 2026-06-12
+6. R3 import hardening + M1 LRU — ✓ SHIPPED 2026-06-12 (+R6+R7+R8+R9 sweep)
+7. P1/P2 scale work             — OPEN | when sessions grow past ~50 bubbles
+8. R4 expiry + R5 multi-tab     — OPEN | design decisions needed (flag vs delete; warn vs lock)
+   G5 mouse MOVE_DELAY          — OPEN | feel change, Jordan's call
+   M4 TEMP diag removal         — OPEN | after Jordan's iPad confirm round
+   T  tier-2 rule wording       — OPEN | adjudicate '<'/for-in/inline-custom-prop rules vs reality
+   JSZip local bundling         — OPEN | decision: vendor ~96KB vs wait for file split
 ```
 
-Each numbered batch is independently shippable and testable by feel.
+All shipped batches verified by driving the app in headless Chromium
+(real UI: session flows, drags, link zones, imports, forced quota/bake
+failures). Remaining items need either scale, a design decision, or
+Jordan's device.

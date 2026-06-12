@@ -73,54 +73,54 @@
     ANIMATION-LOOP              5477 — 5491 
     PHYSICS                     5492 — 5649 
     BUBBLE-DATA                 5650 — 5717 
-    CREATE-BUBBLE               5718 — 5990 
-    STAR-RENDERER               5991 — 6633 
-    STAR-BAKE                   6047 — 6465 
-    CRYSTAL-SWIRL               6634 — 6667 
-    COMPASS (JS)                6669 — 7150 
-    GRAVITY-SUBMENU (JS)        7151 — 7193 
-    DISSOLUTION (JS)            7194 — 7433 
-    LINKING-AUTO                7434 — 7443 
-    CONTACT-DWELL-LINK          7445 — 7835 
-    INDUCED-ORBIT-CLEANUP       7836 — 7924 
-    DRAG-HANDLERS               7925 — 8090 
-    CRYSTALLIZATION (JS)        8091 — 8148 
-    ZOOM-VIEW (JS)              8149 — 8983 
-    PREVIEW-BRIDGE (JS)         8984 — 9040 
-    UNLINKED-DRAWER (JS)        9041 — 9076 
-    SUMMON-MENU (JS)            9077 — 9152 
-    AUTO-SESSION                9153 — 9221 
-    TEXT-INPUT (JS)             9222 — 9244 
-    VOICE-SKETCH-STUBS          9245 — 9263 
-    SELF-AWARENESS (JS)         9264 — 9288 
-    HINT                        9289 — 9297 
-    SEED-CONSTELLATION          9298 — 9303 
-    STAR-TOOLBAR (JS)           9304 — 9373 
-    VISUAL-SETTINGS-STATE       9374 — 9554 
-    STAR-DATA-MODEL             9556 — 9669 
-    TITLE-PILL (JS)             9671 — 9693 
-    SETTINGS-NAV (JS)           9694 — 9765 
-    SELF-AWARENESS-CTRLS        9766 — 9807 
-    SETTINGS-PANEL-DRAG         9808 — 9952 
-    CASCADE-SUBOPTIONS          9953 — 9973 
-    TOGGLE-GROUPS               9974 — 10010
-    SLIDERS                    10011 — 10034
-    ZOOM-INTERIOR-SETTINGS-LISTENERS 10035 — 10120
-    ORBIT-SPEED-DIRECTION      10121 — 10205
-    SESSION-DECAY              10206 — 10268
-    SESSION-PROMPT (JS)        10269 — 10312
-    DASHBOARD-DRAWER (JS)      10313 — 10428
-    PERSISTENCE                10429 — 11413
-    SESSION-INIT (JS)          11414 — 11539
-    HARDCORE-INIT (JS)         11540 — 11838
-    STAR-DIAL                  11842 — 12120
-    GLOBAL-STARS-MODAL         12122 — 12305
-    OVERRIDE-CONFIRM           12307 — 12356
-    BOOT-RESUME                12357 — 12380
-    STAR-TOOLBAR (HTML)        12383 — 12426
-    STAR-DIAL-DOM              12428 — 12452
-    GLOBAL-STARS-MODAL-DOM     12454 — 12489
-    OVERRIDE-CONFIRM-DOM       12491 — 12510
+    CREATE-BUBBLE               5718 — 5993 
+    STAR-RENDERER               5994 — 6636 
+    STAR-BAKE                   6050 — 6468 
+    CRYSTAL-SWIRL               6637 — 6670 
+    COMPASS (JS)                6672 — 7153 
+    GRAVITY-SUBMENU (JS)        7154 — 7196 
+    DISSOLUTION (JS)            7197 — 7436 
+    LINKING-AUTO                7437 — 7446 
+    CONTACT-DWELL-LINK          7448 — 7838 
+    INDUCED-ORBIT-CLEANUP       7839 — 7927 
+    DRAG-HANDLERS               7928 — 8093 
+    CRYSTALLIZATION (JS)        8094 — 8151 
+    ZOOM-VIEW (JS)              8152 — 8986 
+    PREVIEW-BRIDGE (JS)         8987 — 9043 
+    UNLINKED-DRAWER (JS)        9044 — 9079 
+    SUMMON-MENU (JS)            9080 — 9155 
+    AUTO-SESSION                9156 — 9224 
+    TEXT-INPUT (JS)             9225 — 9247 
+    VOICE-SKETCH-STUBS          9248 — 9266 
+    SELF-AWARENESS (JS)         9267 — 9291 
+    HINT                        9292 — 9300 
+    SEED-CONSTELLATION          9301 — 9306 
+    STAR-TOOLBAR (JS)           9307 — 9376 
+    VISUAL-SETTINGS-STATE       9377 — 9557 
+    STAR-DATA-MODEL             9559 — 9672 
+    TITLE-PILL (JS)             9674 — 9696 
+    SETTINGS-NAV (JS)           9697 — 9768 
+    SELF-AWARENESS-CTRLS        9769 — 9810 
+    SETTINGS-PANEL-DRAG         9811 — 9955 
+    CASCADE-SUBOPTIONS          9956 — 9976 
+    TOGGLE-GROUPS               9977 — 10013
+    SLIDERS                    10014 — 10037
+    ZOOM-INTERIOR-SETTINGS-LISTENERS 10038 — 10123
+    ORBIT-SPEED-DIRECTION      10124 — 10208
+    SESSION-DECAY              10209 — 10273
+    SESSION-PROMPT (JS)        10274 — 10317
+    DASHBOARD-DRAWER (JS)      10318 — 10433
+    PERSISTENCE                10434 — 11425
+    SESSION-INIT (JS)          11426 — 11551
+    HARDCORE-INIT (JS)         11552 — 11850
+    STAR-DIAL                  11854 — 12132
+    GLOBAL-STARS-MODAL         12134 — 12317
+    OVERRIDE-CONFIRM           12319 — 12368
+    BOOT-RESUME                12369 — 12392
+    STAR-TOOLBAR (HTML)        12395 — 12438
+    STAR-DIAL-DOM              12440 — 12464
+    GLOBAL-STARS-MODAL-DOM     12466 — 12501
+    OVERRIDE-CONFIRM-DOM       12503 — 12522
   ════════════════════════════════════════════════════════════════════
 -->
 <!--
@@ -5769,10 +5769,13 @@ function renderBubble(b) {
 
   el.innerHTML =
     '<div class="bubble-inner">' +
-      '<div class="bubble-label">' + b.label + '</div>' +
+      '<div class="bubble-label"></div>' +
       '<div class="portal-icon">· portal ·</div>' +
     '</div>' +
     '<div class="bubble-bg"></div>';
+  // textContent, not interpolation — a label containing '<' must render
+  // as text (openLinkSelect already does it this way)
+  el.querySelector('.bubble-label').textContent = b.label;
 
   // ── GESTURE MODEL ──────────────────────────────────────
   // Tap (< 300ms, no move)     → zoom / preview
@@ -10252,6 +10255,7 @@ for (var di = 0; di < decayBtns.length; di++) {
       customSub.classList.remove('open');
       setDecayInterval(parseInt(val, 10));
       syncDecayToggles(parseInt(val, 10));
+      autoSave();   // decayInterval is session state — persist the choice now
     }
   });
 }
@@ -10263,6 +10267,7 @@ document.getElementById('sp-decay-custom-slider').addEventListener('input', func
   var interval = decayMinutesToInterval(mins);
   setDecayInterval(interval);
   syncDecayToggles(interval);
+  autoSave();   // decayInterval is session state — persist the choice now
 });
 
 /* === END SESSION-DECAY === */
@@ -10615,6 +10620,13 @@ function deserializeSession(id) {
     if (cp && orbitChainContains(cp, cb.id)) {
       breakSingleLink(cb.id, cb.orbitOf);             // removes the planetary link if one exists
       if (cb.orbitOf) silentlyReleaseFromOrbit(cb);   // induced orbiter — no link to break
+    }
+    // Heal a moon saved with no orbitRadius — cos × null parks it on the
+    // planet's center; give it a sane ring (or release if the planet's gone)
+    if (cb.orbitOf && !cb.orbitRadius) {
+      var hp = getBubbleById(cb.orbitOf);
+      if (hp) { cb.orbitRadius = bubbleRadius(hp) + bubbleRadius(cb) + 20; }
+      else    { cb.orbitOf = null; }
     }
   }
 
