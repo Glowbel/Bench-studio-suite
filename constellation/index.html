@@ -73,53 +73,53 @@
     ANIMATION-LOOP              5476 — 5490 
     PHYSICS                     5491 — 5648 
     BUBBLE-DATA                 5649 — 5716 
-    CREATE-BUBBLE               5717 — 5962 
-    STAR-RENDERER               5963 — 6478 
-    STAR-BAKE                   6019 — 6310 
-    CRYSTAL-SWIRL               6479 — 6512 
-    COMPASS (JS)                6514 — 6995 
-    GRAVITY-SUBMENU (JS)        6996 — 7038 
-    DISSOLUTION (JS)            7039 — 7274 
-    LINKING-AUTO                7275 — 7284 
-    CONTACT-DWELL-LINK          7286 — 7668 
-    INDUCED-ORBIT-CLEANUP       7669 — 7757 
-    DRAG-HANDLERS               7758 — 7925 
-    CRYSTALLIZATION (JS)        7926 — 7983 
-    ZOOM-VIEW (JS)              7984 — 8818 
-    PREVIEW-BRIDGE (JS)         8819 — 8875 
-    UNLINKED-DRAWER (JS)        8876 — 8911 
-    SUMMON-MENU (JS)            8912 — 8987 
-    AUTO-SESSION                8988 — 9056 
-    TEXT-INPUT (JS)             9057 — 9079 
-    VOICE-SKETCH-STUBS          9080 — 9098 
-    SELF-AWARENESS (JS)         9099 — 9123 
-    HINT                        9124 — 9132 
-    SEED-CONSTELLATION          9133 — 9138 
-    STAR-TOOLBAR (JS)           9139 — 9208 
-    VISUAL-SETTINGS-STATE       9209 — 9389 
-    STAR-DATA-MODEL             9391 — 9504 
-    TITLE-PILL (JS)             9506 — 9528 
-    SETTINGS-NAV (JS)           9529 — 9600 
-    SELF-AWARENESS-CTRLS        9601 — 9642 
-    SETTINGS-PANEL-DRAG         9643 — 9787 
-    CASCADE-SUBOPTIONS          9788 — 9808 
-    TOGGLE-GROUPS               9809 — 9845 
-    SLIDERS                     9846 — 9869 
-    ZOOM-INTERIOR-SETTINGS-LISTENERS  9870 — 9949 
-    ORBIT-SPEED-DIRECTION       9950 — 10034
-    SESSION-DECAY              10035 — 10097
-    SESSION-PROMPT (JS)        10098 — 10141
-    DASHBOARD-DRAWER (JS)      10142 — 10257
-    PERSISTENCE                10258 — 11187
-    SESSION-INIT (JS)          11188 — 11313
-    HARDCORE-INIT (JS)         11314 — 11612
-    STAR-DIAL                  11616 — 11894
-    GLOBAL-STARS-MODAL         11896 — 12079
-    OVERRIDE-CONFIRM           12081 — 12130
-    STAR-TOOLBAR (HTML)        12133 — 12176
-    STAR-DIAL-DOM              12178 — 12202
-    GLOBAL-STARS-MODAL-DOM     12204 — 12239
-    OVERRIDE-CONFIRM-DOM       12241 — 12260
+    CREATE-BUBBLE               5717 — 5989 
+    STAR-RENDERER               5990 — 6505 
+    STAR-BAKE                   6046 — 6337 
+    CRYSTAL-SWIRL               6506 — 6539 
+    COMPASS (JS)                6541 — 7022 
+    GRAVITY-SUBMENU (JS)        7023 — 7065 
+    DISSOLUTION (JS)            7066 — 7305 
+    LINKING-AUTO                7306 — 7315 
+    CONTACT-DWELL-LINK          7317 — 7699 
+    INDUCED-ORBIT-CLEANUP       7700 — 7788 
+    DRAG-HANDLERS               7789 — 7956 
+    CRYSTALLIZATION (JS)        7957 — 8014 
+    ZOOM-VIEW (JS)              8015 — 8849 
+    PREVIEW-BRIDGE (JS)         8850 — 8906 
+    UNLINKED-DRAWER (JS)        8907 — 8942 
+    SUMMON-MENU (JS)            8943 — 9018 
+    AUTO-SESSION                9019 — 9087 
+    TEXT-INPUT (JS)             9088 — 9110 
+    VOICE-SKETCH-STUBS          9111 — 9129 
+    SELF-AWARENESS (JS)         9130 — 9154 
+    HINT                        9155 — 9163 
+    SEED-CONSTELLATION          9164 — 9169 
+    STAR-TOOLBAR (JS)           9170 — 9239 
+    VISUAL-SETTINGS-STATE       9240 — 9420 
+    STAR-DATA-MODEL             9422 — 9535 
+    TITLE-PILL (JS)             9537 — 9559 
+    SETTINGS-NAV (JS)           9560 — 9631 
+    SELF-AWARENESS-CTRLS        9632 — 9673 
+    SETTINGS-PANEL-DRAG         9674 — 9818 
+    CASCADE-SUBOPTIONS          9819 — 9839 
+    TOGGLE-GROUPS               9840 — 9876 
+    SLIDERS                     9877 — 9900 
+    ZOOM-INTERIOR-SETTINGS-LISTENERS  9901 — 9980 
+    ORBIT-SPEED-DIRECTION       9981 — 10065
+    SESSION-DECAY              10066 — 10128
+    SESSION-PROMPT (JS)        10129 — 10172
+    DASHBOARD-DRAWER (JS)      10173 — 10288
+    PERSISTENCE                10289 — 11218
+    SESSION-INIT (JS)          11219 — 11344
+    HARDCORE-INIT (JS)         11345 — 11643
+    STAR-DIAL                  11647 — 11925
+    GLOBAL-STARS-MODAL         11927 — 12110
+    OVERRIDE-CONFIRM           12112 — 12161
+    STAR-TOOLBAR (HTML)        12164 — 12207
+    STAR-DIAL-DOM              12209 — 12233
+    GLOBAL-STARS-MODAL-DOM     12235 — 12270
+    OVERRIDE-CONFIRM-DOM       12272 — 12291
   ════════════════════════════════════════════════════════════════════
 -->
 <!--
@@ -5821,6 +5821,13 @@ function renderBubble(b) {
   }
 
   function onDocMove(e) {
+    // Button already up (released off-window / off-element edge cases the
+    // document mouseup can miss) — a press with no button is a ghost: clean
+    // up instead of starting a drag nobody asked for
+    if (e.buttons === 0 && !dragStarted) {
+      onDocMouseUp();
+      return;
+    }
     var dx = e.clientX - pressX;
     var dy = e.clientY - pressY;
     var dist = Math.sqrt(dx * dx + dy * dy);
@@ -5828,6 +5835,16 @@ function renderBubble(b) {
       clearTimeout(compassTimer); // moved — no compass
       startMoveMode(e.clientX, e.clientY);
     }
+  }
+
+  // One-shot document-level release. The bubble's own mouseup never fires
+  // when the button is released after drifting off the element (<18px, so
+  // no drag started) — without this, the compass timer still fires with no
+  // press, and the armed onDocMove glues the bubble to the next mouse move.
+  function onDocMouseUp() {
+    document.removeEventListener('mouseup', onDocMouseUp);
+    el.style.zIndex = '2';
+    cleanupPress();
   }
 
   // ── MOUSE ──
@@ -5864,6 +5881,7 @@ function renderBubble(b) {
     }, COMPASS_DELAY);
 
     document.addEventListener('mousemove', onDocMove);
+    document.addEventListener('mouseup', onDocMouseUp);
     e.stopPropagation();
   });
 
@@ -5933,6 +5951,15 @@ function renderBubble(b) {
       placeXY(el, b2.x, b2.y);
     }
   }, { passive: true });
+
+  el.addEventListener('touchcancel', function() {
+    // OS interrupted the touch (notification, gesture, palm) — without this
+    // the compass timer keeps running and opens with no finger down
+    el.style.zIndex = '2';
+    cleanupPress();
+    dragStarted = false;
+    // document-level touchcancel finalizes state.dragging if a drag was live
+  });
 
   el.addEventListener('touchend', function(e) {
     el.style.zIndex = '2'; // restore base
@@ -6928,7 +6955,7 @@ function updateCompassSlide(clientX, clientY) {
     // Update bubble glow brightness
     var glows = document.querySelectorAll('.link-select-glow');
     for (var gi = 0; gi < glows.length; gi++) {
-      var gId = glows[gi].id.replace('link-glow-', '');
+      var gId = parseInt(glows[gi].id.replace('link-glow-', ''), 10);
       if (gId === hoveredId) {
         glows[gi].style.animationDuration = '0.5s';
         glows[gi].style.opacity = '1';
@@ -7161,6 +7188,10 @@ function initiateDissolution(bubbleId) {
     starColor = 'rgba(122, 79, 160, 0.8)'; // violet — moderate
   }
 
+  // Reentry guard — the bubble stays tappable during the 850ms dissolve; a
+  // second trigger would make removeChild throw and abort the state cleanup
+  if (el.classList.contains('dissolving')) return;
+
   // Animate dissolve
   el.classList.add('dissolving');
 
@@ -7168,7 +7199,7 @@ function initiateDissolution(bubbleId) {
     // Clean up all link artifacts before removing from state — cleanupBubbleLinks needs getBubbleById
     cleanupBubbleLinks(bubbleId);
     // Remove bubble
-    el.parentNode.removeChild(el);
+    if (el.parentNode) { el.parentNode.removeChild(el); }
     for (var i = 0; i < state.bubbles.length; i++) {
       if (state.bubbles[i].id === bubbleId) {
         state.bubbles.splice(i, 1);
