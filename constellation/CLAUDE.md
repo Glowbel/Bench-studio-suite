@@ -67,6 +67,7 @@ phase milestone → MASTER RECORD entry
 
 ```
 [recent.entries]
+[2026-06-12] feat | JSZip vendored (jszip.min.js sibling, local-first + CDN fallback) — export/import works offline | touches: PERSISTENCE
 [2026-06-12] fix | gesture ghosts (audit G1-G4) — doc mouseup, touchcancel, dissolve guard, glow compare | touches: CREATE-BUBBLE, DISSOLUTION, COMPASS
 [2026-06-12] feat | bake resilience + 1024 LRU eviction (audit M1-M3) — retry ×3, 8s watchdog, cap 6 combos | touches: STAR-BAKE
 [2026-06-12] feat | boot resume + pagehide save; import → loadSession parity + error surfacing (R1-R3,R6-R9) | touches: PERSISTENCE
@@ -305,11 +306,15 @@ direction: constellation outputs (crystallized ideas) → bench leads/skills/pie
 contract: TBD | requires dedicated integration session
 priority: waits on Bench Phase 6 (Pieces) and Constellation file split
 
-[file split] (external work in progress)
-status: active externally | developer friend | testing in Claude artifacts
+[file split] (status in question — 2026-06-12)
+status: Jordan says the file may NEVER split — single-file may be permanent
+  if Claude+Jordan sessions can carry it | confirm direction before any
+  restructure either way
+was: active externally | developer friend | testing in Claude artifacts
 do-not: inline-restructure during regular sessions
-when-lands: verify | then update [zones] vocabulary in this doc to file names
+if-lands: verify | then update [zones] vocabulary in this doc to file names
   then re-evaluate integration flag readiness
+third-party libs: vendor as sibling static files (jszip.min.js shipped Jun 2026)
 
 [ALL]: dedicated session required before wiring
 ```

@@ -10838,16 +10838,31 @@ function exportSessionZip(sessionId) {
   }
 
   if (typeof JSZip === 'undefined') {
-    var script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-    script.onload = doZip;
-    script.onerror = function() {
-      alert("Export needs the zip engine and it couldn't load — are you offline? Try again once connected.");
-    };
-    document.head.appendChild(script);
+    loadZipEngine(doZip, function() {
+      alert("Export needs the zip engine and it couldn't load. Try again — and tell Jordan jszip.min.js is missing.");
+    });
   } else {
     doZip();
   }
+}
+
+// ── ZIP ENGINE LOADER ──
+// JSZip is vendored as a sibling file (jszip.min.js) so export/import — the
+// data-safety net — works offline and inside the wrapped app. The CDN is
+// only a fallback for a stray copy of the HTML traveling without its folder.
+function loadZipEngine(onReady, onFail) {
+  if (typeof JSZip !== 'undefined') { onReady(); return; }
+  var local = document.createElement('script');
+  local.src = 'jszip.min.js';
+  local.onload = onReady;
+  local.onerror = function() {
+    var cdn = document.createElement('script');
+    cdn.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    cdn.onload = onReady;
+    cdn.onerror = onFail;
+    document.head.appendChild(cdn);
+  };
+  document.head.appendChild(local);
 }
 
 function generateZip(zip, meta) {
@@ -10865,17 +10880,9 @@ function generateZip(zip, meta) {
 }
 
 function importSessionZip(file) {
-  if (typeof JSZip === 'undefined') {
-    var script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-    script.onload = function() { doImport(file); };
-    script.onerror = function() {
-      alert("Import needs the zip engine and it couldn't load — are you offline? Try again once connected.");
-    };
-    document.head.appendChild(script);
-  } else {
-    doImport(file);
-  }
+  loadZipEngine(function() { doImport(file); }, function() {
+    alert("Import needs the zip engine and it couldn't load. Try again — and tell Jordan jszip.min.js is missing.");
+  });
 }
 
 function doImport(file) {

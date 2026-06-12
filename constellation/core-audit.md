@@ -194,12 +194,20 @@ shipped file violates 3 written rules yet works everywhere it runs:
 4. R1+R2 resume + pagehide save — ✓ SHIPPED 2026-06-12
 5. P3 cached refs               — ✓ SHIPPED 2026-06-12
 6. R3 import hardening + M1 LRU — ✓ SHIPPED 2026-06-12 (+R6+R7+R8+R9 sweep)
-7. P1/P2 scale work             — OPEN | when sessions grow past ~50 bubbles
-8. R4 expiry + R5 multi-tab     — OPEN | design decisions needed (flag vs delete; warn vs lock)
+7. P1/P2 scale work             — OPEN (Jordan 2026-06-12: leave for the moment)
+8. R4 expiry + R5 multi-tab     — OPEN (Jordan 2026-06-12: leave for the moment)
    G5 mouse MOVE_DELAY          — OPEN | feel change, Jordan's call
-   M4 TEMP diag removal         — OPEN | after Jordan's iPad confirm round
-   T  tier-2 rule wording       — OPEN | adjudicate '<'/for-in/inline-custom-prop rules vs reality
-   JSZip local bundling         — OPEN | decision: vendor ~96KB vs wait for file split
+   M4 TEMP diag                 — KEEP (Jordan 2026-06-12: iPad visual issues
+                                  persist — diag is the instrument; possible
+                                  iPad-specific design pass ahead)
+   T  tier-2 rule wording       — ✓ RESOLVED 2026-06-12 | root CLAUDE.md
+                                  reworded: '<' fine, real traps are </script>
+                                  + <!-- inside JS strings
+   JSZip local bundling         — ✓ SHIPPED 2026-06-12 | vendored as sibling
+                                  jszip.min.js, local-first loader w/ CDN
+                                  fallback; offline round trip verified.
+                                  NOTE (Jordan): file may NEVER split — plan
+                                  in question, confirm before any restructure
 ```
 
 All shipped batches verified by driving the app in headless Chromium

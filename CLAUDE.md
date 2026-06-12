@@ -429,10 +429,18 @@ ES5-safe browser JS:
 - No spread operators (`...`) — use `Object.assign({}, obj)` / `arr.concat([item])`
 - No CSS custom properties as inline `style=` values
 - No `--` inside HTML string literals
-- No `<` comparison in JS → use `!(a >= b)`
+- `<` comparisons in JS are FINE (rule corrected Jun 2026, Jordan-approved —
+  shipped files use them throughout and every target parses them. The REAL
+  traps inside an HTML script: never put the literal sequences `</script>`
+  or `<!--` inside JS strings — those can end the script or open a comment
+  mid-code)
 - No `in` operator → use `Object.prototype.hasOwnProperty.call()`
 - No frameworks, no build tools, no imports
-- Single self-contained `.html` file always
+- Single self-contained `.html` file — third-party libraries vendor as
+  sibling static files loaded by relative path (same philosophy as the image
+  rule: external asset paths, never giant inline blobs; e.g.
+  `constellation/jszip.min.js`, Jun 2026 — keeps the editable HTML lean and
+  export/import working offline + in the wrapped app)
 
 **Tier 2 LIFTS for an app the moment it becomes `Preact-beta`** — that app
 now has a Vite build pipeline, so arrow functions, template literals, JSX,
