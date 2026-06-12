@@ -10641,8 +10641,12 @@ function safeSetItem(key, value) {
 
 function saveCurrentSession() {
   if (!state.currentSessionId) { return; }
-  // A direct save satisfies any pending debounced one
+  // A direct save satisfies any pending debounced/idle one
   if (_autoSaveT) { clearTimeout(_autoSaveT); _autoSaveT = null; }
+  if (_autoSaveIdle) {
+    if (typeof cancelIdleCallback === 'function') { cancelIdleCallback(_autoSaveIdle); }
+    _autoSaveIdle = null;
+  }
   var data = serializeSession();
   var ok = safeSetItem('constellation-state-' + state.currentSessionId, JSON.stringify(data));
   if (ok) {
@@ -11081,13 +11085,24 @@ function doImport(file) {
 // calls (pagehide, session switch, timer zero) flush the pending timer.
 
 var _autoSaveT = null;
+var _autoSaveIdle = null;
 
 function autoSave() {
   if (!state.currentSessionId) { return; }
-  if (_autoSaveT) { return; }   // one trailing save covers the burst
+  if (_autoSaveT || _autoSaveIdle) { return; }   // one trailing save covers the burst
   _autoSaveT = setTimeout(function() {
     _autoSaveT = null;
-    saveCurrentSession();
+    // Idle slot (measured Jun 2026: full save ~6ms at 400 bubbles, more on
+    // iPad) so the snapshot never lands mid-gesture or mid-animation —
+    // same scheduling idiom as the bake queue. 1s cap; pagehide flushes.
+    if (typeof requestIdleCallback === 'function') {
+      _autoSaveIdle = requestIdleCallback(function() {
+        _autoSaveIdle = null;
+        saveCurrentSession();
+      }, { timeout: 1000 });
+    } else {
+      saveCurrentSession();
+    }
   }, 250);
 }
 
