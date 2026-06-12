@@ -81,46 +81,46 @@
     GRAVITY-SUBMENU (JS)        7058 — 7100 
     DISSOLUTION (JS)            7101 — 7340 
     LINKING-AUTO                7341 — 7350 
-    CONTACT-DWELL-LINK          7352 — 7734 
-    INDUCED-ORBIT-CLEANUP       7735 — 7823 
-    DRAG-HANDLERS               7824 — 7991 
-    CRYSTALLIZATION (JS)        7992 — 8049 
-    ZOOM-VIEW (JS)              8050 — 8884 
-    PREVIEW-BRIDGE (JS)         8885 — 8941 
-    UNLINKED-DRAWER (JS)        8942 — 8977 
-    SUMMON-MENU (JS)            8978 — 9053 
-    AUTO-SESSION                9054 — 9122 
-    TEXT-INPUT (JS)             9123 — 9145 
-    VOICE-SKETCH-STUBS          9146 — 9164 
-    SELF-AWARENESS (JS)         9165 — 9189 
-    HINT                        9190 — 9198 
-    SEED-CONSTELLATION          9199 — 9204 
-    STAR-TOOLBAR (JS)           9205 — 9274 
-    VISUAL-SETTINGS-STATE       9275 — 9455 
-    STAR-DATA-MODEL             9457 — 9570 
-    TITLE-PILL (JS)             9572 — 9594 
-    SETTINGS-NAV (JS)           9595 — 9666 
-    SELF-AWARENESS-CTRLS        9667 — 9708 
-    SETTINGS-PANEL-DRAG         9709 — 9853 
-    CASCADE-SUBOPTIONS          9854 — 9874 
-    TOGGLE-GROUPS               9875 — 9911 
-    SLIDERS                     9912 — 9935 
-    ZOOM-INTERIOR-SETTINGS-LISTENERS  9936 — 10021
-    ORBIT-SPEED-DIRECTION      10022 — 10106
-    SESSION-DECAY              10107 — 10169
-    SESSION-PROMPT (JS)        10170 — 10213
-    DASHBOARD-DRAWER (JS)      10214 — 10329
-    PERSISTENCE                10330 — 11274
-    SESSION-INIT (JS)          11275 — 11400
-    HARDCORE-INIT (JS)         11401 — 11699
-    STAR-DIAL                  11703 — 11981
-    GLOBAL-STARS-MODAL         11983 — 12166
-    OVERRIDE-CONFIRM           12168 — 12217
-    BOOT-RESUME                12218 — 12241
-    STAR-TOOLBAR (HTML)        12244 — 12287
-    STAR-DIAL-DOM              12289 — 12313
-    GLOBAL-STARS-MODAL-DOM     12315 — 12350
-    OVERRIDE-CONFIRM-DOM       12352 — 12371
+    CONTACT-DWELL-LINK          7352 — 7742 
+    INDUCED-ORBIT-CLEANUP       7743 — 7831 
+    DRAG-HANDLERS               7832 — 7997 
+    CRYSTALLIZATION (JS)        7998 — 8055 
+    ZOOM-VIEW (JS)              8056 — 8890 
+    PREVIEW-BRIDGE (JS)         8891 — 8947 
+    UNLINKED-DRAWER (JS)        8948 — 8983 
+    SUMMON-MENU (JS)            8984 — 9059 
+    AUTO-SESSION                9060 — 9128 
+    TEXT-INPUT (JS)             9129 — 9151 
+    VOICE-SKETCH-STUBS          9152 — 9170 
+    SELF-AWARENESS (JS)         9171 — 9195 
+    HINT                        9196 — 9204 
+    SEED-CONSTELLATION          9205 — 9210 
+    STAR-TOOLBAR (JS)           9211 — 9280 
+    VISUAL-SETTINGS-STATE       9281 — 9461 
+    STAR-DATA-MODEL             9463 — 9576 
+    TITLE-PILL (JS)             9578 — 9600 
+    SETTINGS-NAV (JS)           9601 — 9672 
+    SELF-AWARENESS-CTRLS        9673 — 9714 
+    SETTINGS-PANEL-DRAG         9715 — 9859 
+    CASCADE-SUBOPTIONS          9860 — 9880 
+    TOGGLE-GROUPS               9881 — 9917 
+    SLIDERS                     9918 — 9941 
+    ZOOM-INTERIOR-SETTINGS-LISTENERS  9942 — 10027
+    ORBIT-SPEED-DIRECTION      10028 — 10112
+    SESSION-DECAY              10113 — 10175
+    SESSION-PROMPT (JS)        10176 — 10219
+    DASHBOARD-DRAWER (JS)      10220 — 10335
+    PERSISTENCE                10336 — 11280
+    SESSION-INIT (JS)          11281 — 11406
+    HARDCORE-INIT (JS)         11407 — 11705
+    STAR-DIAL                  11709 — 11987
+    GLOBAL-STARS-MODAL         11989 — 12172
+    OVERRIDE-CONFIRM           12174 — 12223
+    BOOT-RESUME                12224 — 12247
+    STAR-TOOLBAR (HTML)        12250 — 12293
+    STAR-DIAL-DOM              12295 — 12319
+    GLOBAL-STARS-MODAL-DOM     12321 — 12356
+    OVERRIDE-CONFIRM-DOM       12358 — 12377
   ════════════════════════════════════════════════════════════════════
 -->
 <!--
@@ -7361,6 +7361,10 @@ var contactDwellTimer    = null;
 var contactDwellTargetId = null;
 var contactBreakTimer    = null; // forgiveness window — brief breaks don't reset dwell
 var zonesAreBloomed      = false; // true once zones are showing
+// Zone ring elements cached while bloomed — updateZoneSensing runs every
+// drag frame and must not querySelector per move (hot-path rule)
+var _zonePlanetaryEl     = null;
+var _zoneMutualEl        = null;
 
 function checkLinkProximity(dragBubble) {
   var dr = bubbleRadius(dragBubble);
@@ -7482,6 +7486,8 @@ function showLinkZone(b, zoneType) {
   lbl.style.color = labelColor;
   z.appendChild(lbl);
   bubbleLayer.appendChild(z);
+  if (zoneType === 'planetary') { _zonePlanetaryEl = z; }
+  else                          { _zoneMutualEl = z; }
 }
 
 function clearLinkZones() {
@@ -7489,6 +7495,8 @@ function clearLinkZones() {
   for (var i = 0; i < zones.length; i++) {
     zones[i].parentNode.removeChild(zones[i]);
   }
+  _zonePlanetaryEl = null;
+  _zoneMutualEl = null;
 }
 
 // Called each drag frame while zones are bloomed.
@@ -7520,9 +7528,9 @@ function updateZoneSensing(dragBubble) {
     activeLinkZoneType = null; // outside both — won't commit
   }
 
-  // Update CSS classes on zone rings
-  var pZone = document.querySelector('.link-zone-planetary');
-  var mZone = document.querySelector('.link-zone-mutual');
+  // Update CSS classes on zone rings (cached at bloom — no per-move query)
+  var pZone = _zonePlanetaryEl;
+  var mZone = _zoneMutualEl;
   if (pZone) {
     if (inPlanetary) pZone.classList.add('sensing');
     else             pZone.classList.remove('sensing');
@@ -7863,10 +7871,9 @@ document.addEventListener('mousemove', function(e) {
   }
   b.x = e.clientX - state.dragOffsetX;
   b.y = e.clientY - state.dragOffsetY;
-  var el = document.getElementById('bubble-' + b.id);
-  if (el) { placeXY(el, b.x, b.y); }
-  var mRingD = document.getElementById('mutual-ring-' + b.id);
-  if (mRingD) { placeXY(mRingD, b.x, b.y); }
+  // cached refs — per-move getElementById violates the hot-path rule
+  if (b.el)           { placeXY(b.el, b.x, b.y); }
+  if (b.mutualRingEl) { placeXY(b.mutualRingEl, b.x, b.y); }
   if (!b.crystallized) { checkLinkProximity(b); updateZoneSensing(b); }
 });
 
@@ -7901,10 +7908,9 @@ document.addEventListener('touchmove', function(e) {
   }
   b.x = t.clientX - state.dragOffsetX;
   b.y = t.clientY - state.dragOffsetY;
-  var el = document.getElementById('bubble-' + b.id);
-  if (el) { placeXY(el, b.x, b.y); }
-  var mRingT = document.getElementById('mutual-ring-' + b.id);
-  if (mRingT) { placeXY(mRingT, b.x, b.y); }
+  // cached refs — per-move getElementById violates the hot-path rule
+  if (b.el)           { placeXY(b.el, b.x, b.y); }
+  if (b.mutualRingEl) { placeXY(b.mutualRingEl, b.x, b.y); }
   if (!b.crystallized) { checkLinkProximity(b); updateZoneSensing(b); }
 }, { passive: true });
 document.addEventListener('mouseup', function() {
