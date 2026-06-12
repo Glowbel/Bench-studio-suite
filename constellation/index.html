@@ -74,52 +74,52 @@
     PHYSICS                     5491 — 5648 
     BUBBLE-DATA                 5649 — 5716 
     CREATE-BUBBLE               5717 — 5989 
-    STAR-RENDERER               5990 — 6505 
-    STAR-BAKE                   6046 — 6337 
-    CRYSTAL-SWIRL               6506 — 6539 
-    COMPASS (JS)                6541 — 7022 
-    GRAVITY-SUBMENU (JS)        7023 — 7065 
-    DISSOLUTION (JS)            7066 — 7305 
-    LINKING-AUTO                7306 — 7315 
-    CONTACT-DWELL-LINK          7317 — 7699 
-    INDUCED-ORBIT-CLEANUP       7700 — 7788 
-    DRAG-HANDLERS               7789 — 7956 
-    CRYSTALLIZATION (JS)        7957 — 8014 
-    ZOOM-VIEW (JS)              8015 — 8849 
-    PREVIEW-BRIDGE (JS)         8850 — 8906 
-    UNLINKED-DRAWER (JS)        8907 — 8942 
-    SUMMON-MENU (JS)            8943 — 9018 
-    AUTO-SESSION                9019 — 9087 
-    TEXT-INPUT (JS)             9088 — 9110 
-    VOICE-SKETCH-STUBS          9111 — 9129 
-    SELF-AWARENESS (JS)         9130 — 9154 
-    HINT                        9155 — 9163 
-    SEED-CONSTELLATION          9164 — 9169 
-    STAR-TOOLBAR (JS)           9170 — 9239 
-    VISUAL-SETTINGS-STATE       9240 — 9420 
-    STAR-DATA-MODEL             9422 — 9535 
-    TITLE-PILL (JS)             9537 — 9559 
-    SETTINGS-NAV (JS)           9560 — 9631 
-    SELF-AWARENESS-CTRLS        9632 — 9673 
-    SETTINGS-PANEL-DRAG         9674 — 9818 
-    CASCADE-SUBOPTIONS          9819 — 9839 
-    TOGGLE-GROUPS               9840 — 9876 
-    SLIDERS                     9877 — 9900 
-    ZOOM-INTERIOR-SETTINGS-LISTENERS  9901 — 9980 
-    ORBIT-SPEED-DIRECTION       9981 — 10065
-    SESSION-DECAY              10066 — 10128
-    SESSION-PROMPT (JS)        10129 — 10172
-    DASHBOARD-DRAWER (JS)      10173 — 10288
-    PERSISTENCE                10289 — 11218
-    SESSION-INIT (JS)          11219 — 11344
-    HARDCORE-INIT (JS)         11345 — 11643
-    STAR-DIAL                  11647 — 11925
-    GLOBAL-STARS-MODAL         11927 — 12110
-    OVERRIDE-CONFIRM           12112 — 12161
-    STAR-TOOLBAR (HTML)        12164 — 12207
-    STAR-DIAL-DOM              12209 — 12233
-    GLOBAL-STARS-MODAL-DOM     12235 — 12270
-    OVERRIDE-CONFIRM-DOM       12272 — 12291
+    STAR-RENDERER               5990 — 6539 
+    STAR-BAKE                   6046 — 6371 
+    CRYSTAL-SWIRL               6540 — 6573 
+    COMPASS (JS)                6575 — 7056 
+    GRAVITY-SUBMENU (JS)        7057 — 7099 
+    DISSOLUTION (JS)            7100 — 7339 
+    LINKING-AUTO                7340 — 7349 
+    CONTACT-DWELL-LINK          7351 — 7733 
+    INDUCED-ORBIT-CLEANUP       7734 — 7822 
+    DRAG-HANDLERS               7823 — 7990 
+    CRYSTALLIZATION (JS)        7991 — 8048 
+    ZOOM-VIEW (JS)              8049 — 8883 
+    PREVIEW-BRIDGE (JS)         8884 — 8940 
+    UNLINKED-DRAWER (JS)        8941 — 8976 
+    SUMMON-MENU (JS)            8977 — 9052 
+    AUTO-SESSION                9053 — 9121 
+    TEXT-INPUT (JS)             9122 — 9144 
+    VOICE-SKETCH-STUBS          9145 — 9163 
+    SELF-AWARENESS (JS)         9164 — 9188 
+    HINT                        9189 — 9197 
+    SEED-CONSTELLATION          9198 — 9203 
+    STAR-TOOLBAR (JS)           9204 — 9273 
+    VISUAL-SETTINGS-STATE       9274 — 9454 
+    STAR-DATA-MODEL             9456 — 9569 
+    TITLE-PILL (JS)             9571 — 9593 
+    SETTINGS-NAV (JS)           9594 — 9665 
+    SELF-AWARENESS-CTRLS        9666 — 9707 
+    SETTINGS-PANEL-DRAG         9708 — 9852 
+    CASCADE-SUBOPTIONS          9853 — 9873 
+    TOGGLE-GROUPS               9874 — 9910 
+    SLIDERS                     9911 — 9934 
+    ZOOM-INTERIOR-SETTINGS-LISTENERS  9935 — 10014
+    ORBIT-SPEED-DIRECTION      10015 — 10099
+    SESSION-DECAY              10100 — 10162
+    SESSION-PROMPT (JS)        10163 — 10206
+    DASHBOARD-DRAWER (JS)      10207 — 10322
+    PERSISTENCE                10323 — 11252
+    SESSION-INIT (JS)          11253 — 11378
+    HARDCORE-INIT (JS)         11379 — 11677
+    STAR-DIAL                  11681 — 11959
+    GLOBAL-STARS-MODAL         11961 — 12144
+    OVERRIDE-CONFIRM           12146 — 12195
+    STAR-TOOLBAR (HTML)        12198 — 12241
+    STAR-DIAL-DOM              12243 — 12267
+    GLOBAL-STARS-MODAL-DOM     12269 — 12304
+    OVERRIDE-CONFIRM-DOM       12306 — 12325
   ════════════════════════════════════════════════════════════════════
 -->
 <!--
@@ -6106,35 +6106,69 @@ function _bakeSvgMarkup(size, colorHex, g, filterId) {
     '<circle cx="100" cy="100" r="94" fill="url(#bgrad)" filter="url(#' + filterId + ')"/></svg>';
 }
 
+// Transient-failure tracking (M2, Jun 2026 audit): on iOS a toBlob can
+// return null under momentary memory pressure. Caching that null forever
+// meant a gas-less star for the whole session. Failures now retry up to
+// 3 attempts (auto re-enqueued, low priority); only then does the key go
+// permanently live-fallback (STAR_TEX[key] = null, the old behavior).
+var STAR_TEX_FAILS = {};
+function _noteBakeFailure(key, size, svg) {
+  var f = STAR_TEX_FAILS[key] || { n: 0 };
+  f.n += 1;
+  STAR_TEX_FAILS[key] = f;
+  if (f.n >= 3) { STAR_TEX[key] = null; return; }
+  setTimeout(function () {
+    if (Object.prototype.hasOwnProperty.call(STAR_TEX, key)) return;
+    if (STAR_TEX_PENDING[key]) return;
+    STAR_TEX_PENDING[key] = true;
+    _enqueueBake({ key: key, size: size, svg: svg }, true);
+  }, 3000);
+}
+
 function _startStarBake(key, size, svg, done) {
-  function finish() { if (done) done(); }
-  var svgUrl;
+  // settle() is the ONLY exit — success or failure, it runs exactly once,
+  // clears pending state, and advances the serialized queue. The watchdog
+  // (M3) covers the iOS case where an <img> decode fires NEITHER onload
+  // nor onerror: without it _bakeActive stays true and no bake ever runs
+  // again for the rest of the session.
+  var settled = false;
+  var svgUrl = null;
+  var watchdog = null;
+  function settle(url) {
+    if (settled) return;
+    settled = true;
+    if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+    if (svgUrl) { try { URL.revokeObjectURL(svgUrl); } catch (e) {} svgUrl = null; }
+    if (url) {
+      STAR_TEX[key] = url;
+      if (STAR_TEX_FAILS[key]) { delete STAR_TEX_FAILS[key]; }
+    } else {
+      _noteBakeFailure(key, size, svg);
+    }
+    STAR_TEX_PENDING[key] = false;
+    _fireTexWaiters();
+    if (done) done();
+  }
   try {
     svgUrl = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
-  } catch (e) {
-    STAR_TEX[key] = null; STAR_TEX_PENDING[key] = false; _fireTexWaiters(); finish(); return;
-  }
+  } catch (e) { settle(null); return; }
+  watchdog = setTimeout(function () { settle(null); }, 8000);
   var img = new Image();
   img.onload = function () {
+    if (settled) return;
     try {
       var cv = document.createElement('canvas');
       cv.width = size; cv.height = size;
       cv.getContext('2d').drawImage(img, 0, 0, size, size);
       cv.toBlob(function (blob) {
-        URL.revokeObjectURL(svgUrl);
-        STAR_TEX[key] = blob ? URL.createObjectURL(blob) : null;
-        STAR_TEX_PENDING[key] = false;
-        _fireTexWaiters(); finish();
+        if (settled) return; // watchdog already fired — don't orphan a url
+        settle(blob ? URL.createObjectURL(blob) : null);
       }, 'image/png');
     } catch (e) {
-      URL.revokeObjectURL(svgUrl);
-      STAR_TEX[key] = null; STAR_TEX_PENDING[key] = false; _fireTexWaiters(); finish();
+      settle(null);
     }
   };
-  img.onerror = function () {
-    URL.revokeObjectURL(svgUrl);
-    STAR_TEX[key] = null; STAR_TEX_PENDING[key] = false; _fireTexWaiters(); finish();
-  };
+  img.onerror = function () { settle(null); };
   img.src = svgUrl;
 }
 
