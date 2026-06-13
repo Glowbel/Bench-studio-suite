@@ -1293,10 +1293,12 @@
     transform: translate(-50%, -50%);
     overflow: visible;
     pointer-events: none;
-    /* pre-promote to a GPU layer so the maximize scale doesn't trigger a
-       layer-creation snap on first toggle (the Android-only jump) */
-    will-change: transform;
-    backface-visibility: hidden;
+    /* NOT permanently promoted (was will-change:transform + backface-visibility
+       :hidden). Same stale-tile disease as the zone1 wrap: the held layer kept
+       a scaled-pose tile after the maximize FLIP, showing as the band through
+       the panel / the half-missing star on full->framed. The boost transition
+       promotes its own transient layer and cleans up after. The composited
+       star's gas layers keep their own will-change — those are unaffected. */
   }
 
   /* zone2: inert transition layer (vignette removed Jun 2026 — was non-functional) */
@@ -1317,8 +1319,12 @@
     opacity: 0;
     z-index: 3;
     pointer-events: none;
-    /* own compositor layer so the resize repaint stays isolated */
-    will-change: transform;
+    /* NOT permanently promoted. A persistent will-change layer kept a stale
+       compositor tile from the maximize scale-pose after the FLIP glided back
+       to framed — the ghost panel / disappearing box on full->framed (Jun
+       2026). The transform transition promotes a layer for its own duration
+       and tears it down cleanly after, repainting into the parent: no tile to
+       strand. Self-cleaning beats a held layer here. */
   }
   #zoom-zone1-wrap.interactive {
     pointer-events: all;
@@ -8589,13 +8595,6 @@ function applyZoomZone1Size(geom, animated) {
     var rect = zoomZone1Wrap.getBoundingClientRect();
     var sx = (rect.width  && W) ? rect.width  / W : 1;
     var sy = (rect.height && H) ? rect.height / H : 1;
-    // Promote the layer before it scales (avoids a layer-creation snap on the
-    // first toggle), then demote it once the glide settles — see the timer
-    // below. A scaled will-change layer can otherwise leave a stale full-size
-    // compositor tile behind when it shrinks back: the ghost-panel rectangle
-    // bleeding past the framed edge on full->framed (Jun 2026, all engines).
-    if (state.zone1FlipTimer) { window.clearTimeout(state.zone1FlipTimer); state.zone1FlipTimer = null; }
-    zoomZone1Wrap.style.willChange = 'transform';
     zoomZone1Wrap.style.transition = 'none';
     zoomZone1Wrap.style.width  = W + 'px';
     zoomZone1Wrap.style.height = H + 'px';
@@ -8603,12 +8602,6 @@ function applyZoomZone1Size(geom, animated) {
     void zoomZone1Wrap.offsetWidth;
     zoomZone1Wrap.style.transition = 'transform 0.42s cubic-bezier(0.25,0.8,0.25,1)';
     zoomZone1Wrap.style.transform  = 'translate(-50%,-50%)';
-    // Demote after the glide: discards the stale tile, forces one clean repaint
-    // at the true framed bounds. The next animated resize re-promotes above.
-    state.zone1FlipTimer = window.setTimeout(function() {
-      zoomZone1Wrap.style.willChange = 'auto';
-      state.zone1FlipTimer = null;
-    }, 480);
   } else {
     zoomZone1Wrap.style.transition = 'none';
     zoomZone1Wrap.style.transform  = 'translate(-50%,-50%)';
@@ -8635,17 +8628,7 @@ function applyZoomFull(b, isFull, animated) {
     window.setTimeout(function() {
       if (!state.zoomAnimating) document.body.classList.remove('zoom-animating');
     }, 460);
-    // Same stale-tile guard as the zone1 panel: the star wrap is a permanently
-    // promoted layer and it scales here too. After the glide, demote it so the
-    // GPU discards the scaled-pose tile (the faint band showing through the
-    // translucent panel on full->framed). Re-promoted below before it scales.
-    if (state.zone3FlipTimer) { window.clearTimeout(state.zone3FlipTimer); state.zone3FlipTimer = null; }
-    zoomZone3.style.willChange = 'transform';
     zoomZone3.style.transition = 'transform 0.42s cubic-bezier(0.25,0.8,0.25,1)';
-    state.zone3FlipTimer = window.setTimeout(function() {
-      zoomZone3.style.willChange = 'auto';
-      state.zone3FlipTimer = null;
-    }, 480);
   } else {
     zoomZone3.style.transition = 'none';
   }
@@ -8669,12 +8652,6 @@ function openZoom(bubbleId) {
   state.zoomTargetId = bubbleId;
   document.body.classList.add('zoom-open');
   b.viewed = true;
-  // Start every zoom session with both scaling layers freshly promoted. The
-  // full/framed toggle demotes them on settle to flush stale compositor tiles
-  // (the ghost panel + the band through it); re-promoting here means a leftover
-  // 'auto' from a prior session can't cause a layer-creation snap on the boost.
-  zoomZone1Wrap.style.willChange = 'transform';
-  zoomZone3.style.willChange     = 'transform';
 
   // populate content
   zoomTitle.textContent = b.label;
